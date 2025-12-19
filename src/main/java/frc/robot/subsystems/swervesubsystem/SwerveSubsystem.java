@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
-import frc.robot.Constants.*;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.Vision.Cameras;
 
@@ -54,6 +53,8 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase
 {
+
+  //NOTE - In physicalproperties.json, It is currently set up for R2, and Mass is set for KG.
 
   /**
    * Swerve drive object.
