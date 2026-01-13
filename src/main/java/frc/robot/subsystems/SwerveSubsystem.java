@@ -1,4 +1,4 @@
-package frc.robot.subsystems.swervesubsystem;
+package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Meter;
 
@@ -26,11 +26,9 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
-import frc.robot.subsystems.Vision.Vision;
-import frc.robot.subsystems.Vision.Vision.Cameras;
+import frc.robot.subsystems.Vision.Cameras;
 
 import java.io.File;
 import java.io.IOException;
@@ -115,7 +113,6 @@ public class SwerveSubsystem extends SubsystemBase
       swerveDrive.stopOdometryThread();
     }
     setupPathPlanner();
-    RobotModeTriggers.autonomous().onTrue(Commands.runOnce(this::zeroGyroWithAlliance));
   }
 
   /**

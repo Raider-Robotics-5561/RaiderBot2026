@@ -13,11 +13,13 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import java.io.File;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import swervelib.SwerveInputStream;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import frc.robot.subsystems.swervesubsystem.SwerveSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
 // import frc.robot.subsystems.Vision.Vision;
 
 /**
@@ -33,7 +35,7 @@ public class RobotContainer
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve"));
                                           
- SendableChooser<Command> m_chooser;
+private SendableChooser<Command> autoChooser;
 
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
@@ -101,10 +103,6 @@ public class RobotContainer
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
 
-
-
-    SmartDashboard.putData(m_chooser);
-
 //======================================================================================
 
   }
@@ -133,7 +131,7 @@ public class RobotContainer
     }
 
       //~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~
-      DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
+      DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
 
 
       //This is our boost control Right Trigger
@@ -150,16 +148,22 @@ public class RobotContainer
     
   
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand()
-  {
-    // An example command will be run in autonomous
-    return m_chooser.getSelected();
-  }
+  public void setupAutonomous() {
+        // Named Commands go here
+        //NamedCommands.registerCommand("GUI NAME", theCommand());
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData(autoChooser);
+    }
+
+    /**
+     * Gets the selected autonomous command.
+     *
+     * @return the selected {@link Command}.
+     */
+    public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
+    }
+
   public void setMotorBrake(boolean brake)
   {
     drivebase.setMotorBrake(brake);
