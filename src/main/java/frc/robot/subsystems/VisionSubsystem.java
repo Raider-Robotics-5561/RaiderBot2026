@@ -21,10 +21,13 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import java.awt.Desktop;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -46,22 +49,22 @@ import swervelib.telemetry.SwerveDriveTelemetry;
  * Example PhotonVision class to aid in the pursuit of accurate odometry. Taken from
  * https://gitlab.com/ironclad_code/ironclad-2024/-/blob/master/src/main/java/frc/robot/vision/Vision.java?ref_type=heads
  */
-public class Vision
+public class VisionSubsystem extends SubsystemBase
 {
 
   /**
    * April Tag Field Layout of the year.
    */
   public static final AprilTagFieldLayout fieldLayout                     = AprilTagFieldLayout.loadField(
-      AprilTagFields.k2025ReefscapeWelded);
+      AprilTagFields.kDefaultField);
   /**
-   * Ambiguity defined as a value between (0,1). Used in {@link Vision#filterPose}.
+   * Ambiguity defined as a value between (0,1). Used in {@link VisionSubsystem#filterPose}.
    */
   private final       double              maximumAmbiguity                = 0.25;
   /**
    * Photon Vision Simulation
    */
-  public              VisionSystemSim     visionSim;
+  public static              VisionSystemSim     visionSim;
   /**
    * Count of times that the odom thinks we're more than 10meters away from the april tag.
    */
@@ -82,7 +85,7 @@ public class Vision
    * @param currentPose Current pose supplier, should reference {@link SwerveDrive#getPose()}
    * @param field       Current field, should be {@link SwerveDrive#field}
    */
-  public Vision(Supplier<Pose2d> currentPose, Field2d field)
+  public VisionSubsystem(Supplier<Pose2d> currentPose, Field2d field)
   {
     this.currentPose = currentPose;
     this.field2d = field;
@@ -99,6 +102,24 @@ public class Vision
 
       openSimCameraViews();
     }
+  }
+
+  @Override
+  public void periodic()
+  {
+            
+    // Keep sim vision updated with the robot pose each loop (only in sim).
+    if (RobotBase.isSimulation())
+    {
+      visionSim.update(currentPose.get());
+    }
+
+    // Update each camera's cached results / pose estimate once per loop.
+    for (Cameras c : Cameras.values())
+    {
+      c.getEstimatedGlobalPose();
+    }
+     
   }
 
   /**
@@ -422,7 +443,7 @@ public class Vision
       // https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
       robotToCamTransform = new Transform3d(robotToCamTranslation, robotToCamRotation);
 
-      poseEstimator = new PhotonPoseEstimator(Vision.fieldLayout,
+      poseEstimator = new PhotonPoseEstimator(VisionSubsystem.fieldLayout,
                                               PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
                                               robotToCamTransform);
       poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
@@ -556,6 +577,17 @@ public class Vision
       }
       estimatedRobotPose = visionEst;
     }
+       
+   
+    
+    public Optional<PhotonTrackedTarget> getClosestTag() {
+        return camera.getLatestResult().hasTargets()
+                ? camera.getLatestResult().getTargets().stream()
+                        .filter(t -> t.getFiducialId() > 0) // AprilTags only
+                        .min(Comparator.comparingDouble(
+                                t -> t.getBestCameraToTarget().getTranslation().getNorm()))
+                : Optional.empty();
+    }
 
     /**
      * Calculates new standard deviations This algorithm is a heuristic that creates dynamic standard deviations based
@@ -621,8 +653,6 @@ public class Vision
         }
       }
     }
-
-
   }
 
 }
