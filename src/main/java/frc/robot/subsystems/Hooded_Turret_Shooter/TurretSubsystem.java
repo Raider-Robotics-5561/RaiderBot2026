@@ -29,11 +29,11 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class TurretSubsystem extends SubsystemBase {
-        TalonFX turretMotor = new TalonFX(0);
+        TalonFX turretMotor = new TalonFX(9);
 
         private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
                         .withControlMode(ControlMode.CLOSED_LOOP)
-                        .withClosedLoopController(4, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
+                        .withClosedLoopController(0.01, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
                         // Configure Motor and Mechanism properties
                         .withGearing(new MechanismGearing(13.3333333333))
                         .withIdleMode(MotorMode.BRAKE)

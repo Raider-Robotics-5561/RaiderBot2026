@@ -2,12 +2,14 @@ package frc.robot.subsystems.Hooded_Turret_Shooter;
 
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
 
 import java.util.function.Supplier;
 
@@ -16,11 +18,15 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.ArmConfig;
 import yams.mechanisms.positional.Arm;
@@ -32,15 +38,16 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class HoodSubsystem extends SubsystemBase {
-  TalonFX hoodMotor = new TalonFX(0);
-
+  TalonFX hoodMotor = new TalonFX(12);
+ private final Angle            hardLowerLimit     = Degrees.of(0);
+//   private final Angle            hardUpperLimit     = Degrees.of(110);
     private final SmartMotorControllerConfig hoodMotorConfig = new SmartMotorControllerConfig(this)
-            .withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
+            .withClosedLoopController(0.00016541, 0, 0, RPM.of(2500), RotationsPerSecondPerSecond.of(500))
             .withGearing(new MechanismGearing(200))
-            .withIdleMode(MotorMode.COAST)
+            .withIdleMode(MotorMode.BRAKE)
             .withTelemetry("HoodMotor", TelemetryVerbosity.HIGH)
             .withStatorCurrentLimit(Amps.of(40))
-            .withMotorInverted(false)
+            .withMotorInverted(false) //NOTE - May need to fix based on direction of motor
             .withClosedLoopRampRate(Seconds.of(0.25))
             .withOpenLoopRampRate(Seconds.of(0.25))
             .withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
@@ -54,6 +61,7 @@ public class HoodSubsystem extends SubsystemBase {
             .withSoftLimits(Degrees.of(5), Degrees.of(100))
             .withHardLimit(Degrees.of(0), Degrees.of(120)); // The Hood can be modeled as an arm since it has a
                                                             // gravitational force acted upon based on the angle its in
+
 
     private final Arm hood = new Arm(hoodConfig);
 
@@ -72,6 +80,32 @@ public class HoodSubsystem extends SubsystemBase {
     public Angle getAngle() {
         return hood.getAngle();
     }
+
+
+/**
+   * Reset the encoder to the lowest position when the current threshhold is reached. Should be used when the hood
+   * position is unreliable, like startup. Threshhold is only detected if exceeded for 0.4 seconds, and the motor moves
+   * less than 2 degrees per second.
+   *
+   * @param threshhold The current threshhold held when the hood is at it's hard limit.
+   * @return
+   */
+  public Command homing(Current threshhold)
+  {
+    Debouncer       currentDebouncer  = new Debouncer(0.4); // Current threshold is only detected if exceeded for 0.4 seconds.
+    Voltage         runVolts          = Volts.of(-2); // Volts required to run the mechanism down. Could be negative if the mechanism is inverted.
+    Angle           limitHit          = hardLowerLimit;  // Limit which gets hit. Could be the lower limit if the volts makes the hood go down.
+    AngularVelocity velocityThreshold = DegreesPerSecond.of(2); // The maximum amount of movement for the hood to be considered "hitting the hard limit".
+    return Commands.startRun(hoodSMC::stopClosedLoopController, // Stop the closed loop controller
+                             () -> hoodSMC.setVoltage(runVolts)) // Set the voltage of the motor
+                   .until(() -> currentDebouncer.calculate(hoodSMC.getStatorCurrent().gte(threshhold) &&
+                                                           hoodSMC.getMechanismVelocity().abs(DegreesPerSecond) <=
+                                                           velocityThreshold.in(DegreesPerSecond)))
+                   .finallyDo(() -> {
+                     hoodSMC.setEncoderPosition(limitHit);
+                     hoodSMC.startClosedLoopController();
+                   });
+  }
 
     public Command sysId() {
         return hood.sysId(

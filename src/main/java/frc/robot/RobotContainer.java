@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.Hooded_Turret_Shooter.TurretSubsystem;
 // import frc.robot.subsystems.Vision.Vision;
 
 /**
@@ -29,6 +30,7 @@ import frc.robot.subsystems.SwerveSubsystem;
  */
 public class RobotContainer
 {
+  private final TurretSubsystem TurretSubsystem = new TurretSubsystem();
 
   final         CommandXboxController DriveController = new CommandXboxController(0);
   // The robot's subsystems and commands are defined here...
@@ -132,7 +134,7 @@ private SendableChooser<Command> autoChooser;
 
       //~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~
       DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-
+      DriveController.b().whileTrue(TurretSubsystem.sysId());
 
       //This is our boost control Right Trigger
       DriveController.axisGreaterThan(3, 0.01).onChange(Commands.runOnce(() -> {

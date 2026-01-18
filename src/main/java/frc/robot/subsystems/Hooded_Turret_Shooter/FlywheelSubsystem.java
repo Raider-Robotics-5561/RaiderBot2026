@@ -33,7 +33,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class FlywheelSubsystem extends SubsystemBase {
-  TalonFX flywheelMotor = new TalonFX(0);
+  TalonFX flywheelMotor = new TalonFX(10);
 
   private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
       .withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
@@ -47,7 +47,7 @@ public class FlywheelSubsystem extends SubsystemBase {
       .withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557)) //TODO - Add correct FF values
       .withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
       .withControlMode(ControlMode.CLOSED_LOOP)
-      .withFollowers(Pair.of(new TalonFX(0), false)); //TODO - Add correct CANid
+      .withFollowers(Pair.of(new TalonFX(11), false)); 
 
   private final SmartMotorController motor = new TalonFXWrapper(flywheelMotor, DCMotor.getKrakenX60(1), motorConfig);
 
