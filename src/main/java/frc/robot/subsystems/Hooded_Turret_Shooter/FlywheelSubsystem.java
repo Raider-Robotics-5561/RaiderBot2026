@@ -20,8 +20,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
@@ -37,16 +37,17 @@ public class FlywheelSubsystem extends SubsystemBase {
 
   private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
       .withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
-      .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
+      .withGearing(new MechanismGearing(1))
       .withIdleMode(MotorMode.COAST)
       .withTelemetry("FlywheelMotor", TelemetryVerbosity.HIGH)
       .withStatorCurrentLimit(Amps.of(40))
       .withMotorInverted(false)
       .withClosedLoopRampRate(Seconds.of(0.25))
       .withOpenLoopRampRate(Seconds.of(0.25))
-      .withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
+      .withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557)) //TODO - Add correct FF values
       .withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
-      .withControlMode(ControlMode.CLOSED_LOOP);
+      .withControlMode(ControlMode.CLOSED_LOOP)
+      .withFollowers(Pair.of(new TalonFX(0), false)); //TODO - Add correct CANid
 
   private final SmartMotorController motor = new TalonFXWrapper(flywheelMotor, DCMotor.getKrakenX60(1), motorConfig);
 
@@ -55,7 +56,7 @@ public class FlywheelSubsystem extends SubsystemBase {
       .withMass(Pounds.of(1))
       .withTelemetry("FlywheelMech", TelemetryVerbosity.HIGH)
       .withSoftLimit(RPM.of(-5000), RPM.of(5000))
-      .withSpeedometerSimulation(RPM.of(7500));
+      .withSpeedometerSimulation(RPM.of(5000));
 
   private final FlyWheel flywheel = new FlyWheel(flywheelConfig);
 

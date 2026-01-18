@@ -36,7 +36,7 @@ public class HoodSubsystem extends SubsystemBase {
 
     private final SmartMotorControllerConfig hoodMotorConfig = new SmartMotorControllerConfig(this)
             .withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
-            .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
+            .withGearing(new MechanismGearing(200))
             .withIdleMode(MotorMode.COAST)
             .withTelemetry("HoodMotor", TelemetryVerbosity.HIGH)
             .withStatorCurrentLimit(Amps.of(40))

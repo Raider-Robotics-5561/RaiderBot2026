@@ -35,7 +35,7 @@ public class TurretSubsystem extends SubsystemBase {
                         .withControlMode(ControlMode.CLOSED_LOOP)
                         .withClosedLoopController(4, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
                         // Configure Motor and Mechanism properties
-                        .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
+                        .withGearing(new MechanismGearing(13.3333333333))
                         .withIdleMode(MotorMode.BRAKE)
                         .withMotorInverted(false)
                         // Setup Telemetry
