@@ -32,10 +32,7 @@ public class TurretSubsystem extends SubsystemBase {
         TalonFX turretMotor = new TalonFX(9);
 
         private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
-                        .withControlMode(ControlMode.CLOSED_LOOP)
                         .withClosedLoopController(0.01, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
-                        .withContinuousWrapping(Rotations.of(-0.5),Rotations.of(0.5))
-                        // Configure Motor and Mechanism properties
                         .withGearing(new MechanismGearing(13.3333333333))
                         .withIdleMode(MotorMode.BRAKE)
                         .withMotorInverted(false)
@@ -44,12 +41,14 @@ public class TurretSubsystem extends SubsystemBase {
                         // Power Optimization
                         .withStatorCurrentLimit(Amps.of(40))
                         .withClosedLoopRampRate(Seconds.of(0.25))
-                        .withOpenLoopRampRate(Seconds.of(0.25));
+                        .withOpenLoopRampRate(Seconds.of(0.25))
+                        .withControlMode(ControlMode.CLOSED_LOOP);
+                        // .withContinuousWrapping(Rotations.of(0),Rotations.of(360));
         private final SmartMotorController turretSMC = new TalonFXWrapper(turretMotor,DCMotor.getKrakenX44(1),motorConfig);
 
         private final PivotConfig turretConfig = new PivotConfig(turretSMC)
                         .withStartingPosition(Degrees.of(0)) // Starting position of the Pivot
-                        .withWrapping(Degrees.of(0), Degrees.of(360)) // Wrapping enabled bc the pivot can spin
+                        // .withWrapping(Degrees.of(0), Degrees.of(360)) // Wrapping enabled bc the pivot can spin
                                                                       // infinitely
                         .withHardLimit(Degrees.of(0), Degrees.of(720)) // Hard limit bc wiring prevents infinite
                                                                        // spinning
