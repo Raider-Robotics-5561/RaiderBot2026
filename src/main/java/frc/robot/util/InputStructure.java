@@ -61,7 +61,7 @@ public class InputStructure {
     private final CommandXboxController operatorXbox;
     // Robot subsystems
     private final SwerveSubsystem swerve;
-    private final ControlStructure structure;
+    private final SuperStructure structure;
 
     private StringPublisher inputOverride;
 
@@ -74,7 +74,7 @@ public class InputStructure {
      */
     public InputStructure(
             SwerveSubsystem swerve,
-            ControlStructure structure) {
+            SuperStructure structure) {
 
         this.driverXbox = new CommandXboxController(0);
         this.operatorXbox = new CommandXboxController(1);

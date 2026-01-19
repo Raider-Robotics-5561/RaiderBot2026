@@ -31,7 +31,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 
-public class ControlStructure extends SubsystemBase {
+public class SuperStructure extends SubsystemBase {
     private final SwerveSubsystem swerve;
 
 
@@ -40,7 +40,7 @@ public class ControlStructure extends SubsystemBase {
      * This is the "brain" that controls the body.
      * Calls for all subsystems.
      */
-    public ControlStructure(SwerveSubsystem swerve) {
+    public SuperStructure(SwerveSubsystem swerve) {
         this.swerve = swerve;
 
         if (RobotBase.isSimulation()) {
