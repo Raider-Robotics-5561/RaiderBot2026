@@ -33,7 +33,7 @@ import static edu.wpi.first.units.Units.*;
 public class HoodSubsystem extends SubsystemBase {
   TalonFX hoodMotor = new TalonFX(12);
  public final Angle            hardLowerLimit     = Degrees.of(0);
- private final Angle           hardUpperLimit     = Degrees.of(110);
+ private final Angle           hardUpperLimit     = Degrees.of(40);
     private final SmartMotorControllerConfig hoodMotorConfig = new SmartMotorControllerConfig(this)
             .withClosedLoopController(0.00016541, 0, 0, RPM.of(2500), RotationsPerSecondPerSecond.of(500))
             .withGearing(new MechanismGearing(200))
@@ -50,11 +50,11 @@ public class HoodSubsystem extends SubsystemBase {
     private final SmartMotorController hoodSMC = new TalonFXWrapper(hoodMotor, DCMotor.getKrakenX44(1), hoodMotorConfig);
 
     private final ArmConfig hoodConfig = new ArmConfig(hoodSMC)
-            .withLength(Inches.of(7)).withMass(Gram.of(20))
+            .withLength(Inches.of(6)).withMass(Pound.of(1))
             .withStartingPosition(Degrees.of(0))
             .withTelemetry("HoodMech", TelemetryVerbosity.HIGH)
-            .withSoftLimits(Degrees.of(5), Degrees.of(100))
-            .withHardLimit(Degrees.of(0), Degrees.of(120)); // The Hood can be modeled as an arm since it has a
+            .withSoftLimits(Degrees.of(0), Degrees.of(35))
+            .withHardLimit(Degrees.of(0), Degrees.of(40)); // The Hood can be modeled as an arm since it has a
                                                             // gravitational force acted upon based on the angle its in
 
 
@@ -80,7 +80,7 @@ public class HoodSubsystem extends SubsystemBase {
 /**
    * Reset the encoder to the lowest position when the current threshhold is reached. Should be used when the hood
    * position is unreliable, like startup. Threshhold is only detected if exceeded for 0.1 seconds, and the motor moves
-   * less than 1 degrees per second.
+   * less than 0.2 degrees per second.
    *
    * @param threshhold The current threshhold held when the hood is at it's hard limit.
    * @return

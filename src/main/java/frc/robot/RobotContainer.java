@@ -154,10 +154,10 @@ public class RobotContainer
 //      DriveController.a().onTrue(FlywheelSubsystem.setDutyCycle(0.8));
 //      DriveController.rightBumper().onTrue(FlywheelSubsystem.setDutyCycle(1));
 //      DriveController.x().onTrue(FlywheelSubsystem.setDutyCycle(0));
-      // DriveController.a().onTrue(HoodSubsystem.setAngle(Rotations.of(0.5)));
-      // DriveController.b().onTrue(HoodSubsystem.setAngle(Rotations.of(-0.5)));
-      DriveController.y().onTrue(HoodSubsystem.homing(Amps.of(1)));
-//      DriveController.x().onTrue(HoodSubsystem.setAngle(Degrees.of(20)));
+       DriveController.a().onTrue(HoodSubsystem.setAngle(Rotations.of(0.5)));
+       DriveController.b().onTrue(HoodSubsystem.setAngle(Degrees.of(0)));
+       DriveController.y().onTrue(HoodSubsystem.homing(Amps.of(1)));
+       DriveController.x().onTrue(HoodSubsystem.setAngle(Degrees.of(20)));
 
 
 
