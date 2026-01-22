@@ -11,6 +11,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.VisionSubsystem.Cameras;
 
 
 public class ShooterSubsystem {
@@ -31,17 +32,17 @@ public class ShooterSubsystem {
         // on the hub
 
         hood.setDefaultCommand(hood.setDutyCycle(() -> {
-            var results = VisionSubsystem.Cameras.RoboCamFront.getClosestTag(); //NOTE - Change camera to turret camera
+            var results = VisionSubsystem.Cameras.RoboCamRight.getEstimatedGlobalPose(); //NOTE - Change camera to turret camera
             if (results.isPresent()) {
-                return hoodPIDCOntroller.calculate(results.get().skew, 0);
+//                return hoodPIDCOntroller.calculate(results.get().skew, 0);
             }
             return 0.0;
         }));
 
         turret.setDefaultCommand(turret.setDutyCycle(() -> {
-            var results = VisionSubsystem.Cameras.RoboCamFront.getClosestTag(); //NOTE - Change camera to turret camera
+            var results = VisionSubsystem.Cameras.RoboCamLeft.getEstimatedGlobalPose(); //NOTE - Change camera to turret camera
             if (results.isPresent()) {
-                return turretPIDCOntroller.calculate(results.get().yaw, 0);
+//                return turretPIDCOntroller.calculate(results.get().yaw, 0);
             }
             return 0.0;
         }));
