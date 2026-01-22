@@ -14,9 +14,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Rotations;
-
 import java.io.File;
 import java.util.function.Supplier;
 
@@ -30,6 +27,8 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.Hooded_Turret_Shooter.FlywheelSubsystem;
 import frc.robot.subsystems.Hooded_Turret_Shooter.TurretSubsystem;
 import frc.robot.subsystems.Hooded_Turret_Shooter.HoodSubsystem;
+
+import static edu.wpi.first.units.Units.*;
 // import frc.robot.subsystems.Vision.Vision;
 
 /**
@@ -150,14 +149,15 @@ public class RobotContainer
       // DriveController.a().onTrue(FlywheelSubsystem.setDutyCycle(0.1));
       
 
-      DriveController.b().onTrue(FlywheelSubsystem.setDutyCycle(0.3));
-      DriveController.y().onTrue(FlywheelSubsystem.setDutyCycle(0.5));
-      DriveController.a().onTrue(FlywheelSubsystem.setDutyCycle(0.8));
-      DriveController.rightBumper().onTrue(FlywheelSubsystem.setDutyCycle(1));
-      DriveController.x().onTrue(FlywheelSubsystem.setDutyCycle(0));
+//      DriveController.b().onTrue(FlywheelSubsystem.setDutyCycle(0.3));
+//      DriveController.y().onTrue(FlywheelSubsystem.setDutyCycle(0.5));
+//      DriveController.a().onTrue(FlywheelSubsystem.setDutyCycle(0.8));
+//      DriveController.rightBumper().onTrue(FlywheelSubsystem.setDutyCycle(1));
+//      DriveController.x().onTrue(FlywheelSubsystem.setDutyCycle(0));
       // DriveController.a().onTrue(HoodSubsystem.setAngle(Rotations.of(0.5)));
       // DriveController.b().onTrue(HoodSubsystem.setAngle(Rotations.of(-0.5)));
-      // DriveController.y().onTrue(HoodSubsystem.homing(HoodSubsystem.currentthreshhold));
+      DriveController.y().onTrue(HoodSubsystem.homing(Amps.of(1)));
+//      DriveController.x().onTrue(HoodSubsystem.setAngle(Degrees.of(20)));
 
 
 
