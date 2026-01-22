@@ -24,6 +24,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -38,9 +39,10 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class HoodSubsystem extends SubsystemBase {
+   public Current         currentthreshhold = Current.ofBaseUnits(0.1, Amps);
   TalonFX hoodMotor = new TalonFX(12);
- private final Angle            hardLowerLimit     = Degrees.of(0);
-//   private final Angle            hardUpperLimit     = Degrees.of(110);
+ public final Angle            hardLowerLimit     = Degrees.of(0);
+ private final Angle           hardUpperLimit     = Degrees.of(110);
     private final SmartMotorControllerConfig hoodMotorConfig = new SmartMotorControllerConfig(this)
             .withClosedLoopController(0.00016541, 0, 0, RPM.of(2500), RotationsPerSecondPerSecond.of(500))
             .withGearing(new MechanismGearing(200))
@@ -66,7 +68,7 @@ public class HoodSubsystem extends SubsystemBase {
     private final Arm hood = new Arm(hoodConfig);
 
     public HoodSubsystem() {
-
+        
     }
 
     public Command setAngle(Angle angle) {
@@ -84,18 +86,19 @@ public class HoodSubsystem extends SubsystemBase {
 
 /**
    * Reset the encoder to the lowest position when the current threshhold is reached. Should be used when the hood
-   * position is unreliable, like startup. Threshhold is only detected if exceeded for 0.4 seconds, and the motor moves
-   * less than 2 degrees per second.
+   * position is unreliable, like startup. Threshhold is only detected if exceeded for 0.1 seconds, and the motor moves
+   * less than 1 degrees per second.
    *
    * @param threshhold The current threshhold held when the hood is at it's hard limit.
    * @return
    */
   public Command homing(Current threshhold)
   {
-    Debouncer       currentDebouncer  = new Debouncer(0.4); // Current threshold is only detected if exceeded for 0.4 seconds.
-    Voltage         runVolts          = Volts.of(-2); // Volts required to run the mechanism down. Could be negative if the mechanism is inverted.
+    Debouncer       currentDebouncer  = new Debouncer(0.1); // Current threshold is only detected if exceeded for 0.1 seconds.
+    Voltage         runVolts          = Volts.of(-1); // Volts required to run the mechanism down. Could be negative if the mechanism is inverted.
     Angle           limitHit          = hardLowerLimit;  // Limit which gets hit. Could be the lower limit if the volts makes the hood go down.
-    AngularVelocity velocityThreshold = DegreesPerSecond.of(2); // The maximum amount of movement for the hood to be considered "hitting the hard limit".
+    AngularVelocity velocityThreshold = DegreesPerSecond.of(1); // The maximum amount of movement for the hood to be considered "hitting the hard limit".
+
     return Commands.startRun(hoodSMC::stopClosedLoopController, // Stop the closed loop controller
                              () -> hoodSMC.setVoltage(runVolts)) // Set the voltage of the motor
                    .until(() -> currentDebouncer.calculate(hoodSMC.getStatorCurrent().gte(threshhold) &&
