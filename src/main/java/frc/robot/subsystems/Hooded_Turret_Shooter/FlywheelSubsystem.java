@@ -47,7 +47,7 @@ public class FlywheelSubsystem extends SubsystemBase {
       .withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557)) //TODO - Add correct FF values
       .withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
       .withControlMode(ControlMode.CLOSED_LOOP)
-      .withFollowers(Pair.of(new TalonFX(11), false)); 
+      .withFollowers(Pair.of(new TalonFX(11), true)); 
 
   private final SmartMotorController motor = new TalonFXWrapper(flywheelMotor, DCMotor.getKrakenX60(1), motorConfig);
 
