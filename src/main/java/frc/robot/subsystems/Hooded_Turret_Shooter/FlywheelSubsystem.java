@@ -33,67 +33,67 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class FlywheelSubsystem extends SubsystemBase {
-  TalonFX flywheelMotor = new TalonFX(10);
+    TalonFX flywheelMotor = new TalonFX(10);
 
-  private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
-      .withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
-      .withGearing(new MechanismGearing(1))
-      .withIdleMode(MotorMode.COAST)
-      .withTelemetry("FlywheelMotor", TelemetryVerbosity.HIGH)
-      .withStatorCurrentLimit(Amps.of(40))
-      .withMotorInverted(false)
-      .withClosedLoopRampRate(Seconds.of(0.25))
-      .withOpenLoopRampRate(Seconds.of(0.25))
-      .withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557)) //TODO - Add correct FF values
-      .withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
-      .withControlMode(ControlMode.CLOSED_LOOP)
-      .withFollowers(Pair.of(new TalonFX(11), true)); 
+    private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
+            .withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
+            .withGearing(new MechanismGearing(1))
+            .withIdleMode(MotorMode.COAST)
+            .withTelemetry("FlywheelMotor", TelemetryVerbosity.HIGH)
+            .withStatorCurrentLimit(Amps.of(40))
+            .withMotorInverted(false)
+            .withClosedLoopRampRate(Seconds.of(0.25))
+            .withOpenLoopRampRate(Seconds.of(0.25))
+            .withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557)) //TODO - Add correct FF values
+            .withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
+            .withControlMode(ControlMode.CLOSED_LOOP)
+            .withFollowers(Pair.of(new TalonFX(11), true));
 
-  private final SmartMotorController motor = new TalonFXWrapper(flywheelMotor, DCMotor.getKrakenX60(1), motorConfig);
+    private final SmartMotorController motor = new TalonFXWrapper(flywheelMotor, DCMotor.getKrakenX60(1), motorConfig);
 
-  private final FlyWheelConfig flywheelConfig = new FlyWheelConfig(motor)
-      .withDiameter(Inches.of(4))
-      .withMass(Pounds.of(1))
-      .withTelemetry("FlywheelMech", TelemetryVerbosity.HIGH)
-      .withSoftLimit(RPM.of(-5000), RPM.of(5000))
-      .withSpeedometerSimulation(RPM.of(5000));
+    private final FlyWheelConfig flywheelConfig = new FlyWheelConfig(motor)
+            .withDiameter(Inches.of(4))
+            .withMass(Pounds.of(1))
+            .withTelemetry("FlywheelMech", TelemetryVerbosity.HIGH)
+            .withSoftLimit(RPM.of(-5000), RPM.of(5000))
+            .withSpeedometerSimulation(RPM.of(5000));
 
-  private final FlyWheel flywheel = new FlyWheel(flywheelConfig);
+    private final FlyWheel flywheel = new FlyWheel(flywheelConfig);
 
-  public FlywheelSubsystem() {
-  }
+    public FlywheelSubsystem() {
+    }
 
-  public AngularVelocity getVelocity() {
-    return flywheel.getSpeed();
-  }
+    public AngularVelocity getVelocity() {
+        return flywheel.getSpeed();
+    }
 
-  public Command setVelocity(AngularVelocity speed) {
-    return flywheel.setSpeed(speed);
-  }
+    public Command setVelocity(AngularVelocity speed) {
+        return flywheel.setSpeed(speed);
+    }
 
-  public Command setDutyCycle(double dutyCycle) {
-    return flywheel.set(dutyCycle);
-  }
+    public Command setDutyCycle(double dutyCycle) {
+        return flywheel.set(dutyCycle);
+    }
 
-  public Command setVelocity(Supplier<AngularVelocity> speed) {
-    return flywheel.setSpeed(speed);
-  }
+    public Command setVelocity(Supplier<AngularVelocity> speed) {
+        return flywheel.setSpeed(speed);
+    }
 
-  public Command setDutyCycle(Supplier<Double> dutyCycle) {
-    return flywheel.set(dutyCycle);
-  }
+    public Command setDutyCycle(Supplier<Double> dutyCycle) {
+        return flywheel.set(dutyCycle);
+    }
 
-  public Command sysId() {
-    return flywheel.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));
-  }
+    public Command sysId() {
+        return flywheel.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));
+    }
 
-  @Override
-  public void periodic() {
-    flywheel.updateTelemetry();
-  }
+    @Override
+    public void periodic() {
+        flywheel.updateTelemetry();
+    }
 
-  @Override
-  public void simulationPeriodic() {
-    flywheel.simIterate();
-  }
+    @Override
+    public void simulationPeriodic() {
+        flywheel.simIterate();
+    }
 }

@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.util;
 
 /*
  * ControlStructure.java
@@ -24,24 +24,32 @@ import edu.wpi.first.wpilibj.RobotBase;
 // import edu.wpi.first.wpilibj.util.Color8Bit;
 // import edu.wpi.first.wpilibj2.command.Command;
 // import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.SwerveSubsystem;
 // import edu.wpi.first.wpilibj2.command.button.Trigger;
 // import frc.robot.subsystems.AddressableLEDSubsystem.LEDModes;
 // import frc.robot.subsystems.AddressableLEDSubsystem.LEDViews;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
+
+
+
+import frc.robot.subsystems.Hooded_Turret_Shooter.HoodSubsystem;
+import frc.robot.subsystems.Hooded_Turret_Shooter.FlywheelSubsystem;
 
 
 public class SuperStructure extends SubsystemBase {
-    private final SwerveSubsystem swerve;
-
+    private final FlywheelSubsystem FlywheelSubsystem = new FlywheelSubsystem();
+    private final HoodSubsystem HoodSubsystem = new HoodSubsystem();
 
     /**
      * Initializer for the Control superstructure.
      * This is the "brain" that controls the body.
      * Calls for all subsystems.
      */
-    public SuperStructure(SwerveSubsystem swerve) {
-        this.swerve = swerve;
+    public SuperStructure() {
 
         if (RobotBase.isSimulation()) {
             return;
@@ -51,6 +59,10 @@ public class SuperStructure extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         return;
+    }
+
+    public Command SetHoodandFlywheel() {
+        return FlywheelSubsystem.setVelocity(RPM.of(2500)).alongWith(HoodSubsystem.setAngle(Degrees.of(20)));
     }
 
 

@@ -115,8 +115,8 @@ public class InputStructure {
      * Drive Controls:
      * - Left Stick: Translation (forward/back, left/right)
      * - Right Stick X: Rotation
-     * - Left Trigger (Hold): Slow mode (30% translation, 20% rotation)
-     * - Right Trigger (Hold): Boost mode (100% translation, 75% rotation)
+     * - Left Trigger
+     * - Right Trigger (Hold): Boost mode
      * <p>
      * Pose Selection:
      * - D-Pad Cardinal Directions: Select reef sides (N, NE, SE, S, SW, NW)
@@ -124,14 +124,14 @@ public class InputStructure {
      * - Left/Right Bumpers: Cycle station slots
      * <p>
      * Auto Commands:
-     * - A Button: Auto collect from selected station
-     * - B Button: Auto score L2
-     * - X Button: Auto score L3
-     * - Y Button: Auto score L4
+     * - A Button:
+     * - B Button:
+     * - X Button:
+     * - Y Button:
      * <p>
      * Settings:
-     * - Back: Toggle inverted controls
-     * - Right Stick Button: Toggle field/robot relative drive
+     * - Back:
+     * - Right
      */
     private void singleXboxBindings() {
         // Mode trigger - only active when this binding mode is selected
@@ -154,28 +154,28 @@ public class InputStructure {
      * Split responsibilities between driver and operator for maximum efficiency.
      * <p>
      * Driver Controller:
-     * - Left Stick: Translation
-     * - Right Stick X: Rotation
-     * - Left Trigger (Hold): Slow mode
-     * - Right Trigger (Hold): Boost mode
-     * - A Button: Auto collect from selected station
-     * - B Button: Auto score L2
-     * - X Button: Auto score L3
-     * - Y Button: Auto score L4
-     * - Back: Toggle inverted controls
-     * - Right Stick Button: Toggle field/robot relative
+     * - Left Stick:
+     * - Right Stick X:
+     * - Left Trigger (Hold):
+     * - Right Trigger (Hold):
+     * - A Button:
+     * - B Button:
+     * - X Button:
+     * - Y Button:
+     * - Back:
+     * - Right Stick Button:
      * <p>
      * Operator Controller:
-     * - D-Pad: Pose selection (reef sides and left/right)
-     * - Left/Right Bumpers: Cycle station slots
-     * - Left Stick Y (Hold): Manual elevator control
-     * - Right Stick X (Hold): Manual arm control (twist motion)
-     * - A Button: Manual collect position
-     * - B Button: Manual score L2 position
-     * - X Button: Manual score L3 position
-     * - Y Button: Manual score L4 position
-     * - Left Trigger: Intake
-     * - Right Trigger: Shoot (manual override)
+     * - D-Pad:
+     * - Left/Right Bumpers:
+     * - Left Stick Y (Hold):
+     * - Right Stick X (Hold):
+     * - A Button:
+     * - B Button:
+     * - X Button:
+     * - Y Button:
+     * - Left Trigger:
+     * - Right Trigger:
      */
     private void dualXboxBindings() {
         Trigger isMode = BindingType.DUAL_XBOX.isMode;

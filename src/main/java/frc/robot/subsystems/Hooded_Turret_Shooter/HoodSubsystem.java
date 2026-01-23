@@ -3,9 +3,8 @@ package frc.robot.subsystems.Hooded_Turret_Shooter;
 
 import java.util.function.Supplier;
 
-import com.revrobotics.spark.SparkMax;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
+
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.Debouncer;
@@ -14,7 +13,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,7 +34,7 @@ public class HoodSubsystem extends SubsystemBase {
  private final Angle           hardUpperLimit     = Degrees.of(40);
     private final SmartMotorControllerConfig hoodMotorConfig = new SmartMotorControllerConfig(this)
             .withClosedLoopController(0.00016541, 0, 0, RPM.of(2500), RotationsPerSecondPerSecond.of(500))
-            .withGearing(new MechanismGearing(200))
+            .withGearing(new MechanismGearing(20)) // CHANGE TO 22.57 ONCE WE GET THE COMP BOT BUILT!
             .withIdleMode(MotorMode.BRAKE)
             .withTelemetry("HoodMotor", TelemetryVerbosity.HIGH)
             .withStatorCurrentLimit(Amps.of(40))
@@ -78,14 +76,14 @@ public class HoodSubsystem extends SubsystemBase {
 
 
 /**
-   * Reset the encoder to the lowest position when the current threshhold is reached. Should be used when the hood
-   * position is unreliable, like startup. Threshhold is only detected if exceeded for 0.1 seconds, and the motor moves
+   * Reset the encoder to the lowest position when the current threshold is reached. Should be used when the hood
+   * position is unreliable, like startup. Threshold is only detected if exceeded for 0.1 seconds, and the motor moves
    * less than 0.2 degrees per second.
    *
-   * @param threshhold The current threshhold held when the hood is at it's hard limit.
-   * @return
+   * @param threshold The current threshold held when the hood is at it's hard limit.
+   * @return Command which resets our encoder
    */
-  public Command homing(Current threshhold)
+  public Command homing(Current threshold)
   {
     Debouncer       currentDebouncer  = new Debouncer(0.1); // Current threshold is only detected if exceeded for 0.1 seconds.
     Voltage         runVolts          = Volts.of(-1); // Volts required to run the mechanism down. Could be negative if the mechanism is inverted.
@@ -94,7 +92,7 @@ public class HoodSubsystem extends SubsystemBase {
 
     return Commands.startRun(hoodSMC::stopClosedLoopController, // Stop the closed loop controller
                              () -> hoodSMC.setVoltage(runVolts)) // Set the voltage of the motor
-                   .until(() -> currentDebouncer.calculate(hoodSMC.getStatorCurrent().gte(threshhold) &&
+                   .until(() -> currentDebouncer.calculate(hoodSMC.getStatorCurrent().gte(threshold) &&
                                                            hoodSMC.getMechanismVelocity().abs(DegreesPerSecond) <=
                                                            velocityThreshold.in(DegreesPerSecond)))
                    .finallyDo(() -> {

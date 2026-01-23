@@ -27,6 +27,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.Hooded_Turret_Shooter.FlywheelSubsystem;
 import frc.robot.subsystems.Hooded_Turret_Shooter.TurretSubsystem;
 import frc.robot.subsystems.Hooded_Turret_Shooter.HoodSubsystem;
+import frc.robot.util.SuperStructure;
 
 import static edu.wpi.first.units.Units.*;
 // import frc.robot.subsystems.Vision.Vision;
@@ -41,6 +42,7 @@ public class RobotContainer
   // private final TurretSubsystem TurretSubsystem = new TurretSubsystem();
   private final FlywheelSubsystem FlywheelSubsystem = new FlywheelSubsystem();
   private final HoodSubsystem HoodSubsystem = new HoodSubsystem();
+  private final SuperStructure SuperStructure = new SuperStructure();
 
 
   final         CommandXboxController DriveController = new CommandXboxController(0);
@@ -143,12 +145,13 @@ public class RobotContainer
 
     
 
-      //~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~
-      // DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      // DriveController.b().whileTrue(TurretSubsystem.sysId());
-      // DriveController.a().onTrue(FlywheelSubsystem.setDutyCycle(0.1));
-      
+      /*~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~*/
 
+      // DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+
+      // DriveController.b().whileTrue(TurretSubsystem.sysId());
+
+      // DriveController.a().onTrue(FlywheelSubsystem.setDutyCycle(0.1));
 //      DriveController.b().onTrue(FlywheelSubsystem.setDutyCycle(0.3));
 //      DriveController.y().onTrue(FlywheelSubsystem.setDutyCycle(0.5));
 //      DriveController.a().onTrue(FlywheelSubsystem.setDutyCycle(0.8));
@@ -159,6 +162,9 @@ public class RobotContainer
        DriveController.y().onTrue(HoodSubsystem.homing(Amps.of(1)));
        DriveController.x().onTrue(HoodSubsystem.setAngle(Degrees.of(20)));
 
+
+      /*NOTE - This is an EXPERIMENTAL Superstructure command which should not be tested until Hood is in working order.*/
+       DriveController.x().onTrue(SuperStructure.SetHoodandFlywheel());
 
 
     
