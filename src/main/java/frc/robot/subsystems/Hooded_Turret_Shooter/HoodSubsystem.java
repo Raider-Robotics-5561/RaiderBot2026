@@ -13,6 +13,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -38,6 +39,7 @@ public class HoodSubsystem extends SubsystemBase {
             .withIdleMode(MotorMode.BRAKE)
             .withTelemetry("HoodMotor", TelemetryVerbosity.HIGH)
             .withStatorCurrentLimit(Amps.of(40))
+            .withSupplyCurrentLimit(Amps.of(3))
             .withMotorInverted(false) //NOTE - May need to fix based on direction of motor
             .withClosedLoopRampRate(Seconds.of(0.25))
             .withOpenLoopRampRate(Seconds.of(0.25))
@@ -59,7 +61,6 @@ public class HoodSubsystem extends SubsystemBase {
     private final Arm hood = new Arm(hoodConfig);
 
     public HoodSubsystem() {
-        
     }
 
     public Command setAngle(Angle angle) {
@@ -86,18 +87,18 @@ public class HoodSubsystem extends SubsystemBase {
   public Command homing(Current threshold)
   {
     Debouncer       currentDebouncer  = new Debouncer(0.1); // Current threshold is only detected if exceeded for 0.1 seconds.
+    Voltage         StopVolts         = Volts.of(0); // Volts required to run the mechanism down. Could be negative if the mechanism is inverted.
     Voltage         runVolts          = Volts.of(-1); // Volts required to run the mechanism down. Could be negative if the mechanism is inverted.
     Angle           limitHit          = hardLowerLimit;  // Limit which gets hit. Could be the lower limit if the volts makes the hood go down.
-    AngularVelocity velocityThreshold = DegreesPerSecond.of(0.2); // The maximum amount of movement for the hood to be considered "hitting the hard limit".
 
     return Commands.startRun(hoodSMC::stopClosedLoopController, // Stop the closed loop controller
                              () -> hoodSMC.setVoltage(runVolts)) // Set the voltage of the motor
-                   .until(() -> currentDebouncer.calculate(hoodSMC.getStatorCurrent().gte(threshold) &&
-                                                           hoodSMC.getMechanismVelocity().abs(DegreesPerSecond) <=
-                                                           velocityThreshold.in(DegreesPerSecond)))
+                   .until(() -> currentDebouncer.calculate(hoodSMC.getStatorCurrent().gte(threshold)))
+
                    .finallyDo(() -> {
-                     hoodSMC.setEncoderPosition(limitHit);
-                     hoodSMC.startClosedLoopController();
+                    hoodSMC.setVoltage(StopVolts);
+                    hoodSMC.setEncoderPosition(limitHit);
+                    hoodSMC.startClosedLoopController();
                    });
   }
 
@@ -119,6 +120,8 @@ public class HoodSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("HoodSMC/Stator Current", hoodSMC.getStatorCurrent().baseUnitMagnitude());
+        SmartDashboard.putNumber("HoodSMC/Mechanism Velocity", hoodSMC.getMechanismVelocity().baseUnitMagnitude());
         hood.updateTelemetry();
     }
 

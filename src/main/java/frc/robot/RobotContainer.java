@@ -147,24 +147,12 @@ public class RobotContainer
 
       /*~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-      // DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
 
-      // DriveController.b().whileTrue(TurretSubsystem.sysId());
-
-      // DriveController.a().onTrue(FlywheelSubsystem.setDutyCycle(0.1));
-//      DriveController.b().onTrue(FlywheelSubsystem.setDutyCycle(0.3));
-//      DriveController.y().onTrue(FlywheelSubsystem.setDutyCycle(0.5));
-//      DriveController.a().onTrue(FlywheelSubsystem.setDutyCycle(0.8));
-//      DriveController.rightBumper().onTrue(FlywheelSubsystem.setDutyCycle(1));
-//      DriveController.x().onTrue(FlywheelSubsystem.setDutyCycle(0));
-       DriveController.a().onTrue(HoodSubsystem.setAngle(Rotations.of(0.5)));
-       DriveController.b().onTrue(HoodSubsystem.setAngle(Degrees.of(0)));
-       DriveController.y().onTrue(HoodSubsystem.homing(Amps.of(1)));
-       DriveController.x().onTrue(HoodSubsystem.setAngle(Degrees.of(20)));
-
-
-      /*NOTE - This is an EXPERIMENTAL Superstructure command which should not be tested until Hood is in working order.*/
-       DriveController.x().onTrue(SuperStructure.SetHoodandFlywheel());
+     DriveController.povLeft().onTrue(SuperStructure.StopHoodandFlywheel());
+     DriveController.y().onTrue(HoodSubsystem.homing(Amps.of(15)));
+     DriveController.x().onTrue(SuperStructure.SetHoodandFlywheelmax());
+     DriveController.a().onTrue(SuperStructure.SetHoodandFlywheelmin());
+     DriveController.b().onTrue(SuperStructure.SetHoodandFlywheelIntake());
 
 
     

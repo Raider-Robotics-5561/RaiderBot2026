@@ -33,8 +33,8 @@ import frc.robot.subsystems.SwerveSubsystem;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
-
-
+import static edu.wpi.first.units.Units.Rotation;
+import static edu.wpi.first.units.Units.Rotations;
 
 import frc.robot.subsystems.Hooded_Turret_Shooter.HoodSubsystem;
 import frc.robot.subsystems.Hooded_Turret_Shooter.FlywheelSubsystem;
@@ -61,8 +61,20 @@ public class SuperStructure extends SubsystemBase {
         return;
     }
 
-    public Command SetHoodandFlywheel() {
-        return FlywheelSubsystem.setVelocity(RPM.of(2500)).alongWith(HoodSubsystem.setAngle(Degrees.of(20)));
+    public Command SetHoodandFlywheelmin() {
+        return FlywheelSubsystem.setVelocity(RPM.of(2500)).alongWith(HoodSubsystem.setAngle(Rotations.of(2)));
+    }
+
+    public Command SetHoodandFlywheelIntake() {
+        return FlywheelSubsystem.setVelocity(RPM.of(-1500)).alongWith(HoodSubsystem.setAngle(Rotations.of(0)));
+    }
+
+       public Command SetHoodandFlywheelmax() {
+        return FlywheelSubsystem.setVelocity(RPM.of(4500)).alongWith(HoodSubsystem.setAngle(Rotations.of(2.5)));
+    }
+
+    public Command StopHoodandFlywheel() {
+        return FlywheelSubsystem.setVelocity(RPM.of(0)).alongWith(HoodSubsystem.setAngle(Rotations.of(0)));
     }
 
 
