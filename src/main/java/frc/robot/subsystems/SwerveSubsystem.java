@@ -148,15 +148,15 @@ public class SwerveSubsystem extends SubsystemBase
   public void periodic()
   {
     // When vision is enabled we must manually update odometry in SwerveDrive
-    if (visionDriveTest)
-    {
+    // if (visionDriveTest)
+    // {
       swerveDrive.updateOdometry();
       vision.updatePoseEstimation(swerveDrive);
-    }
+    // }
 
-    if (!isMoving(0.01) && !DriverStation.isAutonomous()) {
-      lock();
-  }
+  //   if (!isMoving(0.01) && !DriverStation.isAutonomous()) {
+  //     lock();
+  // }
 
   }
 

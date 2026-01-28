@@ -50,23 +50,24 @@ public class VisionSubsystem extends SubsystemBase
 
 
 
-
     /// Camera Enum to select each camera
     public enum Cameras {
         RoboCamRight("RoboCamRight",
+        //NOTE - THIS IS MOST LIKELY THE ISSUE
+            //NOTE - Our single tag vecbuilder may be too extreme (lower numbers if so) (VecBuilder.fill(1.2, 1.2, Units.degreesToRadians(25))) Use this if so
                 //35, 30
-                new Rotation3d(0, Units.degreesToRadians(45), 35),
+                new Rotation3d(0, Units.degreesToRadians(45), Units.degreesToRadians(35)),
                 new Translation3d(Units.inchesToMeters(9.5519),
                         Units.inchesToMeters(11.811),
                         Units.inchesToMeters(9.22)),
-                VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1)),
+                VecBuilder.fill(4, 4, 3.14159), VecBuilder.fill(0.5, 0.5, 1)),
 
         RoboCamLeft("RoboCamLeft",
-                new Rotation3d(0, Units.degreesToRadians(-45), 35),
+                new Rotation3d(0, Units.degreesToRadians(-45), Units.degreesToRadians(35)),
                 new Translation3d(Units.inchesToMeters( -9.551),
                         Units.inchesToMeters(11.811),
                         Units.inchesToMeters(9.22)),
-                VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1));
+                VecBuilder.fill(4, 4, 3.14159), VecBuilder.fill(0.5, 0.5, 1));
 
         /// Latency alert to use when high latency is detected.
         public final  Alert                        latencyAlert;
@@ -392,13 +393,25 @@ public class VisionSubsystem extends SubsystemBase
         }
         for (Cameras camera : Cameras.values())
         {
-            Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
-            if (poseEst.isPresent())
-            {
-                var pose = poseEst.get();
-                swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(),
-                        pose.timestampSeconds,
-                        camera.curStdDevs);
+           Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
+                if (poseEst.isPresent()) {
+                     var pose = poseEst.get();
+                     //SECTION - Start TEST 1
+                     System.out.println(camera.name() + " vision pose: " + pose.estimatedPose.toPose2d()
+                      + " t=" + pose.timestampSeconds);
+                    
+
+                    //SECTION - Start TEST 2
+                     swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(),
+                          pose.timestampSeconds,
+                          camera.curStdDevs);
+                          System.out.println("Vision fused at t=" + pose.timestampSeconds + " pose=" + pose.estimatedPose.toPose2d());
+                    
+                } else {
+
+                   //SECTION - Start TEST 3
+                    System.out.println(camera.name() + " NO vision estimate");
+                    
             }
         }
 
