@@ -33,7 +33,7 @@ public class TurretSubsystem extends SubsystemBase {
 
         private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
                         .withClosedLoopController(0.01, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
-                        .withGearing(new MechanismGearing(13.3333333333))
+                        .withGearing(new MechanismGearing(35.56))
                         .withIdleMode(MotorMode.BRAKE)
                         .withMotorInverted(false)
                         // Setup Telemetry

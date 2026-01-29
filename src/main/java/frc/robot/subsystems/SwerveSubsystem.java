@@ -614,7 +614,7 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public void setMotorBrake(boolean brake)
   {
-    swerveDrive.setMotorIdleMode(brake);
+    swerveDrive.setMotorIdleMode(false);
   }
 
   /**
