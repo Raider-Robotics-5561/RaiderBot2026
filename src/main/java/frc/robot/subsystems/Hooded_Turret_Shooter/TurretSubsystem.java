@@ -41,7 +41,7 @@ public class TurretSubsystem extends SubsystemBase {
 //          .getSensor(); // Get the sensor.
         private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
                         .withClosedLoopController(0.01, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
-                        .withGearing(new MechanismGearing(13.3333333333))
+                        .withGearing(new MechanismGearing(35.56))
                         .withIdleMode(MotorMode.BRAKE)
                         .withMotorInverted(false)
                         // Setup Telemetry
@@ -58,7 +58,7 @@ public class TurretSubsystem extends SubsystemBase {
                         .withStartingPosition(Degrees.of(0)) // Starting position of the Pivot
                         // .withWrapping(Degrees.of(0), Degrees.of(360)) // Wrapping enabled bc the pivot can spin
                                                                       // infinitely
-                        .withHardLimit(Degrees.of(0), Degrees.of(720)) // Hard limit bc wiring prevents infinite
+                        .withHardLimit(Degrees.of(0), Degrees.of(270)) // Hard limit bc wiring prevents infinite
                                                                        // spinning
                         .withTelemetry("TurretMech", TelemetryVerbosity.HIGH) // Telemetry
                         .withMOI(Meters.of(0.25), Pounds.of(4)); // MOI Calculation
