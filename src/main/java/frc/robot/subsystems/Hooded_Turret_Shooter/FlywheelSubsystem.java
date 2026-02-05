@@ -42,7 +42,7 @@ public class FlywheelSubsystem extends SubsystemBase {
             .withTelemetry("FlywheelMotor", TelemetryVerbosity.HIGH)
             .withStatorCurrentLimit(Amps.of(40))
             .withMotorInverted(false)
-            .withClosedLoopRampRate(Seconds.of(0.25))
+            .withClosedLoopRampRate(Seconds.of(0.15))
             .withOpenLoopRampRate(Seconds.of(0.25))
             .withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557)) //TODO - Add correct FF values
             .withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))

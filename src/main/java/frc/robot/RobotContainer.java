@@ -39,8 +39,8 @@ import static edu.wpi.first.units.Units.*;
  */
 public class RobotContainer
 {
-  // private final TurretSubsystem TurretSubsystem = new TurretSubsystem();
-  private final FlywheelSubsystem FlywheelSubsystem = new FlywheelSubsystem();
+  private final TurretSubsystem TurretSubsystem = new TurretSubsystem();
+  // private final FlywheelSubsystem FlywheelSubsystem = new FlywheelSubsystem();
   private final HoodSubsystem HoodSubsystem = new HoodSubsystem();
   private final SuperStructure SuperStructure = new SuperStructure();
 
@@ -149,8 +149,12 @@ public class RobotContainer
 
 
      DriveController.povLeft().onTrue(SuperStructure.StopHoodandFlywheel());
+    //  DriveController.povRight().onTrue(SuperStructure.SetTurretPWR());
+    //  DriveController.povUp().onTrue(SuperStructure.SetTurretPWRreverse());
+
      DriveController.y().onTrue(HoodSubsystem.homing(Amps.of(15)));
      DriveController.x().onTrue(SuperStructure.SetHoodandFlywheelmax());
+     DriveController.povDown().onTrue(SuperStructure.SetAllMid());
      DriveController.a().onTrue(SuperStructure.SetHoodandFlywheelmin());
      DriveController.b().onTrue(SuperStructure.SetHoodandFlywheelIntake());
 

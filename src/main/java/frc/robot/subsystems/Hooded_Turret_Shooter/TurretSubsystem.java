@@ -19,18 +19,26 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj.DigitalInput;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.PivotConfig;
+import yams.mechanisms.config.SensorConfig;
 import yams.mechanisms.positional.Pivot;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
+import yams.motorcontrollers.simulation.Sensor;
 
 public class TurretSubsystem extends SubsystemBase {
         TalonFX turretMotor = new TalonFX(9);
 
+// private DigitalInput dio = new DigitalInput(9); // Standard DIO
+// private final Sensor TurretRotation = new SensorConfig("TurretRotation") // Name of the sensor 
+         
+//          .withField("TurretRotation", dio::get, false) // Add a Field to the sensor named "Beam" whose value is dio.get() and defaults to false
+//          .getSensor(); // Get the sensor.
         private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
                         .withClosedLoopController(0.01, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
                         .withGearing(new MechanismGearing(13.3333333333))
@@ -39,7 +47,7 @@ public class TurretSubsystem extends SubsystemBase {
                         // Setup Telemetry
                         .withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
                         // Power Optimization
-                        .withStatorCurrentLimit(Amps.of(40))
+                        .withStatorCurrentLimit(Amps.of(30))
                         .withClosedLoopRampRate(Seconds.of(0.25))
                         .withOpenLoopRampRate(Seconds.of(0.25))
                         .withControlMode(ControlMode.CLOSED_LOOP);
