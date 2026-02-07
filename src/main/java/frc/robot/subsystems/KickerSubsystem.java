@@ -30,7 +30,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class IndexingSubsystem extends SubsystemBase {
+public class KickerSubsystem extends SubsystemBase {
     TalonFX IndexingMotor = new TalonFX(0);
 
     private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
@@ -58,7 +58,7 @@ public class IndexingSubsystem extends SubsystemBase {
 
     private final FlyWheel flywheel = new FlyWheel(flywheelConfig);
 
-    public IndexingSubsystem() {
+    public KickerSubsystem() {
     }
 
     public AngularVelocity getVelocity() {
