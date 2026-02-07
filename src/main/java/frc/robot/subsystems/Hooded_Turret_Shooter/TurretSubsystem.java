@@ -16,6 +16,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.AbsoluteEncoderSubsystem;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
@@ -33,6 +34,7 @@ import yams.motorcontrollers.simulation.Sensor;
 
 public class TurretSubsystem extends SubsystemBase {
         TalonFX turretMotor = new TalonFX(9);
+        AbsoluteEncoderSubsystem abs_encoder = new AbsoluteEncoderSubsystem();
 
 // private DigitalInput dio = new DigitalInput(9); // Standard DIO
 // private final Sensor TurretRotation = new SensorConfig("TurretRotation") // Name of the sensor 
@@ -44,7 +46,7 @@ public class TurretSubsystem extends SubsystemBase {
                         .withGearing(new MechanismGearing(35.56))
                         .withIdleMode(MotorMode.BRAKE)
                         .withMotorInverted(false)
-                        // Setup Telemetry
+
                         .withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
                         // Power Optimization
                         .withStatorCurrentLimit(Amps.of(30))
@@ -53,11 +55,11 @@ public class TurretSubsystem extends SubsystemBase {
                         .withControlMode(ControlMode.CLOSED_LOOP);
                         // .withContinuousWrapping(Rotations.of(0),Rotations.of(360));
         private final SmartMotorController turretSMC = new TalonFXWrapper(turretMotor,DCMotor.getKrakenX44(1),motorConfig);
-
         private final PivotConfig turretConfig = new PivotConfig(turretSMC)
-                        .withStartingPosition(Degrees.of(0)) // Starting position of the Pivot
+                        .withStartingPosition(Degrees.of(abs_encoder.getAngleDegrees())) // Starting position of the Pivot
                         // .withWrapping(Degrees.of(0), Degrees.of(360)) // Wrapping enabled bc the pivot can spin
                                                                       // infinitely
+                                                                      
                         .withHardLimit(Degrees.of(0), Degrees.of(270)) // Hard limit bc wiring prevents infinite
                                                                        // spinning
                         .withTelemetry("TurretMech", TelemetryVerbosity.HIGH) // Telemetry
@@ -66,6 +68,7 @@ public class TurretSubsystem extends SubsystemBase {
         private final Pivot turret = new Pivot(turretConfig);
 
         public TurretSubsystem() {
+        
         }
 
         public Command setAngle(Angle angle) {

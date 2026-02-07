@@ -151,7 +151,7 @@ public class SwerveSubsystem extends SubsystemBase
     // if (visionDriveTest)
     // {
       swerveDrive.updateOdometry();
-      vision.updatePoseEstimation(swerveDrive);
+      //vision.updatePoseEstimation(swerveDrive); // NOTE REmoveted this when useing the test board
     // }
 
   //   if (!isMoving(0.01) && !DriverStation.isAutonomous()) {

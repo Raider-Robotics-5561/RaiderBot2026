@@ -42,8 +42,8 @@ import frc.robot.subsystems.Hooded_Turret_Shooter.FlywheelSubsystem;
 
 
 public class SuperStructure extends SubsystemBase {
-    private final FlywheelSubsystem FlywheelSubsystem = new FlywheelSubsystem();
-    private final HoodSubsystem HoodSubsystem = new HoodSubsystem();
+   // private final FlywheelSubsystem FlywheelSubsystem = new FlywheelSubsystem();
+   // private final HoodSubsystem HoodSubsystem = new HoodSubsystem();
       private final TurretSubsystem TurretSubsytem = new TurretSubsystem();
 
 
@@ -64,29 +64,29 @@ public class SuperStructure extends SubsystemBase {
         return;
     }
 
-    public Command SetHoodandFlywheelmin() {
-        return FlywheelSubsystem.setVelocity(RPM.of(-1500)).alongWith(HoodSubsystem.setAngle(Rotations.of(2)));
-    }
+    // public Command SetHoodandFlywheelmin() {
+    //     return FlywheelSubsystem.setVelocity(RPM.of(-1500)).alongWith(HoodSubsystem.setAngle(Rotations.of(2)));
+    // }
 
-    public Command SetHoodandFlywheelIntake() {
-        return FlywheelSubsystem.setVelocity(RPM.of(-5000)).alongWith(HoodSubsystem.setAngle(Rotations.of(1)));
-    }
+    // public Command SetHoodandFlywheelIntake() {
+    //     return FlywheelSubsystem.setVelocity(RPM.of(-5000)).alongWith(HoodSubsystem.setAngle(Rotations.of(1)));
+    // }
 
-       public Command SetHoodandFlywheelmax() {
-        return FlywheelSubsystem.setVelocity(RPM.of(-6000)).alongWith(HoodSubsystem.setAngle(Rotations.of(0)));
-    }
-    public Command SetAllMid() {
-        return FlywheelSubsystem.setVelocity(RPM.of(-4250)).alongWith(HoodSubsystem.setAngle(Rotations.of(0.6)));
-    }
+    //    public Command SetHoodandFlywheelmax() {
+    //     return FlywheelSubsystem.setVelocity(RPM.of(-6000)).alongWith(HoodSubsystem.setAngle(Rotations.of(0)));
+    // }
+    // public Command SetAllMid() {
+    //     return FlywheelSubsystem.setVelocity(RPM.of(-4250)).alongWith(HoodSubsystem.setAngle(Rotations.of(0.6)));
+    // }
 
-    public Command StopHoodandFlywheel() {
-        return FlywheelSubsystem.setVelocity(RPM.of(0))
-        .alongWith(HoodSubsystem.setAngle(Rotations.of(0)))
-        .alongWith(TurretSubsytem.setDutyCycle(0));
-    }
+    // public Command StopHoodandFlywheel() {
+    //     return FlywheelSubsystem.setVelocity(RPM.of(0))
+    //     .alongWith(HoodSubsystem.setAngle(Rotations.of(0)))
+    //     .alongWith(TurretSubsytem.setDutyCycle(0));
+    // }
 
-    public Command SetTurretPWR() {
-        return TurretSubsytem.setDutyCycle(0.1);
+    public Command SetTurretPWR(double power) {
+        return TurretSubsytem.setDutyCycle(power);
     }
 
     public Command SetTurretPWRreverse() {
