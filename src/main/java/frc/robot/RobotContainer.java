@@ -151,19 +151,10 @@ public class RobotContainer
 
     
     
-    DriveController.povRight().onTrue(SuperStructure.SetTurretPWR(0.13));
-    DriveController.povLeft().onTrue(SuperStructure.SetTurretPWR(-0.13));
-    DriveController.povCenter().onTrue(SuperStructure.SetTurretPWRoff());
-    //  DriveController.povUp().onTrue(SuperStructure.SetTurretPWRreverse());
-
-
-    //  DriveController.povLeft().onTrue(SuperStructure.StopHoodandFlywheel());
-    //  DriveController.y().onTrue(HoodSubsystem.homing(Amps.of(15)));
-    //  DriveController.x().onTrue(SuperStructure.SetHoodandFlywheelmax());
-    //  DriveController.povDown().onTrue(SuperStructure.SetAllMid());
-    //  DriveController.a().onTrue(SuperStructure.SetHoodandFlywheelmin());
-    //  DriveController.b().onTrue(SuperStructure.SetHoodandFlywheelIntake());
-
+   DriveController.a().onTrue(SuperStructure.SetIntakePWR());
+   DriveController.b().onTrue(SuperStructure.SetHopperPos());
+   DriveController.y().onTrue(SuperStructure.SetHopperPosZero());
+   DriveController.x().onTrue(SuperStructure.SetIntakePWRZero());
 
     
 

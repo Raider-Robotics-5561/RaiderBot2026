@@ -39,12 +39,16 @@ import static edu.wpi.first.units.Units.Rotations;
 import frc.robot.subsystems.Hooded_Turret_Shooter.HoodSubsystem;
 import frc.robot.subsystems.Hooded_Turret_Shooter.TurretSubsystem;
 import frc.robot.subsystems.Hooded_Turret_Shooter.FlywheelSubsystem;
+import frc.robot.subsystems.HopperExtenderSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 
 
 public class SuperStructure extends SubsystemBase {
    // private final FlywheelSubsystem FlywheelSubsystem = new FlywheelSubsystem();
    // private final HoodSubsystem HoodSubsystem = new HoodSubsystem();
-      private final TurretSubsystem TurretSubsytem = new TurretSubsystem();
+    //   private final TurretSubsystem TurretSubsytem = new TurretSubsystem();
+    private final IntakeSubsystem IntakeSubsystem = new IntakeSubsystem();
+    private final HopperExtenderSubsystem HopperExtenderSubsystem = new HopperExtenderSubsystem();
 
 
     /**
@@ -85,17 +89,33 @@ public class SuperStructure extends SubsystemBase {
     //     .alongWith(TurretSubsytem.setDutyCycle(0));
     // }
 
-    public Command SetTurretPWR(double power) {
-        return TurretSubsytem.setDutyCycle(power);
+    // public Command SetTurretPWR(double power) {
+    //     return TurretSubsytem.setDutyCycle(power);
+    // }
+
+    // public Command SetTurretPWRreverse() {
+    //     return TurretSubsytem.setDutyCycle(-0.1);
+    // }
+
+    // public Command SetTurretPWRoff() {
+    //     return TurretSubsytem.setDutyCycle(0);
+    // }
+    
+    public Command SetIntakePWR() {
+        return IntakeSubsystem.setDutyCycle(-0.752);
     }
 
-    public Command SetTurretPWRreverse() {
-        return TurretSubsytem.setDutyCycle(-0.1);
+    public Command SetHopperPos() {
+        return HopperExtenderSubsystem.setAngle(Rotations.of(60));
     }
 
-    public Command SetTurretPWRoff() {
-        return TurretSubsytem.setDutyCycle(0);
+    public Command SetHopperPosZero() {
+        return HopperExtenderSubsystem.setAngle(Rotations.of(0));
     }
+    public Command SetIntakePWRZero() {
+        return IntakeSubsystem.setDutyCycle(0);
+    }
+
 
 
     /**
