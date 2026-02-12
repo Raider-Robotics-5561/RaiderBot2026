@@ -106,13 +106,14 @@ public class SuperStructure extends SubsystemBase {
     }
 
     public Command SetHopperPos() {
-        return HopperExtenderSubsystem.setAngle(Rotations.of(60));
+        return HopperExtenderSubsystem.setAngle(Degrees.of(1200));
     }
 
     public Command SetHopperPosZero() {
-        return HopperExtenderSubsystem.setAngle(Rotations.of(0));
+        return HopperExtenderSubsystem.setAngle(Degrees.of(-90));
     }
     public Command SetIntakePWRZero() {
+
         return IntakeSubsystem.setDutyCycle(0);
     }
 

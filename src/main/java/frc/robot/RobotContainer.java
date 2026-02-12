@@ -151,10 +151,10 @@ public class RobotContainer
 
     
     
-   DriveController.a().onTrue(SuperStructure.SetIntakePWR());
-   DriveController.b().onTrue(SuperStructure.SetHopperPos());
+  //  DriveController.a().onTrue(SuperStructure.SetIntakePWR());
+   DriveController.b().whileTrue(SuperStructure.SetHopperPos());
    DriveController.y().onTrue(SuperStructure.SetHopperPosZero());
-   DriveController.x().onTrue(SuperStructure.SetIntakePWRZero());
+  //  DriveController.x().onTrue(SuperStructure.SetIntakePWRZero());
 
     
 
