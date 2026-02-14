@@ -42,94 +42,96 @@ import frc.robot.subsystems.Hooded_Turret_Shooter.FlywheelSubsystem;
 import frc.robot.subsystems.HopperExtenderSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
-
 public class SuperStructure extends SubsystemBase {
-   // private final FlywheelSubsystem FlywheelSubsystem = new FlywheelSubsystem();
-   // private final HoodSubsystem HoodSubsystem = new HoodSubsystem();
-    //   private final TurretSubsystem TurretSubsytem = new TurretSubsystem();
-    private final IntakeSubsystem IntakeSubsystem = new IntakeSubsystem();
-    private final HopperExtenderSubsystem HopperExtenderSubsystem = new HopperExtenderSubsystem();
+	// private final FlywheelSubsystem FlywheelSubsystem = new FlywheelSubsystem();
+	// private final HoodSubsystem HoodSubsystem = new HoodSubsystem();
+	// private final TurretSubsystem TurretSubsytem = new TurretSubsystem();
+	private final IntakeSubsystem IntakeSubsystem = new IntakeSubsystem();
+	private final HopperExtenderSubsystem HopperExtenderSubsystem = new HopperExtenderSubsystem();
 
+	/**
+	 * Initializer for the Control superstructure.
+	 * This is the "brain" that controls the body.
+	 * Calls for all subsystems.
+	 */
+	public SuperStructure() {
 
-    /**
-     * Initializer for the Control superstructure.
-     * This is the "brain" that controls the body.
-     * Calls for all subsystems.
-     */
-    public SuperStructure() {
+		if (RobotBase.isSimulation()) {
+			return;
+		}
+	}
 
-        if (RobotBase.isSimulation()) {
-            return;
-        }
-    }
+	@Override
+	public void simulationPeriodic() {
+		return;
+	}
 
-    @Override
-    public void simulationPeriodic() {
-        return;
-    }
+	// public Command SetHoodandFlywheelmin() {
+	// return
+	// FlywheelSubsystem.setVelocity(RPM.of(-1500)).alongWith(HoodSubsystem.setAngle(Rotations.of(2)));
+	// }
 
-    // public Command SetHoodandFlywheelmin() {
-    //     return FlywheelSubsystem.setVelocity(RPM.of(-1500)).alongWith(HoodSubsystem.setAngle(Rotations.of(2)));
-    // }
+	// public Command SetHoodandFlywheelIntake() {
+	// return
+	// FlywheelSubsystem.setVelocity(RPM.of(-5000)).alongWith(HoodSubsystem.setAngle(Rotations.of(1)));
+	// }
 
-    // public Command SetHoodandFlywheelIntake() {
-    //     return FlywheelSubsystem.setVelocity(RPM.of(-5000)).alongWith(HoodSubsystem.setAngle(Rotations.of(1)));
-    // }
+	// public Command SetHoodandFlywheelmax() {
+	// return
+	// FlywheelSubsystem.setVelocity(RPM.of(-6000)).alongWith(HoodSubsystem.setAngle(Rotations.of(0)));
+	// }
+	// public Command SetAllMid() {
+	// return
+	// FlywheelSubsystem.setVelocity(RPM.of(-4250)).alongWith(HoodSubsystem.setAngle(Rotations.of(0.6)));
+	// }
 
-    //    public Command SetHoodandFlywheelmax() {
-    //     return FlywheelSubsystem.setVelocity(RPM.of(-6000)).alongWith(HoodSubsystem.setAngle(Rotations.of(0)));
-    // }
-    // public Command SetAllMid() {
-    //     return FlywheelSubsystem.setVelocity(RPM.of(-4250)).alongWith(HoodSubsystem.setAngle(Rotations.of(0.6)));
-    // }
+	// public Command StopHoodandFlywheel() {
+	// return FlywheelSubsystem.setVelocity(RPM.of(0))
+	// .alongWith(HoodSubsystem.setAngle(Rotations.of(0)))
+	// .alongWith(TurretSubsytem.setDutyCycle(0));
+	// }
 
-    // public Command StopHoodandFlywheel() {
-    //     return FlywheelSubsystem.setVelocity(RPM.of(0))
-    //     .alongWith(HoodSubsystem.setAngle(Rotations.of(0)))
-    //     .alongWith(TurretSubsytem.setDutyCycle(0));
-    // }
+	// public Command SetTurretPWR(double power) {
+	// return TurretSubsytem.setDutyCycle(power);
+	// }
 
-    // public Command SetTurretPWR(double power) {
-    //     return TurretSubsytem.setDutyCycle(power);
-    // }
+	// public Command SetTurretPWRreverse() {
+	// return TurretSubsytem.setDutyCycle(-0.1);
+	// }
 
-    // public Command SetTurretPWRreverse() {
-    //     return TurretSubsytem.setDutyCycle(-0.1);
-    // }
+	// public Command SetTurretPWRoff() {
+	// return TurretSubsytem.setDutyCycle(0);
+	// }
 
-    // public Command SetTurretPWRoff() {
-    //     return TurretSubsytem.setDutyCycle(0);
-    // }
-    
-    public Command SetIntakePWR() {
-        return IntakeSubsystem.setDutyCycle(-0.752);
-    }
+	public Command SetIntakePWR() {
+		return IntakeSubsystem.setDutyCycle(-0.752);
+	}
 
-    public Command SetHopperPos() {
-        return HopperExtenderSubsystem.setAngle(Degrees.of(1200));
-    }
+	public Command SetHopperPos() {
+		return HopperExtenderSubsystem.setAngle(Degrees.of(1200));
+	}
 
-    public Command SetHopperPosZero() {
-        return HopperExtenderSubsystem.setAngle(Degrees.of(-90));
-    }
-    public Command SetIntakePWRZero() {
+	public Command SetHopperPosZero() {
+		return HopperExtenderSubsystem.setAngle(Degrees.of(-90));
+	}
 
-        return IntakeSubsystem.setDutyCycle(0);
-    }
+	public Command SetIntakePWRZero() {
 
+		return IntakeSubsystem.setDutyCycle(0);
+	}
 
-
-    /**
-     * Runs a command that sets all LEDs to scrolling rainbow.
-     *
-     * @return a {@link Command} that sets all LEDs to scrolling rainbow.
-     *
-     * NOTE - Stole this code from team 5517. Will impliment LED's later once we get an Idea of our LED situation.
-    private Command setLEDRainbow() {
-        return Commands.run(() -> {
-            led.runLED(LEDViews.BOTH, LEDModes.RAINBOW);
-        }).finallyDo(() -> led.runLED(LEDViews.BOTH, LEDModes.OFF));
-    }
-*/
+	/**
+	 * Runs a command that sets all LEDs to scrolling rainbow.
+	 *
+	 * @return a {@link Command} that sets all LEDs to scrolling rainbow.
+	 *
+	 *         NOTE - Stole this code from team 5517. Will impliment LED's later
+	 *         once we get an Idea of our LED situation.
+	 *         private Command setLEDRainbow() {
+	 *         return Commands.run(() -> {
+	 *         led.runLED(LEDViews.BOTH, LEDModes.RAINBOW);
+	 *         }).finallyDo(() -> led.runLED(LEDViews.BOTH, LEDModes.OFF));
+	 *         }
+	 */
 
 }

@@ -33,79 +33,83 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 import yams.motorcontrollers.simulation.Sensor;
 
 public class TurretSubsystem extends SubsystemBase {
-        TalonFX turretMotor = new TalonFX(9);
-        AbsoluteEncoderSubsystem abs_encoder = new AbsoluteEncoderSubsystem();
+	TalonFX turretMotor = new TalonFX(9);
+	AbsoluteEncoderSubsystem abs_encoder = new AbsoluteEncoderSubsystem();
 
-// private DigitalInput dio = new DigitalInput(9); // Standard DIO
-// private final Sensor TurretRotation = new SensorConfig("TurretRotation") // Name of the sensor 
-         
-//          .withField("TurretRotation", dio::get, false) // Add a Field to the sensor named "Beam" whose value is dio.get() and defaults to false
-//          .getSensor(); // Get the sensor.
-        private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
-                        .withClosedLoopController(0.01, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
-                        .withGearing(new MechanismGearing(35.56))
-                        .withIdleMode(MotorMode.BRAKE)
-                        .withMotorInverted(false)
+	// private DigitalInput dio = new DigitalInput(9); // Standard DIO
+	// private final Sensor TurretRotation = new SensorConfig("TurretRotation") //
+	// Name of the sensor
 
-                        .withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
-                        // Power Optimization
-                        .withStatorCurrentLimit(Amps.of(30))
-                        .withClosedLoopRampRate(Seconds.of(0.25))
-                        .withOpenLoopRampRate(Seconds.of(0.25))
-                        .withControlMode(ControlMode.CLOSED_LOOP);
-                        // .withContinuousWrapping(Rotations.of(0),Rotations.of(360));
-        private final SmartMotorController turretSMC = new TalonFXWrapper(turretMotor,DCMotor.getKrakenX44(1),motorConfig);
-        private final PivotConfig turretConfig = new PivotConfig(turretSMC)
-                        .withStartingPosition(Degrees.of(abs_encoder.getAngleDegrees())) // Starting position of the Pivot
-                        // .withWrapping(Degrees.of(0), Degrees.of(360)) // Wrapping enabled bc the pivot can spin
-                                                                      // infinitely
-                                                                      
-                        .withHardLimit(Degrees.of(0), Degrees.of(270)) // Hard limit bc wiring prevents infinite
-                                                                       // spinning
-                        .withTelemetry("TurretMech", TelemetryVerbosity.HIGH) // Telemetry
-                        .withMOI(Meters.of(0.25), Pounds.of(4)); // MOI Calculation
+	// .withField("TurretRotation", dio::get, false) // Add a Field to the sensor
+	// named "Beam" whose value is dio.get() and defaults to false
+	// .getSensor(); // Get the sensor.
+	private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
+			.withClosedLoopController(0.01, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
+			.withGearing(new MechanismGearing(35.56))
+			.withIdleMode(MotorMode.BRAKE)
+			.withMotorInverted(false)
 
-        private final Pivot turret = new Pivot(turretConfig);
+			.withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
+			// Power Optimization
+			.withStatorCurrentLimit(Amps.of(30))
+			.withClosedLoopRampRate(Seconds.of(0.25))
+			.withOpenLoopRampRate(Seconds.of(0.25))
+			.withControlMode(ControlMode.CLOSED_LOOP);
+	// .withContinuousWrapping(Rotations.of(0),Rotations.of(360));
+	private final SmartMotorController turretSMC = new TalonFXWrapper(turretMotor, DCMotor.getKrakenX44(1),
+			motorConfig);
+	private final PivotConfig turretConfig = new PivotConfig(turretSMC)
+			.withStartingPosition(Degrees.of(abs_encoder.getAngleDegrees())) // Starting position of the Pivot
+			// .withWrapping(Degrees.of(0), Degrees.of(360)) // Wrapping enabled bc the
+			// pivot can spin
+			// infinitely
 
-        public TurretSubsystem() {
-        
-        }
+			.withHardLimit(Degrees.of(0), Degrees.of(270)) // Hard limit bc wiring prevents infinite
+															// spinning
+			.withTelemetry("TurretMech", TelemetryVerbosity.HIGH) // Telemetry
+			.withMOI(Meters.of(0.25), Pounds.of(4)); // MOI Calculation
 
-        public Command setAngle(Angle angle) {
-                return turret.setAngle(angle);
-        }
+	private final Pivot turret = new Pivot(turretConfig);
 
-        public Command setAngle(Supplier<Angle> angleSupplier) {
-                return turret.setAngle(angleSupplier);
-        }
+	public TurretSubsystem() {
 
-        public Angle getAngle() {
-                return turret.getAngle();
-        }
+	}
 
-        public Command sysId() {
-                return turret.sysId(
-                                Volts.of(4.0), // maximumVoltage
-                                Volts.per(Second).of(0.5), // step
-                                Seconds.of(8.0) // duration
-                );
-        }
+	public Command setAngle(Angle angle) {
+		return turret.setAngle(angle);
+	}
 
-        public Command setDutyCycle(Supplier<Double> dutyCycleSupplier) {
-                return turret.set(dutyCycleSupplier);
-        }
+	public Command setAngle(Supplier<Angle> angleSupplier) {
+		return turret.setAngle(angleSupplier);
+	}
 
-        public Command setDutyCycle(double dutyCycle) {
-                return turret.set(dutyCycle);
-        }
+	public Angle getAngle() {
+		return turret.getAngle();
+	}
 
-        @Override
-        public void periodic() {
-                turret.updateTelemetry();
-        }
+	public Command sysId() {
+		return turret.sysId(
+				Volts.of(4.0), // maximumVoltage
+				Volts.per(Second).of(0.5), // step
+				Seconds.of(8.0) // duration
+		);
+	}
 
-        @Override
-        public void simulationPeriodic() {
-                turret.simIterate();
-        }
+	public Command setDutyCycle(Supplier<Double> dutyCycleSupplier) {
+		return turret.set(dutyCycleSupplier);
+	}
+
+	public Command setDutyCycle(double dutyCycle) {
+		return turret.set(dutyCycle);
+	}
+
+	@Override
+	public void periodic() {
+		turret.updateTelemetry();
+	}
+
+	@Override
+	public void simulationPeriodic() {
+		turret.simIterate();
+	}
 }
