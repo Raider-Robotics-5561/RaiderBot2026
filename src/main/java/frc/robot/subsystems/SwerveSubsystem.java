@@ -65,7 +65,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	/**
 	 * PhotonVision class to keep an accurate odometry .
 	 */
-	private VisionSubsystem vision;
+	//private VisionSubsystem vision;
 
 	/**
 	 * Initialize {@link SwerveDrive} with the directory provided.
@@ -105,7 +105,7 @@ public class SwerveSubsystem extends SubsystemBase {
 				true,
 				0.1); // Correct for skew that gets worse as angular velocity increases. Start with a
 						// coefficient of 0.1.
-		swerveDrive.setModuleEncoderAutoSynchronize(true, // NOTE - Enabled for testing, may not work
+		swerveDrive.setModuleEncoderAutoSynchronize(false, // NOTE - Enabled for testing, may not work
 				1); // Enable if you want to resynchronize your absolute encoders and motor encoders
 					// periodically when they are not moving.
 		// swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used
@@ -138,7 +138,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	 * Setup the photon vision class.
 	 */
 	public void setupPhotonVision() {
-		vision = new VisionSubsystem(swerveDrive::getPose, swerveDrive.field);
+		//vision = new VisionSubsystem(swerveDrive::getPose, swerveDrive.field);
 	}
 
 	public boolean isMoving(double tolerance) {
@@ -153,7 +153,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		// if (visionDriveTest)
 		// {
 		swerveDrive.updateOdometry();
-		vision.updatePoseEstimation(swerveDrive);
+		//vision.updatePoseEstimation(swerveDrive);
 		// }
 
 		// if (!isMoving(0.01) && !DriverStation.isAutonomous()) {
