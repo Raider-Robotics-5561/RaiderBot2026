@@ -1,4 +1,4 @@
-package frc.robot.subsystems.HopperSubsystemGroup;
+package frc.robot.subsystems.HopperSysytem;
 
 import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.units.measure.Distance;

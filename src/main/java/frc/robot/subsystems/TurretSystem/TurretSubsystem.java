@@ -1,4 +1,4 @@
-package frc.robot.subsystems.TurretSubsystemGroup;
+package frc.robot.subsystems.TurretSystem;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import static edu.wpi.first.units.Units.Amps;

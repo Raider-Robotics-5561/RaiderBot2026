@@ -1,4 +1,4 @@
-package frc.robot.subsystems.TurretSubsystemGroup;
+package frc.robot.subsystems.TurretSystem;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

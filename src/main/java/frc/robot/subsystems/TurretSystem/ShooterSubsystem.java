@@ -1,4 +1,4 @@
-package frc.robot.subsystems.TurretSubsystemGroup;
+package frc.robot.subsystems.TurretSystem;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 

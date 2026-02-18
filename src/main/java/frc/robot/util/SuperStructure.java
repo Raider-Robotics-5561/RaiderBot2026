@@ -3,12 +3,6 @@ package frc.robot.util;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.HopperSubsystemGroup.HopperExtenderSubsystem;
-import frc.robot.subsystems.HopperSubsystemGroup.HopperRollerSubsystem;
-import frc.robot.subsystems.HopperSubsystemGroup.IntakeSubsystem;
-import frc.robot.subsystems.TurretSubsystemGroup.FlywheelSubsystem;
-import frc.robot.subsystems.TurretSubsystemGroup.HoodSubsystem;
-import frc.robot.subsystems.TurretSubsystemGroup.TurretSubsystem;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
@@ -16,6 +10,12 @@ import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
 
 import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.HopperSysytem.HopperExtenderSubsystem;
+import frc.robot.subsystems.HopperSysytem.HopperRollerSubsystem;
+import frc.robot.subsystems.HopperSysytem.IntakeSubsystem;
+import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
+import frc.robot.subsystems.TurretSystem.HoodSubsystem;
+import frc.robot.subsystems.TurretSystem.TurretSubsystem;
 
 public class SuperStructure extends SubsystemBase {
 	private final FlywheelSubsystem 	  FlywheelSubsystem 	  = new FlywheelSubsystem();

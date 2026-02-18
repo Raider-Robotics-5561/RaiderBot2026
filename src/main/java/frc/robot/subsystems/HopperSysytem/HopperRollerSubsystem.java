@@ -1,4 +1,4 @@
-package frc.robot.subsystems.HopperSubsystemGroup;
+package frc.robot.subsystems.HopperSysytem;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
@@ -9,6 +9,8 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -16,9 +18,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import java.util.function.Supplier;
-
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
@@ -30,68 +29,70 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class KickerSubsystem extends SubsystemBase {
-	TalonFX IndexingMotor = new TalonFX(0);
+public class HopperRollerSubsystem extends SubsystemBase {
+	TalonFX HopperRoller = new TalonFX(24);
 
-	private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
-			.withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
-			.withGearing(new MechanismGearing(1))
-			.withIdleMode(MotorMode.COAST)
-			.withTelemetry("IndexingMotor", TelemetryVerbosity.HIGH)
-			.withStatorCurrentLimit(Amps.of(40))
-			.withMotorInverted(false) // Pos (+) should be going into the turret
-			.withClosedLoopRampRate(Seconds.of(0.25))
-			.withOpenLoopRampRate(Seconds.of(0.25))
-			.withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557)) // TODO - Add correct FF values
-			.withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
+	private SmartMotorControllerConfig HopperRollerConfig = new SmartMotorControllerConfig(this)
 			.withControlMode(ControlMode.CLOSED_LOOP)
-			.withFollowers(Pair.of(new TalonFX(11), true));
+			.withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
+			.withSimClosedLoopController(1, 0, 0)
+			.withStatorCurrentLimit(Amps.of(40))
+			.withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+			.withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+			.withTelemetry("HopperRollerMotor", TelemetryVerbosity.HIGH)
+			.withGearing(new MechanismGearing(1))
+			.withMotorInverted(false)
+			.withIdleMode(MotorMode.COAST)
+			.withControlMode(ControlMode.CLOSED_LOOP)
+			.withStatorCurrentLimit(Amps.of(40));
 
-	private final SmartMotorController motor = new TalonFXWrapper(IndexingMotor, DCMotor.getKrakenX60(1), motorConfig);
+	// Create our SmartMotorController from our Spark and config with the NEO.
+	private final SmartMotorController HopperRollerMotor = new TalonFXWrapper(HopperRoller, DCMotor.getKrakenX60(1), HopperRollerConfig);
 
-	private final FlyWheelConfig flywheelConfig = new FlyWheelConfig(motor)
-			.withDiameter(Inches.of(4))
+	private final FlyWheelConfig flywheelConfig = new FlyWheelConfig(HopperRollerMotor)
+			// Diameter of the flywheel.
+			.withDiameter(Inches.of(2))
+			// Mass of the flywheel.
 			.withMass(Pounds.of(1))
-			.withTelemetry("FlywheelMech", TelemetryVerbosity.HIGH)
+			// Maximum speed of the shooter.
 			.withSoftLimit(RPM.of(-5000), RPM.of(5000))
-			.withSpeedometerSimulation(RPM.of(5000));
+			// Telemetry name and verbosity for the arm.
+			.withTelemetry("HopperRollers", TelemetryVerbosity.HIGH);
 
-	private final FlyWheel flywheel = new FlyWheel(flywheelConfig);
-
-	public KickerSubsystem() {
-	}
+	// Shooter Mechanism
+	private FlyWheel HopperRollers = new FlyWheel(flywheelConfig);
 
 	public AngularVelocity getVelocity() {
-		return flywheel.getSpeed();
+		return HopperRollers.getSpeed();
 	}
 
 	public Command setVelocity(AngularVelocity speed) {
-		return flywheel.setSpeed(speed);
+		return HopperRollers.setSpeed(speed);
 	}
 
 	public Command setDutyCycle(double dutyCycle) {
-		return flywheel.set(dutyCycle);
+		return HopperRollers.set(dutyCycle);
 	}
 
 	public Command setVelocity(Supplier<AngularVelocity> speed) {
-		return flywheel.setSpeed(speed);
+		return HopperRollers.setSpeed(speed);
 	}
 
 	public Command setDutyCycle(Supplier<Double> dutyCycle) {
-		return flywheel.set(dutyCycle);
+		return HopperRollers.set(dutyCycle);
 	}
 
 	public Command sysId() {
-		return flywheel.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));
+		return HopperRollers.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));
 	}
 
 	@Override
 	public void periodic() {
-		flywheel.updateTelemetry();
+		HopperRollers.updateTelemetry();
 	}
 
 	@Override
 	public void simulationPeriodic() {
-		flywheel.simIterate();
+		HopperRollers.simIterate();
 	}
 }
