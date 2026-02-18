@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import java.io.File;
@@ -25,7 +26,7 @@ import swervelib.SwerveInputStream;
  * trigger mappings) should be declared here.
  */
 public class RobotContainer {
-	// private final SuperStructure SuperStructure = new SuperStructure();
+	private final SuperStructure SuperStructure = new SuperStructure();
 
 	final CommandXboxController DriveController = new CommandXboxController(0);
 	// The robot's subsystems and commands are defined here...
@@ -128,26 +129,28 @@ public class RobotContainer {
 
 		/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-        // DriveController.a().whileTrue(SuperStructure.SetClimberPWRon());
-		// DriveController.b().whileTrue(SuperStructure.SetClimberPWRrev());
-		// DriveController.x().onTrue(SuperStructure.SetHopperRollers());
-		// DriveController.y().onTrue(SuperStructure.SetHopperRollersoff());
-		// DriveController.start().onTrue(SuperStructure.SetHopperPos());
+        DriveController.a().whileTrue(SuperStructure.SetClimberPWRon());
+		DriveController.b().whileTrue(SuperStructure.SetClimberPWRrev());
+		DriveController.x().onTrue(SuperStructure.SetHopperRollers());
+		DriveController.y().onTrue(SuperStructure.SetHopperRollersoff());
+		DriveController.start().onTrue(SuperStructure.SetHopperPos());
+
+			// This is our boost control Right Trigger
+	DriveController.axisGreaterThan(3, 0.01).onChange(Commands.runOnce(() -> {
+	driveAngularVelocity.scaleTranslation(DriveController.getRightTriggerAxis() +
+	0.35);
+	driveAngularVelocity.scaleRotation((DriveController.getRightTriggerAxis() *
+	Constants.MiscConstants.RotationSpeedScale) + 0.25);
+	}).repeatedly()).whileFalse(Commands.runOnce(() -> {
+	driveAngularVelocity.scaleTranslation(0.25);
+	driveAngularVelocity.scaleRotation(0.15);
+	}).repeatedly());
 
 	}
 
-	// This is our boost control Right Trigger
-	// DriveController.axisGreaterThan(3, 0.01).onChange(Commands.runOnce(() -> {
-	// driveAngularVelocity.scaleTranslation(DriveController.getRightTriggerAxis() +
-	// 0.35);
-	// driveAngularVelocity.scaleRotation((DriveController.getRightTriggerAxis() *
-	// Constants.MiscConstants.RotationSpeedScale) + 0.25);
-	// }).repeatedly()).whileFalse(Commands.runOnce(() -> {
-	// driveAngularVelocity.scaleTranslation(0.25);
-	// driveAngularVelocity.scaleRotation(0.15);
-	// }).repeatedly());
 
-	// }
+	
+
 
 	public void setupAutonomous() {
 		// Named Commands go here

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Hooded_Turret_Shooter;
+package frc.robot.subsystems.TurretSubsystemGroup;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import static edu.wpi.first.units.Units.Amps;
@@ -16,7 +16,6 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.AbsoluteEncoderSubsystem;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
