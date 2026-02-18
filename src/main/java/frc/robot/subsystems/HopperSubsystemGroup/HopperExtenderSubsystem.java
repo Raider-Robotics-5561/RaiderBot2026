@@ -15,16 +15,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Feet;
-import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
-
 import yams.mechanisms.config.ElevatorConfig;
 import yams.mechanisms.positional.Elevator;
 import yams.motorcontrollers.SmartMotorController;
@@ -44,6 +34,8 @@ public class HopperExtenderSubsystem extends SubsystemBase {
 	private final SparkMax HopperExtender = new SparkMax(14, MotorType.kBrushless);
 
 	private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
+      // Mechanism Circumference is the distance traveled by each mechanism rotation converting rotations to meters.
+      .withMechanismCircumference(Meters.of(Inches.of(0.25).in(Meters) * 22)) //- Fix to be correct
 			.withClosedLoopController(0.00016541, 0, 0, RPM.of(500), RotationsPerSecondPerSecond.of(100))
 			.withGearing(new MechanismGearing(3))
 			.withIdleMode(MotorMode.COAST)
