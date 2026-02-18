@@ -32,6 +32,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 // import frc.robot.subsystems.AddressableLEDSubsystem.LEDViews;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Rotations;
@@ -39,7 +40,9 @@ import static edu.wpi.first.units.Units.Rotations;
 import frc.robot.subsystems.Hooded_Turret_Shooter.HoodSubsystem;
 import frc.robot.subsystems.Hooded_Turret_Shooter.TurretSubsystem;
 import frc.robot.subsystems.Hooded_Turret_Shooter.FlywheelSubsystem;
-import frc.robot.subsystems.HopperExtenderSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
+// import frc.robot.subsystems.HopperExtenderSubsystem;
+import frc.robot.subsystems.HopperRollerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class SuperStructure extends SubsystemBase {
@@ -47,7 +50,9 @@ public class SuperStructure extends SubsystemBase {
 	// private final HoodSubsystem HoodSubsystem = new HoodSubsystem();
 	// private final TurretSubsystem TurretSubsytem = new TurretSubsystem();
 	private final IntakeSubsystem IntakeSubsystem = new IntakeSubsystem();
-	private final HopperExtenderSubsystem HopperExtenderSubsystem = new HopperExtenderSubsystem();
+	// private final HopperExtenderSubsystem HopperExtenderSubsystem = new HopperExtenderSubsystem();
+	// private final ClimberSubsystem ClimberSubsystem = new ClimberSubsystem();
+	// private final HopperRollerSubsystem hopperRollerSubsystem = new HopperRollerSubsystem();
 
 	/**
 	 * Initializer for the Control superstructure.
@@ -103,22 +108,46 @@ public class SuperStructure extends SubsystemBase {
 	// return TurretSubsytem.setDutyCycle(0);
 	// }
 
+	// public Command SetHopperRollers() {
+	// 	return hopperRollerSubsystem.setDutyCycle(0.3);
+	// }
+
+	// public Command SetHopperRollersoff() {
+	// 	return hopperRollerSubsystem.setDutyCycle(0.0);
+	// }
+
+	//start hopper
+	// public Command SetHopperPos() {
+	// 	return HopperExtenderSubsystem.setHeight(Meters.of(0.1));
+	// }
+
+	// public Command SetHopperPosZero() {
+	// 	return HopperExtenderSubsystem.setHeight(Meters.of(-0.1));
+	// }
+	//end hopper
+
+	//Intake control
 	public Command SetIntakePWR() {
 		return IntakeSubsystem.setDutyCycle(-0.752);
-	}
-
-	public Command SetHopperPos() {
-		return HopperExtenderSubsystem.setAngle(Degrees.of(1200));
-	}
-
-	public Command SetHopperPosZero() {
-		return HopperExtenderSubsystem.setAngle(Degrees.of(-90));
 	}
 
 	public Command SetIntakePWRZero() {
 
 		return IntakeSubsystem.setDutyCycle(0);
 	}
+	//end intake
+
+	//Climb control
+	// public Command SetClimberPWRon() {
+
+	// 	return ClimberSubsystem.set(0.3);
+	// }
+
+	// public Command SetClimberPWRrev() {
+
+	// 	return ClimberSubsystem.set(-0.3);
+	// }
+	//end climb
 
 	/**
 	 * Runs a command that sets all LEDs to scrolling rainbow.

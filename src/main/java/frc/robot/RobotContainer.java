@@ -25,10 +25,7 @@ import swervelib.SwerveInputStream;
  * trigger mappings) should be declared here.
  */
 public class RobotContainer {
-	// private final TurretSubsystem TurretSubsystem = new TurretSubsystem();
-	// private final FlywheelSubsystem FlywheelSubsystem = new FlywheelSubsystem();
-	// private final HoodSubsystem HoodSubsystem = new HoodSubsystem();
-	private final SuperStructure SuperStructure = new SuperStructure();
+	// private final SuperStructure SuperStructure = new SuperStructure();
 
 	final CommandXboxController DriveController = new CommandXboxController(0);
 	// The robot's subsystems and commands are defined here...
@@ -131,10 +128,11 @@ public class RobotContainer {
 
 		/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-		// // DriveController.a().onTrue(SuperStructure.SetIntakePWR());
-		// DriveController.b().whileTrue(SuperStructure.SetHopperPos());
-		// DriveController.y().onTrue(SuperStructure.SetHopperPosZero());
-		// // DriveController.x().onTrue(SuperStructure.SetIntakePWRZero());
+        // DriveController.a().whileTrue(SuperStructure.SetClimberPWRon());
+		// DriveController.b().whileTrue(SuperStructure.SetClimberPWRrev());
+		// DriveController.x().onTrue(SuperStructure.SetHopperRollers());
+		// DriveController.y().onTrue(SuperStructure.SetHopperRollersoff());
+		// DriveController.start().onTrue(SuperStructure.SetHopperPos());
 
 	}
 
