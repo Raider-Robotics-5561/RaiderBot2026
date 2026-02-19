@@ -31,23 +31,22 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class KickerSubsystem extends SubsystemBase {
-	TalonFX IndexingMotor = new TalonFX(0);
+	TalonFX IndexingMotor = new TalonFX(23);
 
 	private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
 			.withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
-			.withGearing(new MechanismGearing(1))
+			.withGearing(new MechanismGearing(2))
 			.withIdleMode(MotorMode.COAST)
-			.withTelemetry("IndexingMotor", TelemetryVerbosity.HIGH)
+			.withTelemetry("KickerMotor", TelemetryVerbosity.HIGH)
 			.withStatorCurrentLimit(Amps.of(40))
 			.withMotorInverted(false) // Pos (+) should be going into the turret
 			.withClosedLoopRampRate(Seconds.of(0.25))
 			.withOpenLoopRampRate(Seconds.of(0.25))
 			.withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557)) // TODO - Add correct FF values
 			.withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
-			.withControlMode(ControlMode.CLOSED_LOOP)
-			.withFollowers(Pair.of(new TalonFX(11), true));
+			.withControlMode(ControlMode.OPEN_LOOP);
 
-	private final SmartMotorController motor = new TalonFXWrapper(IndexingMotor, DCMotor.getKrakenX60(1), motorConfig);
+	private final SmartMotorController motor = new TalonFXWrapper(IndexingMotor, DCMotor.getKrakenX44(1), motorConfig);
 
 	private final FlyWheelConfig flywheelConfig = new FlyWheelConfig(motor)
 			.withDiameter(Inches.of(4))

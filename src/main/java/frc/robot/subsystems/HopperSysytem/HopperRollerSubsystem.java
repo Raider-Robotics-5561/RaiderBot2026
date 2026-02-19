@@ -43,8 +43,8 @@ public class HopperRollerSubsystem extends SubsystemBase {
 			.withGearing(new MechanismGearing(1))
 			.withMotorInverted(false)
 			.withIdleMode(MotorMode.COAST)
-			.withControlMode(ControlMode.CLOSED_LOOP)
-			.withStatorCurrentLimit(Amps.of(40));
+			.withControlMode(ControlMode.OPEN_LOOP);
+			//.withStatorCurrentLimit(Amps.of(40));
 
 	// Create our SmartMotorController from our Spark and config with the NEO.
 	private final SmartMotorController HopperRollerMotor = new TalonFXWrapper(HopperRoller, DCMotor.getKrakenX60(1), HopperRollerConfig);

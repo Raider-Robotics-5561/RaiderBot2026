@@ -19,11 +19,11 @@ public class ClimberSubsystem extends SubsystemBase {
     public ClimberSubsystem () {
 
     // Set up the climb motor as a brushless motor
-    climberMotor = new SparkMax(23, MotorType.kBrushless);
+    climberMotor = new SparkMax(34, MotorType.kBrushless);
 
     SparkMaxConfig climbConfig = new SparkMaxConfig();
-    climbConfig.voltageCompensation(12);
-    climbConfig.smartCurrentLimit(40);
+    // climbConfig.voltageCompensation(12);
+    // climbConfig.smartCurrentLimit(40);
     climbConfig.idleMode(IdleMode.kBrake);
     
     climberMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -39,7 +39,7 @@ public class ClimberSubsystem extends SubsystemBase {
      * 
      * @param speed motor speed from -1.0 to 1, with 0 stopping it
      */
-     public Command set(double dutycycle) { 
-        return Commands.runOnce(() -> climberMotor.set(dutycycle));}
-
+    public void runClimber(double speed){
+        climberMotor.set(speed);
+    }
 }

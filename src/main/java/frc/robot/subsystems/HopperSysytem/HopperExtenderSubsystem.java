@@ -31,11 +31,11 @@ import yams.gearing.MechanismGearing;
 
 
 public class HopperExtenderSubsystem extends SubsystemBase {
-	private final SparkMax HopperExtender = new SparkMax(14, MotorType.kBrushless);
+	private final SparkMax HopperExtender = new SparkMax(33, MotorType.kBrushless);
 
 	private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
       // Mechanism Circumference is the distance traveled by each mechanism rotation converting rotations to meters.
-      .withMechanismCircumference(Meters.of(Inches.of(0.25).in(Meters) * 22)) //- Fix to be correct
+      .withMechanismCircumference(Meters.of(Inches.of(2.16).in(Meters) * 18)) //- Fix to be correct
 			.withClosedLoopController(0.00016541, 0, 0, RPM.of(500), RotationsPerSecondPerSecond.of(100))
 			.withGearing(new MechanismGearing(3))
 			.withIdleMode(MotorMode.COAST)

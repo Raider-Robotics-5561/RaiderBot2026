@@ -13,6 +13,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Commands.ClimberDownCommand;
+import frc.robot.Commands.ClimberUpCommand;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.util.SuperStructure;
 import swervelib.SwerveInputStream;
@@ -28,6 +31,9 @@ import swervelib.SwerveInputStream;
 public class RobotContainer {
 	private final SuperStructure SuperStructure = new SuperStructure();
 
+
+	public final ClimberSubsystem m_climber = new ClimberSubsystem();
+  
 	final CommandXboxController DriveController = new CommandXboxController(0);
 	// The robot's subsystems and commands are defined here...
 	private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
@@ -128,14 +134,17 @@ public class RobotContainer {
 		// REV 11--1817
 
 		/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
+         DriveController.b().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+		 DriveController.x().whileTrue(new ClimberUpCommand(m_climber));
+     	 DriveController.a().whileTrue(new ClimberDownCommand(m_climber));
+        // DriveController.a().whileTrue(SuperStructure.SetClimberPWRon());
+		// DriveController.x().whileTrue(SuperStructure.SetClimberPWRrev());
+		// DriveController.b().onTrue(SuperStructure.SetClimberPWRoff());
+		// DriveController.x().onTrue(SuperStructure.SetHopperRollers());
+		// DriveController.y().onTrue(SuperStructure.SetHopperRollersoff());
+		// DriveController.start().onTrue(SuperStructure.SetHopperPos());
 
-        DriveController.a().whileTrue(SuperStructure.SetClimberPWRon());
-		DriveController.b().whileTrue(SuperStructure.SetClimberPWRrev());
-		DriveController.x().onTrue(SuperStructure.SetHopperRollers());
-		DriveController.y().onTrue(SuperStructure.SetHopperRollersoff());
-		DriveController.start().onTrue(SuperStructure.SetHopperPos());
-
-			// This is our boost control Right Trigger
+	// This is our boost control Right Trigger
 	DriveController.axisGreaterThan(3, 0.01).onChange(Commands.runOnce(() -> {
 	driveAngularVelocity.scaleTranslation(DriveController.getRightTriggerAxis() +
 	0.35);
