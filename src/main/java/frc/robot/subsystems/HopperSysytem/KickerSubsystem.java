@@ -38,7 +38,7 @@ public class KickerSubsystem extends SubsystemBase {
 			.withGearing(new MechanismGearing(2))
 			.withIdleMode(MotorMode.COAST)
 			.withTelemetry("KickerMotor", TelemetryVerbosity.HIGH)
-			.withStatorCurrentLimit(Amps.of(40))
+			.withStatorCurrentLimit(Amps.of(35))
 			.withMotorInverted(false) // Pos (+) should be going into the turret
 			.withClosedLoopRampRate(Seconds.of(0.25))
 			.withOpenLoopRampRate(Seconds.of(0.25))

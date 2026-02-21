@@ -134,15 +134,31 @@ public class RobotContainer {
 		// REV 11--1817
 
 		/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
-         DriveController.b().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-		 DriveController.x().whileTrue(new ClimberUpCommand(m_climber));
-     	 DriveController.a().whileTrue(new ClimberDownCommand(m_climber));
-        // DriveController.a().whileTrue(SuperStructure.SetClimberPWRon());
-		// DriveController.x().whileTrue(SuperStructure.SetClimberPWRrev());
-		// DriveController.b().onTrue(SuperStructure.SetClimberPWRoff());
+         DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+		// DriveController.a().onTrue(SuperStructure.SetHoodandFlywheelmin());
+		// DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
+     	// DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
+
+		DriveController.b().onTrue(SuperStructure.SetIntakePWR());
+		DriveController.povRight().onTrue(SuperStructure.SetIntakePWRZero());
+
+		DriveController.povUp().onTrue(SuperStructure.SetAllMid());	
+		DriveController.povDown().onTrue(SuperStructure.SetHoodandFlywheelZero());
+
+		DriveController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.1)).or(DriveController.rightBumper().onTrue(
+			SuperStructure.SetHopperExtenderPower(-0.1)
+		)).whileFalse(
+			SuperStructure.SetHopperExtenderPower(0)
+		);
+
+		// DriveController.a().onTrue(SuperStructure.SetHoodandFlywheelmin());
+		// DriveController.start().onTrue(SuperStructure.SetHopperPosZero());
+		// DriveController.povLeft().onTrue(SuperStructure.SetHopperPos());
+		// DriveController.povRight().onTrue(SuperStructure.SetKickerPowerHigh());
+		// DriveController.povLeft().onTrue(SuperStructure.SetHoodandFlywheelmin());
 		// DriveController.x().onTrue(SuperStructure.SetHopperRollers());
 		// DriveController.y().onTrue(SuperStructure.SetHopperRollersoff());
-		// DriveController.start().onTrue(SuperStructure.SetHopperPos());
+
 
 	// This is our boost control Right Trigger
 	DriveController.axisGreaterThan(3, 0.01).onChange(Commands.runOnce(() -> {

@@ -35,8 +35,8 @@ public class HopperExtenderSubsystem extends SubsystemBase {
 
 	private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
       // Mechanism Circumference is the distance traveled by each mechanism rotation converting rotations to meters.
-      .withMechanismCircumference(Meters.of(Inches.of(2.16).in(Meters) * 18)) //- Fix to be correct
-			.withClosedLoopController(0.00016541, 0, 0, RPM.of(500), RotationsPerSecondPerSecond.of(100))
+      .withMechanismCircumference(Meters.of(Inches.of(19.4882).in(Meters) * 18)) //- Fix to be correct
+			.withClosedLoopController(0.01, 0, 0.001, RPM.of(500), RotationsPerSecondPerSecond.of(100))
 			.withGearing(new MechanismGearing(3))
 			.withIdleMode(MotorMode.COAST)
 			.withTelemetry("HopperExtender", TelemetryVerbosity.HIGH)
@@ -45,7 +45,7 @@ public class HopperExtenderSubsystem extends SubsystemBase {
 			.withMotorInverted(false)
 			.withClosedLoopRampRate(Seconds.of(0.15))
 			.withOpenLoopRampRate(Seconds.of(0.25))
-			.withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
+			// .withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
 			.withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
 			.withControlMode(ControlMode.CLOSED_LOOP);
 

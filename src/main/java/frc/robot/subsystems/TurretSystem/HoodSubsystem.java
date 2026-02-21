@@ -2,6 +2,7 @@ package frc.robot.subsystems.TurretSystem;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -27,7 +28,8 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 import static edu.wpi.first.units.Units.*;
 
 public class HoodSubsystem extends SubsystemBase {
-	TalonFX hoodMotor = new TalonFX(12);
+	final CANBus canbus = new CANBus("Turret");
+	TalonFX hoodMotor = new TalonFX(12, canbus);
 	public final Angle hardLowerLimit = Degrees.of(0);
 	private final Angle hardUpperLimit = Degrees.of(40);
 	private final SmartMotorControllerConfig hoodMotorConfig = new SmartMotorControllerConfig(this)
