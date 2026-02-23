@@ -71,11 +71,7 @@ public class RobotContainer {
 	SwerveInputStream driveAngularVelocityKeyboard = SwerveInputStream.of(drivebase.getSwerveDrive(),
 			() -> -DriveController.getLeftY(),
 			() -> -DriveController.getLeftX())
-			.withControllerRotationAxis(() -> DriveController.getRawAxis(
-					// () -> -driverJoystick.getRawAxis(1),
-					// () -> -driverJoystick.getRawAxis(0))
-					// .withControllerRotationAxis(() -> driverJoystick.getRawAxis(
-					2))
+			.withControllerRotationAxis(() -> DriveController.getRawAxis(2))
 			.deadband(Constants.MiscConstants.DEADBAND)
 			.scaleTranslation(0.8)
 			.allianceRelativeControl(true);
@@ -193,8 +189,8 @@ public class RobotContainer {
 		return autoChooser.getSelected();
 	}
 
-	// public void setMotorBrake(boolean brake)
-	// {
-	// drivebase.setMotorBrake(brake);
-	// }
+	public void setMotorBrake(boolean brake)
+	{
+	drivebase.setMotorBrake(false);
+	}
 }
