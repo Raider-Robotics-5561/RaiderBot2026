@@ -11,7 +11,7 @@
     },
     "inverted": {
       "drive": false,
-      "angle": true
+      "angle": false
     },
     "angle": {
       "type": "talonfx",
