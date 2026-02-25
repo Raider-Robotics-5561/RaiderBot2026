@@ -141,8 +141,8 @@ public class RobotContainer {
 		DriveController.povUp().onTrue(SuperStructure.SetAllMid());	
 		DriveController.povDown().onTrue(SuperStructure.SetHoodandFlywheelZero());
 
-		DriveController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.1)).or(DriveController.rightBumper().onTrue(
-			SuperStructure.SetHopperExtenderPower(-0.1)
+		DriveController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3)).or(DriveController.rightBumper().onTrue(
+			SuperStructure.SetHopperExtenderPower(-0.3)
 		)).whileFalse(
 			SuperStructure.SetHopperExtenderPower(0)
 		);
