@@ -83,12 +83,8 @@ public class SuperStructure extends SubsystemBase {
 	return TurretSubsytem.setDutyCycle(power);
 	}
 
-	public Command SetTurretPWRreverse() {
-	return TurretSubsytem.setDutyCycle(-0.1);
-	}
-
-	public Command SetTurretPWRoff() {
-	return TurretSubsytem.setDutyCycle(0);
+	public Command SetHoodPWR(double power) {
+	return HoodSubsystem.setDutyCycle(power);
 	}
 
 	public Command SetHopperRollers() {

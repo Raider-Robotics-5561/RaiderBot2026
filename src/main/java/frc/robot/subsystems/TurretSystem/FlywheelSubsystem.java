@@ -96,4 +96,15 @@ public class FlywheelSubsystem extends SubsystemBase {
 	public void simulationPeriodic() {
 		flywheel.simIterate();
 	}
+
+	public void setVelocitySetpoint(AngularVelocity speed)
+  {
+    flywheel.setMechanismVelocitySetpoint(speed);
+  }
+
+  public void setDutyCycleSetpoint(double dutyCycle)
+  {
+    flywheel.setDutyCycleSetpoint(dutyCycle);
+  }
+
 }

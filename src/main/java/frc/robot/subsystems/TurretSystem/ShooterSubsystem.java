@@ -28,23 +28,23 @@ public class ShooterSubsystem {
 		// the closest tag, can be reused and filtered with tag ids to get it to point
 		// on the hub
 
-		hood.setDefaultCommand(hood.setDutyCycle(() -> {
-			var results = VisionSubsystem.Cameras.RoboCamRight.getEstimatedGlobalPose(); // NOTE - Change camera to
-																							// turret camera
-			if (results.isPresent()) {
-				// return hoodPIDCOntroller.calculate(results.get().skew, 0);
-			}
-			return 0.0;
-		}));
+	// 	hood.setDefaultCommand(hood.setDutyCycle(() -> {
+	// 		var results = VisionSubsystem.Cameras.RoboCamRight.getEstimatedGlobalPose(); // NOTE - Change camera to
+	// 																						// turret camera
+	// 		if (results.isPresent()) {
+	// 			// return hoodPIDCOntroller.calculate(results.get().skew, 0);
+	// 		}
+	// 		return 0.0;
+	// 	}));
 
-		turret.setDefaultCommand(turret.setDutyCycle(() -> {
-			var results = VisionSubsystem.Cameras.RoboCamLeft.getEstimatedGlobalPose(); // NOTE - Change camera to
-																						// turret camera
-			if (results.isPresent()) {
-				// return turretPIDCOntroller.calculate(results.get().yaw, 0);
-			}
-			return 0.0;
-		}));
+	// 	turret.setDefaultCommand(turret.setDutyCycle(() -> {
+	// 		var results = VisionSubsystem.Cameras.RoboCamLeft.getEstimatedGlobalPose(); // NOTE - Change camera to
+	// 																					// turret camera
+	// 		if (results.isPresent()) {
+	// 			// return turretPIDCOntroller.calculate(results.get().yaw, 0);
+	// 		}
+	// 		return 0.0;
+	// 	}));
 	}
 
 	public Command aimAt(Angle hoodAngle, Angle turretAngle) {
@@ -79,5 +79,5 @@ public class ShooterSubsystem {
 		// method in order to set the right shooter speed relative to that
 		flywheelVelocitySupplier = velocitySupplier;
 	}
-
+	
 }

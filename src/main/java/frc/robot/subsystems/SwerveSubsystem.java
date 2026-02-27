@@ -61,11 +61,11 @@ public class SwerveSubsystem extends SubsystemBase {
 	/**
 	 * Enable vision odometry updates while driving.
 	 */
-	private final boolean visionDriveTest = false;
+	// private final boolean visionDriveTest = false;
 	/**
-	 * PhotonVision class to keep an accurate odometry .
-	 */
-	//private VisionSubsystem vision;
+     * PhotonVision class to keep an accurate odometry .
+     */
+    public       VisionSubsystem      vision;
 
 	/**
 	 * Initialize {@link SwerveDrive} with the directory provided.
@@ -111,12 +111,12 @@ public class SwerveSubsystem extends SubsystemBase {
 		// swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used
 		// over the internal encoder and push the offsets onto it. Throws warning if not
 		// possible
-		if (visionDriveTest) {
+		// if (visionDriveTest) {
 			setupPhotonVision();
 			// Stop the odometry thread if we are using vision that way we can synchronize
 			// updates better.
 			swerveDrive.stopOdometryThread();
-		}
+		// }
 		setupPathPlanner();
 	}
 
@@ -138,7 +138,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	 * Setup the photon vision class.
 	 */
 	public void setupPhotonVision() {
-		//vision = new VisionSubsystem(swerveDrive::getPose, swerveDrive.field);
+		vision = new VisionSubsystem(swerveDrive::getPose, swerveDrive.field);
 	}
 
 	public boolean isMoving(double tolerance) {
@@ -149,12 +149,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		// When vision is enabled we must manually update odometry in SwerveDrive
-		// if (visionDriveTest)
-		// {
+
 		swerveDrive.updateOdometry();
-		//vision.updatePoseEstimation(swerveDrive);
-		// }
+        vision.updatePoseEstimation(swerveDrive);
 
 		// if (!isMoving(0.01) && !DriverStation.isAutonomous()) {
 		// lock();

@@ -130,21 +130,33 @@ public class RobotContainer {
 		// REV 11--1817
 
 		/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
-         DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+         DriveController.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
 		// DriveController.a().onTrue(SuperStructure.SetHoodandFlywheelmin());
 		// DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
      	// DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
 
 		DriveController.b().onTrue(SuperStructure.SetIntakePWR());
-		DriveController.povRight().onTrue(SuperStructure.SetIntakePWRZero());
+		DriveController.y().onTrue(SuperStructure.SetIntakePWRZero());
 
-		DriveController.povUp().onTrue(SuperStructure.SetAllMid());	
-		DriveController.povDown().onTrue(SuperStructure.SetHoodandFlywheelZero());
+		DriveController.a().onTrue(SuperStructure.SetAllMid());	
+		DriveController.x().onTrue(SuperStructure.SetHoodandFlywheelZero());
 
 		DriveController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3)).or(DriveController.rightBumper().onTrue(
 			SuperStructure.SetHopperExtenderPower(-0.3)
 		)).whileFalse(
 			SuperStructure.SetHopperExtenderPower(0)
+		);
+
+		DriveController.povLeft().onTrue(SuperStructure.SetTurretPWR(0.1)).or(DriveController.povRight().onTrue(
+			SuperStructure.SetTurretPWR(-0.1)
+		)).whileFalse(
+			SuperStructure.SetTurretPWR(0)
+		);
+
+		DriveController.povUp().onTrue(SuperStructure.SetHoodPWR(0.05)).or(DriveController.povDown().onTrue(
+			SuperStructure.SetHoodPWR(-0.05)
+		)).whileFalse(
+			SuperStructure.SetHoodPWR(0)
 		);
 
 		// DriveController.a().onTrue(SuperStructure.SetHoodandFlywheelmin());

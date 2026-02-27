@@ -11,12 +11,22 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Radians;
+
+
 
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.motorcontrollers.SmartMotorControllerConfig;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -30,6 +40,8 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 import yams.motorcontrollers.simulation.Sensor;
+import yams.motorcontrollers.SimSupplier;
+
 
 public class TurretSubsystem extends SubsystemBase {
 	TalonFX turretMotor = new TalonFX(9);
@@ -73,6 +85,8 @@ public class TurretSubsystem extends SubsystemBase {
 	public TurretSubsystem() {
 
 	}
+  	// Robot to turret transform, from center of robot to turret.
+  	private final Transform3d roboToTurret = new Transform3d(Feet.of(-1.5), Feet.of(0), Feet.of(0.5), Rotation3d.kZero);
 
 	public Command setAngle(Angle angle) {
 		return turret.setAngle(angle);
@@ -111,4 +125,33 @@ public class TurretSubsystem extends SubsystemBase {
 	public void simulationPeriodic() {
 		turret.simIterate();
 	}
+	public void setAngleSetpoint(Angle measure)
+  {
+    turret.setMechanismPositionSetpoint(measure);
+  }
+
+  public Pose2d getPose(Pose2d robotPose)
+  {
+    return robotPose.plus(new Transform2d(
+        roboToTurret.getTranslation().toTranslation2d(), roboToTurret.getRotation().toRotation2d()));
+  }
+
+  public ChassisSpeeds getVelocity(ChassisSpeeds robotVelocity, Angle robotAngle)
+  {
+    var robotAngleRads = robotAngle.in(Radians);
+    double turretVelocityX =
+        robotVelocity.vxMetersPerSecond
+        + robotVelocity.omegaRadiansPerSecond
+          * (roboToTurret.getY() * Math.cos(robotAngleRads)
+             - roboToTurret.getX() * Math.sin(robotAngleRads));
+    double turretVelocityY =
+        robotVelocity.vyMetersPerSecond
+        + robotVelocity.omegaRadiansPerSecond
+          * (roboToTurret.getX() * Math.cos(robotAngleRads)
+             - roboToTurret.getY() * Math.sin(robotAngleRads));
+
+    return new ChassisSpeeds(turretVelocityX,
+                             turretVelocityY,
+                             robotVelocity.omegaRadiansPerSecond + turretSMC.getMechanismVelocity().in(RadiansPerSecond));
+  }
 }
