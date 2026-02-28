@@ -7,19 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "blue 3.1"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 6.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "blue 3.2"
+            "pathName": "Path Middle"
           }
         }
       ]
