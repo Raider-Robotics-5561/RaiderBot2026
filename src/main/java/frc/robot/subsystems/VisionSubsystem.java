@@ -23,6 +23,8 @@ import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import java.awt.Desktop;
@@ -42,7 +44,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import swervelib.SwerveDrive;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import frc.robot.subsystems.SwerveSubsystem;
-
+import frc.robot.subsystems.VisionSubsystem.Cameras;
 
 /**
  * Example PhotonVision class to aid in the pursuit of accurate odometry. Taken from
@@ -51,24 +53,27 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class VisionSubsystem extends SubsystemBase
 {
 
-
-
+    
     /// Camera Enum to select each camera
-    public enum Cameras {
-        RoboCamRight("RoboCamRight",
-                new Rotation3d(0, Units.degreesToRadians(-35), Units.degreesToRadians(45)),
-                new Translation3d(Units.inchesToMeters(11.811),
-                                 -Units.inchesToMeters(9.5519),
-                                  Units.inchesToMeters(9.22)),
+   public enum Cameras {
+
+        //Back Camera
+        Camera1("Camera1",
+                new Rotation3d(0, Units.degreesToRadians(-13.8), Units.degreesToRadians(-25)),
+                new Translation3d(Units.inchesToMeters(-11.71), 
+                                 Units.inchesToMeters(-9.2592),
+                                  Units.inchesToMeters(10.855)),
                 VecBuilder.fill(1.2, 1.2, Units.degreesToRadians(25)), VecBuilder.fill(0.35, 0.35, Units.degreesToRadians(10))),
 
-        RoboCamLeft("RoboCamLeft",
-                new Rotation3d(0, Units.degreesToRadians(-35), Units.degreesToRadians(-45)),
-                new Translation3d(Units.inchesToMeters(11.811),
-                                  Units.inchesToMeters(9.5519),
-                                  Units.inchesToMeters(9.22)),
+        //Side Camera
+        Camera2("Camera2",
+                new Rotation3d(90, Units.degreesToRadians(0), 0),
+                new Translation3d(Units.inchesToMeters(-10.488189),
+                                  Units.inchesToMeters(12.9629921),
+                                  Units.inchesToMeters(-19.7673228)),
 
                 VecBuilder.fill(1.2, 1.2, Units.degreesToRadians(25)), VecBuilder.fill(0.35, 0.35, Units.degreesToRadians(10)));
+
 
         /// Latency alert to use when high latency is detected.
         public final  Alert                        latencyAlert;
@@ -305,7 +310,7 @@ public class VisionSubsystem extends SubsystemBase
      * April Tag Field Layout of the year.
      */
     public static final AprilTagFieldLayout fieldLayout                     = AprilTagFieldLayout.loadField(
-            AprilTagFields.k2025ReefscapeWelded);
+            AprilTagFields.k2026RebuiltWelded);
     /**
      * Ambiguity defined as a value between (0,1). Used in {@link VisionSubsystem#filterPose}.
      */
@@ -351,9 +356,11 @@ public class VisionSubsystem extends SubsystemBase
 
             openSimCameraViews();
         }
-        fieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide); //NOTE - This should be fusing our robot pos to blue
+        VisionSubsystem.fieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+
     }
 
+ 
     /**
      * Calculates a target pose relative to an AprilTag on the field.
      *
@@ -382,6 +389,7 @@ public class VisionSubsystem extends SubsystemBase
      */
     public void updatePoseEstimation(SwerveDrive swerveDrive)
     {
+        
         if (SwerveDriveTelemetry.isSimulation && swerveDrive.getSimulationDriveTrainPose().isPresent())
         {
             /*
@@ -411,7 +419,7 @@ public class VisionSubsystem extends SubsystemBase
                         camera.curStdDevs);
                 // System.out.println("Vision fused at t=" + pose.timestampSeconds + " pose=" + pose.estimatedPose.toPose2d());
 
-            } else {
+            }// else {
 
                 //SECTION - Start TEST 3
                 // System.out.println(camera.name() + " NO vision estimate");
@@ -419,7 +427,7 @@ public class VisionSubsystem extends SubsystemBase
             }
         }
 
-    }
+    //}
 
     /**
      * Generates the estimated robot pose. Returns empty if:
