@@ -83,6 +83,10 @@ public class SuperStructure extends SubsystemBase {
 	return TurretSubsytem.setDutyCycle(power);
 	}
 
+	public Command SetTurretangle(double angle) {
+	return TurretSubsytem.setAngle(Rotations.of(angle));
+	}
+
 	public Command SetHoodPWR(double power) {
 	return HoodSubsystem.setDutyCycle(power);
 	}

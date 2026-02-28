@@ -22,6 +22,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.motorcontrollers.SmartMotorControllerConfig;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -30,6 +31,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.PivotConfig;
 import yams.mechanisms.config.SensorConfig;
@@ -47,22 +49,20 @@ public class TurretSubsystem extends SubsystemBase {
 	TalonFX turretMotor = new TalonFX(9);
 	AbsoluteEncoderSubsystem abs_encoder = new AbsoluteEncoderSubsystem();
 
-	// private DigitalInput dio = new DigitalInput(9); // Standard DIO
-	// private final Sensor TurretRotation = new SensorConfig("TurretRotation") //
-	// Name of the sensor
-
-	// .withField("TurretRotation", dio::get, false) // Add a Field to the sensor
-	// named "Beam" whose value is dio.get() and defaults to false
-	// .getSensor(); // Get the sensor.
 	private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
-			.withClosedLoopController(0.01, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
+			.withClosedLoopController(100, 5, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
 			.withGearing(new MechanismGearing(35.56))
 			.withIdleMode(MotorMode.BRAKE)
 			.withMotorInverted(false)
-
+			.withFeedforward(new SimpleMotorFeedforward(1, 0.01))
+			// .withExternalEncoder(abs_encoder)
+			// .withExternalEncoderInverted(false)
+    	    // .withExternalEncoderGearing(1)
+      		// .withExternalEncoderZeroOffset(Degrees.of(33.25))
+     		// .withUseExternalFeedbackEncoder(true)
 			.withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
 			// Power Optimization
-			.withStatorCurrentLimit(Amps.of(30))
+			.withStatorCurrentLimit(Amps.of(40))
 			.withClosedLoopRampRate(Seconds.of(0.25))
 			.withOpenLoopRampRate(Seconds.of(0.25))
 			.withControlMode(ControlMode.CLOSED_LOOP);
@@ -70,15 +70,15 @@ public class TurretSubsystem extends SubsystemBase {
 	private final SmartMotorController turretSMC = new TalonFXWrapper(turretMotor, DCMotor.getKrakenX44(1),
 			motorConfig);
 	private final PivotConfig turretConfig = new PivotConfig(turretSMC)
-			.withStartingPosition(Degrees.of(abs_encoder.getAngleDegrees())) // Starting position of the Pivot
+			//.withStartingPosition(Degrees.of(abs_encoder.getAngleDegrees())) // Starting position of the Pivot
 			// .withWrapping(Degrees.of(0), Degrees.of(360)) // Wrapping enabled bc the
 			// pivot can spin
 			// infinitely
-
-			.withHardLimit(Degrees.of(0), Degrees.of(270)) // Hard limit bc wiring prevents infinite
+			.withSoftLimits(Rotations.of(-0.4), Rotations.of(0.4))
+			.withHardLimit(Rotations.of(-0.45), Rotations.of(0.45)) // Hard limit bc wiring prevents infinite
 															// spinning
-			.withTelemetry("TurretMech", TelemetryVerbosity.HIGH) // Telemetry
-			.withMOI(Meters.of(0.25), Pounds.of(4)); // MOI Calculation
+			.withTelemetry("TurretMech", TelemetryVerbosity.HIGH); // Telemetry
+		//	.withMOI(Meters.of(0.25), Pounds.of(4)); // MOI Calculation
 
 	private final Pivot turret = new Pivot(turretConfig);
 
@@ -119,6 +119,8 @@ public class TurretSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 		turret.updateTelemetry();
+		// SmartDashboard.putNumber("relative Angle Raw", getAngle());
+
 	}
 
 	@Override

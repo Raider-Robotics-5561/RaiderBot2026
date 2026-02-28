@@ -137,6 +137,9 @@ public class RobotContainer {
 
 		DriveController.b().onTrue(SuperStructure.SetIntakePWR());
 		DriveController.y().onTrue(SuperStructure.SetIntakePWRZero());
+		DriveController.povLeft().onTrue(SuperStructure.SetTurretangle(0.4));
+		DriveController.povRight().onTrue(SuperStructure.SetTurretangle(-0.02));
+
 
 		DriveController.a().onTrue(SuperStructure.SetAllMid());	
 		DriveController.x().onTrue(SuperStructure.SetHoodandFlywheelZero());
@@ -147,14 +150,14 @@ public class RobotContainer {
 			SuperStructure.SetHopperExtenderPower(0)
 		);
 
-		DriveController.povLeft().onTrue(SuperStructure.SetTurretPWR(0.1)).or(DriveController.povRight().onTrue(
-			SuperStructure.SetTurretPWR(-0.1)
-		)).whileFalse(
-			SuperStructure.SetTurretPWR(0)
-		);
+		// DriveController.povLeft().onTrue(SuperStructure.SetTurretPWR(0.2)).or(DriveController.povRight().onTrue(
+		// 	SuperStructure.SetTurretPWR(-0.2)
+		// )).whileFalse(
+		// 	SuperStructure.SetTurretPWR(0)
+		// );
 
-		DriveController.povUp().onTrue(SuperStructure.SetHoodPWR(0.05)).or(DriveController.povDown().onTrue(
-			SuperStructure.SetHoodPWR(-0.05)
+		DriveController.povUp().onTrue(SuperStructure.SetHoodPWR(0.1)).or(DriveController.povDown().onTrue(
+			SuperStructure.SetHoodPWR(-0.1)
 		)).whileFalse(
 			SuperStructure.SetHoodPWR(0)
 		);
