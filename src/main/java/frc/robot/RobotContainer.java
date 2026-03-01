@@ -35,6 +35,7 @@ public class RobotContainer {
 	public final ClimberSubsystem m_climber = new ClimberSubsystem();
   
 	final CommandXboxController DriveController = new CommandXboxController(0);
+	final CommandXboxController OpController = new CommandXboxController(1);
 	// The robot's subsystems and commands are defined here...
 	private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
 			"swerve"));
@@ -130,7 +131,7 @@ public class RobotContainer {
 		// REV 11--1817
 
 		/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
-         DriveController.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+         DriveController.start().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
 		// DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
      	// DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
 
@@ -143,11 +144,12 @@ public class RobotContainer {
 		DriveController.a().onTrue(SuperStructure.SetAllMid());	
 		DriveController.x().onTrue(SuperStructure.SetHoodandFlywheelZero());
 
-		DriveController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3)).or(DriveController.rightBumper().onTrue(
-			SuperStructure.SetHopperExtenderPower(-0.3)
-		)).whileFalse(
-			SuperStructure.SetHopperExtenderPower(0)
-		);
+		DriveController.leftBumper().onTrue(SuperStructure.SetHopperPos());
+		// DriveController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3)).or(DriveController.rightBumper().onTrue(
+		// 	SuperStructure.SetHopperExtenderPower(-0.3)
+		// )).whileFalse(
+		// 	SuperStructure.SetHopperExtenderPower(0)
+		// );
 
 		// DriveController.povLeft().onTrue(SuperStructure.SetTurretPWR(0.2)).or(DriveController.povRight().onTrue(
 		// 	SuperStructure.SetTurretPWR(-0.2)
