@@ -1,6 +1,12 @@
 package frc.robot.subsystems.TurretSystem;
 
+import com.ctre.phoenix6.configs.CANdiConfiguration;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
@@ -47,7 +53,19 @@ import yams.motorcontrollers.SimSupplier;
 
 public class TurretSubsystem extends SubsystemBase {
 	TalonFX turretMotor = new TalonFX(9);
+	CANdi candi = new CANdi(34);
+	final DigitalInput m_forwardLimit = new DigitalInput(0);
 	AbsoluteEncoderSubsystem abs_encoder = new AbsoluteEncoderSubsystem();
+	TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
+	CANdiConfiguration configs = new CANdiConfiguration();
+
+	// // Use CANdi's Quadrature encoder as the motor's feedback sensor
+	// talonConfigs.Feedback.withRemoteCANdiQuadrature(candi);
+
+	// // Use CANdi's S1 input as a remote forward limit switch
+	// talonConfigs.HardwareLimitSwitch.withForwardLimitRemoteCANdi(candi, S1);
+
+	// talonMotor.getConfigurator().apply(talonConfigs);
 
 	private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
 			.withClosedLoopController(100, 5, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
