@@ -1,6 +1,12 @@
 package frc.robot.subsystems.TurretSystem;
 
+import com.ctre.phoenix6.configs.CANdiConfiguration;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
@@ -47,7 +53,19 @@ import yams.motorcontrollers.SimSupplier;
 
 public class TurretSubsystem extends SubsystemBase {
 	TalonFX turretMotor = new TalonFX(9);
+	CANdi candi = new CANdi(34);
+	final DigitalInput m_forwardLimit = new DigitalInput(0);
 	AbsoluteEncoderSubsystem abs_encoder = new AbsoluteEncoderSubsystem();
+	TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
+	CANdiConfiguration configs = new CANdiConfiguration();
+
+	// // Use CANdi's Quadrature encoder as the motor's feedback sensor
+	// talonConfigs.Feedback.withRemoteCANdiQuadrature(candi);
+
+	// // Use CANdi's S1 input as a remote forward limit switch
+	// talonConfigs.HardwareLimitSwitch.withForwardLimitRemoteCANdi(candi, S1);
+
+	// talonMotor.getConfigurator().apply(talonConfigs);
 
 	private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
 			.withClosedLoopController(100, 5, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
@@ -70,15 +88,15 @@ public class TurretSubsystem extends SubsystemBase {
 	private final SmartMotorController turretSMC = new TalonFXWrapper(turretMotor, DCMotor.getKrakenX44(1),
 			motorConfig);
 	private final PivotConfig turretConfig = new PivotConfig(turretSMC)
-			//.withStartingPosition(Degrees.of(abs_encoder.getAngleDegrees())) // Starting position of the Pivot
+			.withStartingPosition(Degrees.of(abs_encoder.getAngleDegrees())) // Starting position of the Pivot
 			// .withWrapping(Degrees.of(0), Degrees.of(360)) // Wrapping enabled bc the
 			// pivot can spin
 			// infinitely
 			.withSoftLimits(Rotations.of(-0.4), Rotations.of(0.4))
 			.withHardLimit(Rotations.of(-0.45), Rotations.of(0.45)) // Hard limit bc wiring prevents infinite
 															// spinning
-			.withTelemetry("TurretMech", TelemetryVerbosity.HIGH); // Telemetry
-		//	.withMOI(Meters.of(0.25), Pounds.of(4)); // MOI Calculation
+			.withTelemetry("TurretMech", TelemetryVerbosity.HIGH) // Telemetry
+			.withMOI(Meters.of(0.25), Pounds.of(4)); // MOI Calculation
 
 	private final Pivot turret = new Pivot(turretConfig);
 
