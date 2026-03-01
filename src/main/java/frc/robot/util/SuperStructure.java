@@ -55,7 +55,7 @@ public class SuperStructure extends SubsystemBase {
 	public Command SetHoodandFlywheelZero() {
 	return
 	FlywheelSubsystem.setVelocity(RPM.of(0))
-	.alongWith(HoodSubsystem.homing(Amps.of(25))
+	.alongWith(HoodSubsystem.homing(Amps.of(20))
 	.alongWith(HopperRollerSubsystem.setDutyCycle(0))
 	.alongWith(kickerSubsystem.setDutyCycle(0)));
 	}
@@ -70,7 +70,6 @@ public class SuperStructure extends SubsystemBase {
 		.alongWith(new WaitCommand(1)
 		.andThen(HopperRollerSubsystem.setDutyCycle(0.6)).repeatedly()));
 	}
-
 
 	public Command SetTurretPWR(double power) {
 	return TurretSubsytem.setDutyCycle(power);
