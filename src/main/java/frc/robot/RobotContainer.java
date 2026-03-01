@@ -131,12 +131,11 @@ public class RobotContainer {
 
 		/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
          DriveController.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-		// DriveController.a().onTrue(SuperStructure.SetHoodandFlywheelmin());
 		// DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
      	// DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
 
-		DriveController.b().onTrue(SuperStructure.SetIntakePWR());
-		DriveController.y().onTrue(SuperStructure.SetIntakePWRZero());
+		DriveController.b().onTrue(SuperStructure.SetIntakePWR(0.8));
+		DriveController.y().onTrue(SuperStructure.SetIntakePWR(0));
 		DriveController.povLeft().onTrue(SuperStructure.SetTurretangle(0.4));
 		DriveController.povRight().onTrue(SuperStructure.SetTurretangle(-0.4));
 
@@ -161,14 +160,6 @@ public class RobotContainer {
 		)).whileFalse(
 			SuperStructure.SetHoodPWR(0)
 		);
-
-		// DriveController.a().onTrue(SuperStructure.SetHoodandFlywheelmin());
-		// DriveController.start().onTrue(SuperStructure.SetHopperPosZero());
-		// DriveController.povLeft().onTrue(SuperStructure.SetHopperPos());
-		// DriveController.povRight().onTrue(SuperStructure.SetKickerPowerHigh());
-		// DriveController.povLeft().onTrue(SuperStructure.SetHoodandFlywheelmin());
-		// DriveController.x().onTrue(SuperStructure.SetHopperRollers());
-		// DriveController.y().onTrue(SuperStructure.SetHopperRollersoff());
 
 
 	// This is our boost control Right Trigger
