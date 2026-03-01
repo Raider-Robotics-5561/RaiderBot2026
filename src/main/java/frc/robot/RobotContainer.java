@@ -138,7 +138,7 @@ public class RobotContainer {
 		DriveController.b().onTrue(SuperStructure.SetIntakePWR());
 		DriveController.y().onTrue(SuperStructure.SetIntakePWRZero());
 		DriveController.povLeft().onTrue(SuperStructure.SetTurretangle(0.4));
-		DriveController.povRight().onTrue(SuperStructure.SetTurretangle(-0.02));
+		DriveController.povRight().onTrue(SuperStructure.SetTurretangle(-0.4));
 
 
 		DriveController.a().onTrue(SuperStructure.SetAllMid());	
