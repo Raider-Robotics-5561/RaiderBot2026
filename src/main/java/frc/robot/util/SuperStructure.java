@@ -86,7 +86,7 @@ public class SuperStructure extends SubsystemBase {
 
 	//start hopper NEED TO FIX
 	public Command SetHopperPos() {
-		return HopperExtenderSubsystem.setHeight(Meters.of(3));
+		return HopperExtenderSubsystem.setHeight(Meters.of(0.3));
 	}
 
 	public Command SetHopperPosZero() {
