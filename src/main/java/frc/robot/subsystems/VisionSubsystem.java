@@ -60,7 +60,7 @@ public class VisionSubsystem extends SubsystemBase
         //Back Camera
         Camera1("Camera1",
                 new Rotation3d(0, Units.degreesToRadians(-13.8), Units.degreesToRadians(25)), //-25 yaw
-                new Translation3d(Units.inchesToMeters(11.71), 
+                new Translation3d(Units.inchesToMeters(-11.71), 
                                  Units.inchesToMeters(-9.2592),
                                   Units.inchesToMeters(10.855)),
                 VecBuilder.fill(1.2, 1.2, Units.degreesToRadians(25)), VecBuilder.fill(0.35, 0.35, Units.degreesToRadians(10))),
