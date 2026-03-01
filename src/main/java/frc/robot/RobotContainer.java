@@ -46,7 +46,7 @@ public class RobotContainer {
 			() -> DriveController.getLeftY() * -1,
 			() -> DriveController.getLeftX() * -1)
 			// .withControllerRotationAxis(() -> DriveController.getRawAxis(2))
-			.withControllerRotationAxis(DriveController::getRightX)
+			.withControllerRotationAxis(() -> DriveController.getRightX() * -1)
 			.deadband(Constants.MiscConstants.DEADBAND)
 			.scaleTranslation(0.20)
 			.scaleRotation(0.35)
@@ -150,6 +150,7 @@ public class RobotContainer {
 		// )).whileFalse(
 		// 	SuperStructure.SetHopperExtenderPower(0)
 		// );
+
 
 		// DriveController.povLeft().onTrue(SuperStructure.SetTurretPWR(0.2)).or(DriveController.povRight().onTrue(
 		// 	SuperStructure.SetTurretPWR(-0.2)
