@@ -135,7 +135,7 @@ public class RobotContainer {
 		// DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
      	// DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
 
-		DriveController.b().onTrue(SuperStructure.SetIntakePWR(0.8));
+		DriveController.b().onTrue(SuperStructure.SetIntakePWR(-0.8)); // This should should be neative to run the intake in
 		DriveController.y().onTrue(SuperStructure.SetIntakePWR(0));
 		DriveController.povLeft().onTrue(SuperStructure.SetTurretangle(0.4));
 		DriveController.povRight().onTrue(SuperStructure.SetTurretangle(-0.4));
