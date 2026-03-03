@@ -137,26 +137,26 @@ public class RobotContainer {
 
 		DriveController.b().onTrue(SuperStructure.SetIntakePWR(-0.8)); // This should should be neative to run the intake in
 		DriveController.y().onTrue(SuperStructure.SetIntakePWR(0));
-		DriveController.povLeft().onTrue(SuperStructure.SetTurretangle(0.4));
-		DriveController.povRight().onTrue(SuperStructure.SetTurretangle(-0.4));
+		// DriveController.povLeft().onTrue(SuperStructure.SetTurretangle(0.4));
+		// DriveController.povRight().onTrue(SuperStructure.SetTurretangle(-0.4));
 
 
 		DriveController.a().onTrue(SuperStructure.SetAllMid());	
 		DriveController.x().onTrue(SuperStructure.SetHoodandFlywheelZero());
 
-		DriveController.leftBumper().onTrue(SuperStructure.SetHopperPos());
-		// DriveController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3)).or(DriveController.rightBumper().onTrue(
-		// 	SuperStructure.SetHopperExtenderPower(-0.3)
-		// )).whileFalse(
-		// 	SuperStructure.SetHopperExtenderPower(0)
-		// );
+		// DriveController.leftBumper().onTrue(SuperStructure.SetHopperPos());
+		DriveController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3)).or(DriveController.rightBumper().onTrue(
+			SuperStructure.SetHopperExtenderPower(-0.3)
+		)).whileFalse(
+			SuperStructure.SetHopperExtenderPower(0)
+		);
 
 
-		// DriveController.povLeft().onTrue(SuperStructure.SetTurretPWR(0.2)).or(DriveController.povRight().onTrue(
-		// 	SuperStructure.SetTurretPWR(-0.2)
-		// )).whileFalse(
-		// 	SuperStructure.SetTurretPWR(0)
-		// );
+		DriveController.povLeft().onTrue(SuperStructure.SetTurretPWR(0.2)).or(DriveController.povRight().onTrue(
+			SuperStructure.SetTurretPWR(-0.2)
+		)).whileFalse(
+			SuperStructure.SetTurretPWR(0)
+		);
 
 		DriveController.povUp().onTrue(SuperStructure.SetHoodPWR(0.1)).or(DriveController.povDown().onTrue(
 			SuperStructure.SetHoodPWR(-0.1)

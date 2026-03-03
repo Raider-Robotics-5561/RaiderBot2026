@@ -71,33 +71,34 @@ public class ShootOnTheMoveCommand extends Command
   {
     //NOTE - NEED OUR OWN VALUES IN THESE MAPS, THESE ARE JUST EXAMPLES
     // These should be found on your robot
-    launchHoodAngleMap.put(1.34, Rotation2d.fromDegrees(19.0));
-    launchHoodAngleMap.put(1.78, Rotation2d.fromDegrees(19.0));
-    launchHoodAngleMap.put(2.17, Rotation2d.fromDegrees(24.0));
-    launchHoodAngleMap.put(2.81, Rotation2d.fromDegrees(27.0));
-    launchHoodAngleMap.put(3.82, Rotation2d.fromDegrees(29.0));
-    launchHoodAngleMap.put(4.09, Rotation2d.fromDegrees(30.0));
-    launchHoodAngleMap.put(4.40, Rotation2d.fromDegrees(31.0));
-    launchHoodAngleMap.put(4.77, Rotation2d.fromDegrees(32.0));
-    launchHoodAngleMap.put(5.57, Rotation2d.fromDegrees(32.0));
-    launchHoodAngleMap.put(5.60, Rotation2d.fromDegrees(35.0));
+    //Postition on the field / distance from hub plus our value from 
+    launchHoodAngleMap.put(1.0, Rotation2d.fromRotations(0));
+    launchHoodAngleMap.put(1.5, Rotation2d.fromRotations(0));
+    launchHoodAngleMap.put(2.0, Rotation2d.fromRotations(0));
+    launchHoodAngleMap.put(2.5, Rotation2d.fromRotations(0));
+    launchHoodAngleMap.put(3.0, Rotation2d.fromRotations(0));
+    launchHoodAngleMap.put(3.5, Rotation2d.fromRotations(0));
+    launchHoodAngleMap.put(4.0, Rotation2d.fromRotations(0));
+    launchHoodAngleMap.put(4.5, Rotation2d.fromRotations(0));
+    launchHoodAngleMap.put(5.0, Rotation2d.fromRotations(0));
+    launchHoodAngleMap.put(5.5, Rotation2d.fromRotations(0));
 
-    launchFlywheelSpeedMap.put(1.34, 2100.0);
-    launchFlywheelSpeedMap.put(1.78, 2200.0);
-    launchFlywheelSpeedMap.put(2.17, 2200.0);
-    launchFlywheelSpeedMap.put(2.81, 2300.0);
-    launchFlywheelSpeedMap.put(3.82, 2500.0);
-    launchFlywheelSpeedMap.put(4.09, 2550.0);
-    launchFlywheelSpeedMap.put(4.40, 2600.0);
-    launchFlywheelSpeedMap.put(4.77, 2650.0);
-    launchFlywheelSpeedMap.put(5.57, 2750.0);
-    launchFlywheelSpeedMap.put(5.60, 2900.0);
+    launchFlywheelSpeedMap.put(1.0, 0.0);
+    launchFlywheelSpeedMap.put(1.5, 0.0);
+    launchFlywheelSpeedMap.put(2.0, 3500.0);
+    launchFlywheelSpeedMap.put(2.5, 0.0);
+    launchFlywheelSpeedMap.put(3.0, 0.0);
+    launchFlywheelSpeedMap.put(3.5, 0.0);
+    launchFlywheelSpeedMap.put(4.0, 0.0);
+    launchFlywheelSpeedMap.put(4.5, 0.0);
+    launchFlywheelSpeedMap.put(5.0, 0.0);
+    launchFlywheelSpeedMap.put(5.5, 0.0);
 
-    timeOfFlightMap.put(5.68, 1.16);
-    timeOfFlightMap.put(4.55, 1.12);
-    timeOfFlightMap.put(3.15, 1.11);
-    timeOfFlightMap.put(1.88, 1.09);
-    timeOfFlightMap.put(1.38, 0.90);
+    timeOfFlightMap.put(1.0, 0.0);
+    timeOfFlightMap.put(1.5, 0.0);
+    timeOfFlightMap.put(2.0, 1.11); //Note - TOF was not recorded past 1.5m
+    timeOfFlightMap.put(2.5, 1.09);
+    timeOfFlightMap.put(3.0, 0.90);
   }
 
   public ShootOnTheMoveCommand(TurretSubsystem turret, ShooterSubsystem shooter, HoodSubsystem hood,

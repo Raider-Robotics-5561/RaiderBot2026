@@ -63,7 +63,7 @@ public class SuperStructure extends SubsystemBase {
 	
 	public Command SetAllMid() {
 	return
-		FlywheelSubsystem.setVelocity(RPM.of(-4500))
+		FlywheelSubsystem.setVelocity(RPM.of(-3500))
 		.alongWith(HoodSubsystem.setAngle(Rotations.of(0.0))
 		.alongWith(kickerSubsystem.setDutyCycle(-0.8))
 		// .alongWith(HoodSubsystem.setAngle(Rotations.of(1)))
