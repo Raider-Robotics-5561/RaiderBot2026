@@ -65,9 +65,9 @@ public class SuperStructure extends SubsystemBase {
 	return
 		FlywheelSubsystem.setVelocity(RPM.of(-3500))
 		.alongWith(HoodSubsystem.setAngle(Rotations.of(0.0))
-		.alongWith(kickerSubsystem.setDutyCycle(-0.8))
 		// .alongWith(HoodSubsystem.setAngle(Rotations.of(1)))
 		.alongWith(new WaitCommand(1)
+		.alongWith(kickerSubsystem.setDutyCycle(-0.8)).repeatedly()
 		.andThen(HopperRollerSubsystem.setDutyCycle(0.6)).repeatedly()));
 	}
 

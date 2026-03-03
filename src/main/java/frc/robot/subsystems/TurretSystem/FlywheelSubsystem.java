@@ -14,6 +14,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -82,6 +83,11 @@ public class FlywheelSubsystem extends SubsystemBase {
 	public Command setDutyCycle(Supplier<Double> dutyCycle) {
 		return flywheel.set(dutyCycle);
 	}
+
+	public void setRPM(LinearVelocity newHorizontalSpeed)
+  	{
+    flywheel.setMeasurementVelocitySetpoint(newHorizontalSpeed);
+ 	 }
 
 	public Command sysId() {
 		return flywheel.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));

@@ -54,6 +54,8 @@ import yams.motorcontrollers.SimSupplier;
 public class TurretSubsystem extends SubsystemBase {
 	TalonFX turretMotor = new TalonFX(9);
 	CANdi candi = new CANdi(34);
+	public static Angle softLimitMin = Rotations.of(-0.4); //for testing
+    public static Angle softLimitMax = Rotations.of(0.4);
 	final DigitalInput m_forwardLimit = new DigitalInput(0);
 	AbsoluteEncoderSubsystem abs_encoder = new AbsoluteEncoderSubsystem();
 	TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
