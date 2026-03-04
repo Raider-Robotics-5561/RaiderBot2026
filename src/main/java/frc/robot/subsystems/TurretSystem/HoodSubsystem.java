@@ -36,7 +36,7 @@ public class HoodSubsystem extends SubsystemBase {
 	public static final Angle softLimitMax = Degrees.of(35);
 	private final SmartMotorControllerConfig hoodMotorConfig = new SmartMotorControllerConfig(this)
 			.withClosedLoopController(0.00016541, 0, 0, RPM.of(2500), RotationsPerSecondPerSecond.of(500))
-			.withGearing(new MechanismGearing(22.57))
+			.withGearing(new MechanismGearing(533.25))
 			.withIdleMode(MotorMode.BRAKE)
 			.withTelemetry("HoodMotor", TelemetryVerbosity.HIGH)
 			.withStatorCurrentLimit(Amps.of(40))
