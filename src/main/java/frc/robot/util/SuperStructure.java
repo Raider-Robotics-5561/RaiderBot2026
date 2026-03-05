@@ -1,7 +1,9 @@
 package frc.robot.util;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
@@ -11,7 +13,16 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.*;
 
+
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Voltage;
+import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.HopperSysytem.HopperExtenderSubsystem;
 import frc.robot.subsystems.HopperSysytem.HopperRollerSubsystem;
 import frc.robot.subsystems.HopperSysytem.IntakeSubsystem;
@@ -19,10 +30,11 @@ import frc.robot.subsystems.HopperSysytem.KickerSubsystem;
 import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
 import frc.robot.subsystems.TurretSystem.HoodSubsystem;
 import frc.robot.subsystems.TurretSystem.TurretSubsystem;
+import frc.robot.util.ShooterTargetingSystem.Shot;
 
 public class SuperStructure extends SubsystemBase {
 	private final FlywheelSubsystem 	  FlywheelSubsystem 	  = new FlywheelSubsystem();
-	private final HoodSubsystem 		  HoodSubsystem 		  = new HoodSubsystem();
+	private final HoodSubsystem 		  _HoodSubsystem 		  = new HoodSubsystem();
 	private final TurretSubsystem 		  TurretSubsytem 		  = new TurretSubsystem();
 	private final IntakeSubsystem 		  IntakeSubsystem         = new IntakeSubsystem();
 	private final HopperExtenderSubsystem HopperExtenderSubsystem = new HopperExtenderSubsystem();
@@ -55,19 +67,18 @@ public class SuperStructure extends SubsystemBase {
 	public Command SetHoodandFlywheelZero() {
 	return
 	FlywheelSubsystem.setVelocity(RPM.of(0))
-	.alongWith(HoodSubsystem.homing(Amps.of(20))
+	.alongWith(_HoodSubsystem.homing(Amps.of(20))
 	.alongWith(HopperRollerSubsystem.setDutyCycle(0))
 	.alongWith(kickerSubsystem.setDutyCycle(0)));
 	}
 
-	
 	public Command SetAllMid() {
 	return
 		FlywheelSubsystem.setVelocity(RPM.of(0))//-3500))
-		.alongWith(HoodSubsystem.setAngle(Rotations.of(0.0))
+		.alongWith(_HoodSubsystem.setAngle(Rotations.of(0.0))
 		// .alongWith(HoodSubsystem.setAngle(Rotations.of(1)))
+		.andThen(kickerSubsystem.setDutyCycle(-0.8))
 		.alongWith(new WaitCommand(1)
-		.andThen(kickerSubsystem.setDutyCycle(-0.8)).repeatedly()
 		.andThen(HopperRollerSubsystem.setDutyCycle(0.6)).repeatedly()));
 	}
 
@@ -80,13 +91,37 @@ public class SuperStructure extends SubsystemBase {
 	}
 
 	public Command SetHoodPWR(double power) {
-	return HoodSubsystem.setDutyCycle(power);
+	return _HoodSubsystem.setDutyCycle(power);
 	}
 
+	public Command SetHoodAngle() {
+		return _HoodSubsystem.setAngle(Rotations.of(0.1));//Rotation.of(5));
+	}
+	
 
+	public Command homing(Current threshold) {
+		Debouncer currentDebouncer = new Debouncer(0.1); // Current threshold is only detected if exceeded for 0.1
+															// seconds.
+		Voltage StopVolts = Volts.of(0); // Set Volts to zero when we are done with the command 
+											// is inverted.
+		Voltage runVolts = Volts.of(-8); // Volts required to run the mechanism down. Could be negative if the mechanism
+											// is inverted.
+		Angle limitHit = _HoodSubsystem.hardLowerLimit; // Limit which gets hit. Could be the lower limit if the volts makes the hood
+											// go down.
+
+		return Commands.startRun(_HoodSubsystem.hoodSMC::stopClosedLoopController, // Stop the closed loop controller
+				() -> _HoodSubsystem.hoodSMC.setVoltage(runVolts)) // Set the voltage of the motor
+				.until(() -> currentDebouncer.calculate(_HoodSubsystem.hoodSMC.getStatorCurrent().gte(threshold)))
+
+				.finallyDo(() -> {
+					_HoodSubsystem.hoodSMC.setVoltage(StopVolts);
+					_HoodSubsystem.hoodSMC.setEncoderPosition(limitHit);
+					_HoodSubsystem.hoodSMC.startClosedLoopController();
+				});
+	}
 	//start hopper NEED TO FIX
 	public Command SetHopperPos() {
-		return HopperExtenderSubsystem.setHeight(Meters.of(0.3));
+		return HopperExtenderSubsystem.setHeight(Meters.of(0.5));
 	}
 
 	public Command SetHopperPosZero() {

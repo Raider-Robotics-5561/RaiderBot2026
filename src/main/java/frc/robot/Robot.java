@@ -10,8 +10,12 @@ import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.TurretSystem.HoodSubsystem;
+import frc.robot.util.ShooterTargetingSystem;
+import frc.robot.util.ShooterTargetingSystem.Shot;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -38,6 +42,8 @@ public class Robot extends TimedRobot {
 	}
 
 	public void robotInit() {
+				SmartDashboard.putNumber("Hood Angle feed", 0);
+
 		// Rev Logging
 		DataLogManager.start();
 		URCL.start();
@@ -66,6 +72,14 @@ public class Robot extends TimedRobot {
 		// and running subsystem periodic() methods. This must be called from the
 		// robot's periodic
 		// block in order for anything in the Command-based framework to work.
+
+		Shot s = ShooterTargetingSystem.getShotData(m_robotContainer.drivebase.getPose(), m_robotContainer.drivebase.getRobotVelocity(), 3);
+		if(s != null) {
+			SmartDashboard.putNumber("Shot exit vel:", s.exitVelocity());
+			SmartDashboard.putNumber("Shot Hoodangle: ", s.hoodAngle());
+			SmartDashboard.putNumber("Shot Target: ", s.target());
+		}
+
 		CommandScheduler.getInstance().run();
 	}
 

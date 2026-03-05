@@ -155,9 +155,9 @@ public class ShooterTargetingSystem {
     double y2 = hubHeight + clearance;
     double x3 = 0;
     double y3 = hubInsideHeight;
-    System.out.println(
-        "x1 = " + x1 + "\n" + "y1 = " + y1 + "\n" + "x2 = " + x2 + "\n" + "y2 = " + y2 + "\n"
-            + "x3 = " + x3 + "\n" + "y3 = " + y3);
+    // // System.out.println(
+    //     "x1 = " + x1 + "\n" + "y1 = " + y1 + "\n" + "x2 = " + x2 + "\n" + "y2 = " + y2 + "\n"
+    //         + "x3 = " + x3 + "\n" + "y3 = " + y3);
     double a =
         (y1 * (x2 - x3) + y2 * (-x1 + x3) + y3 * (x1 - x2)) / ((x1 - x2) * (x1 - x3) * (x2 - x3));
   
@@ -174,18 +174,18 @@ public class ShooterTargetingSystem {
                 (-9.81) / (2 * a * Math.pow(Math.cos(turretPitchAngle.baseUnitMagnitude()), 2))),
             MetersPerSecond);
 
-    System.out.println(
-        "a = "
-            + a
-            + "\n"
-            + "b = "
-            + b
-            + "\n"
-            + "turretPitchAngle = "
-            + turretPitchAngle
-            + "\n"
-            + "initialVelocity = "
-            + initialVelocity);
+    // System.out.println(
+    //     "a = "
+    //         + a
+    //         + "\n"
+    //         + "b = "
+    //         + b
+    //         + "\n"
+    //         + "turretPitchAngle = "
+    //         + turretPitchAngle
+    //         + "\n"
+    //         + "initialVelocity = "
+    //         + initialVelocity);
 
     return new Shot(initialVelocity, turretPitchAngle, Angle.ofBaseUnits(0, Radians));
   }
@@ -262,7 +262,7 @@ public class ShooterTargetingSystem {
             0.451739, // up from the floor reference
             new Rotation3d());
     // 1. LATENCY COMP
-    System.out.println("shooterAimer time = " + timer.get());
+    // System.out.println("shooterAimer time = " + timer.get());
     double latency = 0.37; // Tuned constant
     Pose2d robotPose =
         oldRobotPose
@@ -274,10 +274,10 @@ public class ShooterTargetingSystem {
                     chassisSpeeds.vyMetersPerSecond,
                     new Rotation2d())
                 .times(-1 * latency));
-    System.out.println(
-        "chassisSpeeds X thing = "
-            + (chassisSpeeds.vxMetersPerSecond * ((chassisSpeeds.vxMetersPerSecond < 0) ? -1 : 1)));
-    System.out.println("chassisSpeeds Y thing = " + (chassisSpeeds.vyMetersPerSecond));
+    // System.out.println(
+    //     "chassisSpeeds X thing = "
+    //         + (chassisSpeeds.vxMetersPerSecond * ((chassisSpeeds.vxMetersPerSecond < 0) ? -1 : 1)));
+    // System.out.println("chassisSpeeds Y thing = " + (chassisSpeeds.vyMetersPerSecond));
 
     Shot initialCalcShot = findIdealVelocityAndAngle(robotPose, chassisSpeeds);
     Translation2d targetVec = getTargetVector(robotPose);

@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.spark.config.FeedForwardConfig;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.Debouncer;
@@ -34,8 +35,11 @@ public class HoodSubsystem extends SubsystemBase {
 	private final Angle hardUpperLimit = Degrees.of(40);
 	public static final Angle softLimitMin = Degrees.of(0);
 	public static final Angle softLimitMax = Degrees.of(35);
+	public Angle HoodAngle = Degrees.of(0);
+
 	private final SmartMotorControllerConfig hoodMotorConfig = new SmartMotorControllerConfig(this)
-			.withClosedLoopController(0.00016541, 0, 0, RPM.of(2500), RotationsPerSecondPerSecond.of(500))
+			.withClosedLoopController(100, 10,0, RPM.of(6000), RotationsPerSecondPerSecond.of(500))
+			.withFeedforward(new SimpleMotorFeedforward(2, 0.1))
 			.withGearing(new MechanismGearing(533.25))
 			.withIdleMode(MotorMode.BRAKE)
 			.withTelemetry("HoodMotor", TelemetryVerbosity.HIGH)
@@ -44,11 +48,11 @@ public class HoodSubsystem extends SubsystemBase {
 			.withMotorInverted(false) // NOTE - May need to fix based on direction of motor
 			.withClosedLoopRampRate(Seconds.of(0.25))
 			.withOpenLoopRampRate(Seconds.of(0.25))
-			.withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
+			//.withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
 			.withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
 			.withControlMode(ControlMode.CLOSED_LOOP);
 
-	private final SmartMotorController hoodSMC = new TalonFXWrapper(hoodMotor, DCMotor.getKrakenX44(1),
+	public final SmartMotorController hoodSMC = new TalonFXWrapper(hoodMotor, DCMotor.getKrakenX44(1),
 			hoodMotorConfig);
 
 	private final ArmConfig hoodConfig = new ArmConfig(hoodSMC)
@@ -140,4 +144,6 @@ public class HoodSubsystem extends SubsystemBase {
   {
     hood.setMechanismPositionSetpoint(measure);
   }
+
+   
 }

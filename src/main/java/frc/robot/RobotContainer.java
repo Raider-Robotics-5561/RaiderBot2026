@@ -1,11 +1,15 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
+import static edu.wpi.first.units.Units.Amps;
 
 import java.io.File;
 
@@ -17,6 +21,9 @@ import frc.robot.Commands.ClimberDownCommand;
 import frc.robot.Commands.ClimberUpCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.HopperSysytem.HopperExtenderSubsystem;
+import frc.robot.subsystems.TurretSystem.HoodSubsystem;
+import frc.robot.util.ShooterTargetingSystem;
 import frc.robot.util.SuperStructure;
 import swervelib.SwerveInputStream;
 
@@ -30,14 +37,14 @@ import swervelib.SwerveInputStream;
  */
 public class RobotContainer {
 	private final SuperStructure SuperStructure = new SuperStructure();
-
-
 	public final ClimberSubsystem m_climber = new ClimberSubsystem();
+	//public final ShooterTargetingSystem shooterTargetingSystem = new ShooterTargetingSystem(new Transform3d(0.0,0.0,0.0,new Rotation3d(0, 0, 0)));
+
   
 	final CommandXboxController DriveController = new CommandXboxController(0);
 	final CommandXboxController OpController = new CommandXboxController(1);
 	// The robot's subsystems and commands are defined here...
-	private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
+	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
 			"swerve"));
 
 	private SendableChooser<Command> autoChooser;
@@ -132,6 +139,7 @@ public class RobotContainer {
 
 		/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
          DriveController.start().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
+
 		// DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
      	// DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
 
@@ -150,19 +158,22 @@ public class RobotContainer {
 		)).whileFalse(
 			SuperStructure.SetHopperExtenderPower(0)
 		);
+		
 
 
-		DriveController.povLeft().onTrue(SuperStructure.SetTurretPWR(0.2)).or(DriveController.povRight().onTrue(
-			SuperStructure.SetTurretPWR(-0.2)
-		)).whileFalse(
-			SuperStructure.SetTurretPWR(0)
-		);
+		// DriveController.povLeft().onTrue(SuperStructure.SetTurretPWR(0.2)).or(DriveController.povRight().onTrue(
+		// 	SuperStructure.SetTurretPWR(-0.2)
+		// )).whileFalse(
+		// 	SuperStructure.SetTurretPWR(0)
+		// );
 
-		DriveController.povUp().onTrue(SuperStructure.SetHoodPWR(0.1)).or(DriveController.povDown().onTrue(
-			SuperStructure.SetHoodPWR(-0.1)
-		)).whileFalse(
-			SuperStructure.SetHoodPWR(0)
-		);
+		DriveController.povUp().onTrue(SuperStructure.SetHoodAngle());
+		DriveController.povDown().onTrue(SuperStructure.homing(Amps.of(35)));
+		//0.1)).or(DriveController.povDown().onTrue(
+		// 	SuperStructure.SetHoodPWR(-0.1)
+		// )).whileFalse(
+		// 	SuperStructure.SetHoodPWR(0)
+		// );
 
 
 	// This is our boost control Right Trigger
