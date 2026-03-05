@@ -73,18 +73,23 @@ public class SwerveSubsystem extends SubsystemBase {
 	 * @param directory Directory of swerve drive config files.
 	 */
 	public SwerveSubsystem(File directory) {
-		boolean blueAlliance = false;
 		Pose2d startingPose;
-		if (blueAlliance) {
+		if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
 			startingPose = new Pose2d(new Translation2d(Meter.of(16),
 					Meter.of(4)),
 					Rotation2d.fromDegrees(0));
-		} else {
+		} else if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
 			startingPose = new Pose2d(new Translation2d(Meter.of(1),
 					Meter.of(4)),
 					Rotation2d.fromDegrees(180));
 
+		} else {
+			System.out.println("Alliance not detected, defaulting to blue starting position");
+			startingPose = new Pose2d(new Translation2d(Meter.of(16),
+					Meter.of(4)),
+					Rotation2d.fromDegrees(0));
 		}
+		
 		// Configure the Telemetry before creating the SwerveDrive to avoid unnecessary
 		// objects being created.
 		SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
@@ -440,7 +445,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	 */
 	public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier headingX,
 			DoubleSupplier headingY) {
-		// swerveDrive.setHeadingCorrection(true); // Normally you would want heading
+		//swerveDrive.setHeadingCorrection(true); // Normally you would want heading
 		// correction for this kind of control.
 		return run(() -> {
 

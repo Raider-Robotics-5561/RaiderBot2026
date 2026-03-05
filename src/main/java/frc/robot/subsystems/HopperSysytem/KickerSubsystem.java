@@ -89,6 +89,10 @@ public class KickerSubsystem extends SubsystemBase {
 		flywheel.updateTelemetry();
 	}
 
+	public Command indexShoot(){
+    return setDutyCycle(-0.8);
+ 	 }
+
 	@Override
 	public void simulationPeriodic() {
 		flywheel.simIterate();

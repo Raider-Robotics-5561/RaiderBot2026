@@ -48,56 +48,45 @@ public class SuperStructure extends SubsystemBase {
 
 	public Command SetHoodandFlywheelmin() {
 	return
-	FlywheelSubsystem.setVelocity(RPM.of(-1500));//.alongWith(HoodSubsystem.setAngle(Rotations.of(2)));
+	FlywheelSubsystem.setVelocity(RPM.of(-1500));
+	//.alongWith(HoodSubsystem.setAngle(Rotations.of(2)));
 	}
 
 	public Command SetHoodandFlywheelZero() {
 	return
 	FlywheelSubsystem.setVelocity(RPM.of(0))
-	.alongWith(HoodSubsystem.homing(Amps.of(25))
+	.alongWith(HoodSubsystem.homing(Amps.of(20))
 	.alongWith(HopperRollerSubsystem.setDutyCycle(0))
 	.alongWith(kickerSubsystem.setDutyCycle(0)));
 	}
 
-	public Command SetHoodandFlywheelmax() {
-	return
-	FlywheelSubsystem.setVelocity(RPM.of(-6000)).alongWith(HoodSubsystem.setAngle(Rotations.of(0)));
-	}
+	
 	public Command SetAllMid() {
 	return
-		FlywheelSubsystem.setVelocity(RPM.of(-4500))
+		FlywheelSubsystem.setVelocity(RPM.of(0))//-3500))
 		.alongWith(HoodSubsystem.setAngle(Rotations.of(0.0))
-		.alongWith(kickerSubsystem.setDutyCycle(-0.8))
 		// .alongWith(HoodSubsystem.setAngle(Rotations.of(1)))
 		.alongWith(new WaitCommand(1)
+		.andThen(kickerSubsystem.setDutyCycle(-0.8)).repeatedly()
 		.andThen(HopperRollerSubsystem.setDutyCycle(0.6)).repeatedly()));
-	}
-
-	public Command StopHoodandFlywheel() {
-	return FlywheelSubsystem.setVelocity(RPM.of(0))
-	.alongWith(HoodSubsystem.setAngle(Rotations.of(0)))
-	.alongWith(TurretSubsytem.setDutyCycle(0));
 	}
 
 	public Command SetTurretPWR(double power) {
 	return TurretSubsytem.setDutyCycle(power);
 	}
 
+	public Command SetTurretangle(double angle) {
+	return TurretSubsytem.setAngle(Rotations.of(angle));
+	}
+
 	public Command SetHoodPWR(double power) {
 	return HoodSubsystem.setDutyCycle(power);
 	}
 
-	public Command SetHopperRollers() {
-		return HopperRollerSubsystem.setDutyCycle(0.1);
-	}
 
-	public Command SetHopperRollersoff() {
-		return HopperRollerSubsystem.setDutyCycle(0.0);
-	}
-
-	//start hopper
+	//start hopper NEED TO FIX
 	public Command SetHopperPos() {
-		return HopperExtenderSubsystem.setHeight(Meters.of(3));
+		return HopperExtenderSubsystem.setHeight(Meters.of(0.3));
 	}
 
 	public Command SetHopperPosZero() {
@@ -106,37 +95,24 @@ public class SuperStructure extends SubsystemBase {
 	//end hopper
 
 	//Intake control
-	public Command SetIntakePWR() {
-		return IntakeSubsystem.setDutyCycle(-0.9);
-	}
-
 	public Command SetTrueIntake() {
 		return HopperExtenderSubsystem.setHeight(Meters.of(0.3))
 			   .alongWith(IntakeSubsystem.setDutyCycle(-0.752))
 			   .alongWith(HopperRollerSubsystem.setDutyCycle(0.8));
 	}
 
-	public Command SetIntakePWRZero() {
-
-		return IntakeSubsystem.setDutyCycle(0);
-	}
 	//end intake
 
-	public Command SetKickerPowerHigh() {
-
-		return kickerSubsystem.setDutyCycle(-0.5);
-	}
-
-	public Command SetKickerPowerOff() {
-
-		return kickerSubsystem.setDutyCycle(0);
-	}
 
 	public Command SetHopperExtenderPower(double power) {
 
 		return HopperExtenderSubsystem.set(power);
 	}
 
+	public Command SetIntakePWR(double power) {
+
+		return IntakeSubsystem.setDutyCycle(power);
+	}
 	/**
 	 * Runs a command that sets all LEDs to scrolling rainbow.
 	 *

@@ -35,6 +35,7 @@ public class RobotContainer {
 	public final ClimberSubsystem m_climber = new ClimberSubsystem();
   
 	final CommandXboxController DriveController = new CommandXboxController(0);
+	final CommandXboxController OpController = new CommandXboxController(1);
 	// The robot's subsystems and commands are defined here...
 	private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
 			"swerve"));
@@ -45,7 +46,7 @@ public class RobotContainer {
 			() -> DriveController.getLeftY() * -1,
 			() -> DriveController.getLeftX() * -1)
 			// .withControllerRotationAxis(() -> DriveController.getRawAxis(2))
-			.withControllerRotationAxis(DriveController::getRightX)
+			.withControllerRotationAxis(() -> DriveController.getRightX() * -1)
 			.deadband(Constants.MiscConstants.DEADBAND)
 			.scaleTranslation(0.20)
 			.scaleRotation(0.35)
@@ -130,42 +131,38 @@ public class RobotContainer {
 		// REV 11--1817
 
 		/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
-         DriveController.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-		// DriveController.a().onTrue(SuperStructure.SetHoodandFlywheelmin());
+         DriveController.start().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
 		// DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
      	// DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
 
-		DriveController.b().onTrue(SuperStructure.SetIntakePWR());
-		DriveController.y().onTrue(SuperStructure.SetIntakePWRZero());
+		DriveController.b().onTrue(SuperStructure.SetIntakePWR(-0.8)); // This should should be neative to run the intake in
+		DriveController.y().onTrue(SuperStructure.SetIntakePWR(0));
+		// DriveController.povLeft().onTrue(SuperStructure.SetTurretangle(0.4));
+		// DriveController.povRight().onTrue(SuperStructure.SetTurretangle(-0.4));
+
 
 		DriveController.a().onTrue(SuperStructure.SetAllMid());	
 		DriveController.x().onTrue(SuperStructure.SetHoodandFlywheelZero());
 
+		// DriveController.leftBumper().onTrue(SuperStructure.SetHopperPos());
 		DriveController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3)).or(DriveController.rightBumper().onTrue(
 			SuperStructure.SetHopperExtenderPower(-0.3)
 		)).whileFalse(
 			SuperStructure.SetHopperExtenderPower(0)
 		);
 
-		DriveController.povLeft().onTrue(SuperStructure.SetTurretPWR(0.1)).or(DriveController.povRight().onTrue(
-			SuperStructure.SetTurretPWR(-0.1)
+
+		DriveController.povLeft().onTrue(SuperStructure.SetTurretPWR(0.2)).or(DriveController.povRight().onTrue(
+			SuperStructure.SetTurretPWR(-0.2)
 		)).whileFalse(
 			SuperStructure.SetTurretPWR(0)
 		);
 
-		DriveController.povUp().onTrue(SuperStructure.SetHoodPWR(0.05)).or(DriveController.povDown().onTrue(
-			SuperStructure.SetHoodPWR(-0.05)
+		DriveController.povUp().onTrue(SuperStructure.SetHoodPWR(0.1)).or(DriveController.povDown().onTrue(
+			SuperStructure.SetHoodPWR(-0.1)
 		)).whileFalse(
 			SuperStructure.SetHoodPWR(0)
 		);
-
-		// DriveController.a().onTrue(SuperStructure.SetHoodandFlywheelmin());
-		// DriveController.start().onTrue(SuperStructure.SetHopperPosZero());
-		// DriveController.povLeft().onTrue(SuperStructure.SetHopperPos());
-		// DriveController.povRight().onTrue(SuperStructure.SetKickerPowerHigh());
-		// DriveController.povLeft().onTrue(SuperStructure.SetHoodandFlywheelmin());
-		// DriveController.x().onTrue(SuperStructure.SetHopperRollers());
-		// DriveController.y().onTrue(SuperStructure.SetHopperRollersoff());
 
 
 	// This is our boost control Right Trigger
