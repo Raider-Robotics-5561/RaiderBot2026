@@ -112,8 +112,8 @@ public class TurretSubsystem extends SubsystemBase {
 		return turret.setAngle(angle);
 	}
 
-	public Command setAngle(Supplier<Angle> angleSupplier) {
-		return turret.setAngle(angleSupplier);
+	public Command setAngleDashboard() {
+		return turret.setAngle(Degrees.of(SmartDashboard.getNumber("Turret Angle Requested", 0)));
 	}
 
 	public Angle getAngle() {

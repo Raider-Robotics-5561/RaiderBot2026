@@ -72,8 +72,8 @@ public class HoodSubsystem extends SubsystemBase {
 		return hood.setAngle(angle);
 	}
 
-	public Command setAngle(Supplier<Angle> angleSupplier) {
-		return hood.setAngle(angleSupplier);
+	public Command setAngleDashboard() {
+		return hood.setAngle(Degrees.of(SmartDashboard.getNumber("Hood Angle Requested", 0)));
 	}
 
 	public Angle getAngle() {

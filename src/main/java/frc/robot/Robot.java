@@ -42,7 +42,10 @@ public class Robot extends TimedRobot {
 	}
 
 	public void robotInit() {
-				SmartDashboard.putNumber("Hood Angle feed", 0);
+				SmartDashboard.putNumber("Hood Angle Requested", 0);
+				SmartDashboard.putNumber("Turret Angle Requested", 0);
+				SmartDashboard.putNumber("Flywheel speed Requested", 0);
+
 
 		// Rev Logging
 		DataLogManager.start();
@@ -79,7 +82,7 @@ public class Robot extends TimedRobot {
 			SmartDashboard.putNumber("Shot Hoodangle: ", s.hoodAngle());
 			SmartDashboard.putNumber("Shot Target: ", s.target());
 		}
-
+		
 		CommandScheduler.getInstance().run();
 	}
 

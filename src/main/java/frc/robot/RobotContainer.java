@@ -22,9 +22,12 @@ import frc.robot.Commands.ClimberUpCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.HopperSysytem.HopperExtenderSubsystem;
+import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
 import frc.robot.subsystems.TurretSystem.HoodSubsystem;
+import frc.robot.subsystems.TurretSystem.TurretSubsystem;
 import frc.robot.util.ShooterTargetingSystem;
 import frc.robot.util.SuperStructure;
+import frc.robot.util.Setpoints.Turret.Hood;
 import swervelib.SwerveInputStream;
 
 /**
@@ -39,6 +42,9 @@ public class RobotContainer {
 	private final SuperStructure SuperStructure = new SuperStructure();
 	public final ClimberSubsystem m_climber = new ClimberSubsystem();
 	//public final ShooterTargetingSystem shooterTargetingSystem = new ShooterTargetingSystem(new Transform3d(0.0,0.0,0.0,new Rotation3d(0, 0, 0)));
+	private final HoodSubsystem m_hood = new HoodSubsystem();
+	private final TurretSubsystem m_turret = new TurretSubsystem();
+	private final FlywheelSubsystem m_flywheel = new FlywheelSubsystem();
 
   
 	final CommandXboxController DriveController = new CommandXboxController(0);
@@ -148,9 +154,14 @@ public class RobotContainer {
 		// DriveController.povLeft().onTrue(SuperStructure.SetTurretangle(0.4));
 		// DriveController.povRight().onTrue(SuperStructure.SetTurretangle(-0.4));
 
+		DriveController.a().onTrue(m_hood.setAngleDashboard()
+		.alongWith(m_turret.setAngleDashboard()
+		.alongWith(m_flywheel.setVelocityDashboard())));	
 
-		DriveController.a().onTrue(SuperStructure.SetAllMid());	
-		DriveController.x().onTrue(SuperStructure.SetHoodandFlywheelZero());
+		DriveController.x().onTrue(m_hood.homing(Amps.of(25)));
+
+		// DriveController.a().onTrue(SuperStructure.SetAllMid());	
+		// DriveController.x().onTrue(SuperStructure.SetHoodandFlywheelZero());
 
 		// DriveController.leftBumper().onTrue(SuperStructure.SetHopperPos());
 		DriveController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3)).or(DriveController.rightBumper().onTrue(
@@ -167,8 +178,8 @@ public class RobotContainer {
 		// 	SuperStructure.SetTurretPWR(0)
 		// );
 
-		DriveController.povUp().onTrue(SuperStructure.SetHoodAngle());
-		DriveController.povDown().onTrue(SuperStructure.homing(Amps.of(35)));
+		// DriveController.povUp().onTrue(HoodSubsystem.SetHoodAngleDashboard());
+		// DriveController.povDown().onTrue(SuperStructure.homing(Amps.of(35)));
 		//0.1)).or(DriveController.povDown().onTrue(
 		// 	SuperStructure.SetHoodPWR(-0.1)
 		// )).whileFalse(
