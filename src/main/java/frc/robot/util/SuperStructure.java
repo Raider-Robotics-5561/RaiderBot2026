@@ -64,7 +64,7 @@ public class SuperStructure extends SubsystemBase {
 	// //.alongWith(HoodSubsystem.setAngle(Rotations.of(2)));
 	// }
 
-	public Command SetAllMidOff() {
+	public Command SetKickerBellyOff() {
 	return
 	//FlywheelSubsystem.setVelocity(RPM.of(0))
 	//.alongWith(_HoodSubsystem.homing(Amps.of(20))
@@ -72,7 +72,7 @@ public class SuperStructure extends SubsystemBase {
 	.alongWith(kickerSubsystem.setDutyCycle(0));
 	}
 
-	public Command SetAllMid() {
+	public Command SetKickerAndBelly() {
 	return
 		//FlywheelSubsystem.setVelocity(RPM.of(0))//-3500))
 		//HoodSubsystem.setAngle(Rotations.of(0.0))

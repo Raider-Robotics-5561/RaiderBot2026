@@ -89,15 +89,14 @@ public class TurretSubsystem extends SubsystemBase {
 	private final SmartMotorController turretSMC = new TalonFXWrapper(turretMotor, DCMotor.getKrakenX44(1),
 			motorConfig);
 	private final PivotConfig turretConfig = new PivotConfig(turretSMC)
-			// .withStartingPosition(Degrees.of(abs_encoder.getAngleDegrees())) // Starting
+			.withStartingPosition(Degrees.of(abs_encoder.getAngleDegrees())) // Starting
 			// position of the Pivot
 			// .withWrapping(Degrees.of(0), Degrees.of(360)) // Wrapping enabled bc the
 			// pivot can spin
 			// infinitely
 			// .withSoftLimits(Degrees.of(-60), Degrees.of(60))
-			// .withHardLimit(Degrees.of(-80), Degrees.of(80))
-			// Hard limit bc wiring prevents infinite
-			// spinning
+			// HARD LIMIT IS FOR SIM
+			.withHardLimit(Degrees.of(-80), Degrees.of(80))
 			.withTelemetry("TurretMech", TelemetryVerbosity.HIGH) // Telemetry
 			.withMOI(Meters.of(0.25), Pounds.of(4)); // MOI Calculation
 

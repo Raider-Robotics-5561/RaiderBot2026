@@ -9,6 +9,8 @@ import org.littletonrobotics.urcl.URCL;
 import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -67,13 +69,15 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotPeriodic() {
-		// Runs the Scheduler. This is responsible for polling buttons, adding
-		// newly-scheduled
-		// commands, running already-scheduled commands, removing finished or
-		// interrupted commands,
-		// and running subsystem periodic() methods. This must be called from the
-		// robot's periodic
-		// block in order for anything in the Command-based framework to work.
+		//Our custom dashbaord outputs
+		double voltage = RobotController.getBatteryVoltage();
+		SmartDashboard.putNumber("Battery Voltage", voltage);
+
+		double MatchTime = DriverStation.getMatchTime();
+		SmartDashboard.putNumber("Match Time", MatchTime);	
+
+		String gameData = DriverStation.getGameSpecificMessage();
+      	SmartDashboard.putString("FMS Game Data", gameData);
 
 		Shot s = ShooterTargetingSystem.getShotData(m_robotContainer.drivebase.getPose(),
 				m_robotContainer.drivebase.getRobotVelocity(), 3);
