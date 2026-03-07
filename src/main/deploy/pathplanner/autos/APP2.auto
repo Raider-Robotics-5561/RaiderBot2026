@@ -9,6 +9,36 @@
           "data": {
             "pathName": "Allience Path Pos2(Right)"
           }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeRun"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 7.7
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeStop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeRun"
+          }
         }
       ]
     }
