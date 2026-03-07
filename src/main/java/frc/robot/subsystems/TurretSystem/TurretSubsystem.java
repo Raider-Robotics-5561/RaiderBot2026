@@ -21,8 +21,6 @@ import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
-
-
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -51,18 +49,15 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 import yams.motorcontrollers.simulation.Sensor;
 import yams.motorcontrollers.SimSupplier;
 
-
 public class TurretSubsystem extends SubsystemBase {
 	TalonFX turretMotor = new TalonFX(9);
-	//CANdi candi = new CANdi(34);
-	public static Angle softLimitMin = Rotations.of(-0.4); //for testing
-    public static Angle softLimitMax = Rotations.of(0.4);
+	// CANdi candi = new CANdi(34);
+	public static Angle softLimitMin = Rotations.of(-0.4); // for testing
+	public static Angle softLimitMax = Rotations.of(0.4);
 	final DigitalInput m_forwardLimit = new DigitalInput(0);
 	AbsoluteEncoderSubsystem abs_encoder = new AbsoluteEncoderSubsystem();
 	TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
 	CANdiConfiguration configs = new CANdiConfiguration();
-
-	private double dashboard_turret_angle = 0;
 
 	// // Use CANdi's Quadrature encoder as the motor's feedback sensor
 	// talonConfigs.Feedback.withRemoteCANdiQuadrature(candi);
@@ -78,12 +73,12 @@ public class TurretSubsystem extends SubsystemBase {
 			.withIdleMode(MotorMode.BRAKE)
 			.withMotorInverted(false)
 			.withFeedforward(new SimpleMotorFeedforward(1.25, 1))
-			
+
 			// .withExternalEncoder(abs_encoder)
 			// .withExternalEncoderInverted(false)
-    	    // .withExternalEncoderGearing(1)
-      		// .withExternalEncoderZeroOffset(Degrees.of(33.25))
-     		// .withUseExternalFeedbackEncoder(true)
+			// .withExternalEncoderGearing(1)
+			// .withExternalEncoderZeroOffset(Degrees.of(33.25))
+			// .withUseExternalFeedbackEncoder(true)
 			.withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
 			// Power Optimization
 			.withStatorCurrentLimit(Amps.of(40))
@@ -94,13 +89,15 @@ public class TurretSubsystem extends SubsystemBase {
 	private final SmartMotorController turretSMC = new TalonFXWrapper(turretMotor, DCMotor.getKrakenX44(1),
 			motorConfig);
 	private final PivotConfig turretConfig = new PivotConfig(turretSMC)
-			//.withStartingPosition(Degrees.of(abs_encoder.getAngleDegrees())) // Starting position of the Pivot
+			// .withStartingPosition(Degrees.of(abs_encoder.getAngleDegrees())) // Starting
+			// position of the Pivot
 			// .withWrapping(Degrees.of(0), Degrees.of(360)) // Wrapping enabled bc the
 			// pivot can spin
 			// infinitely
-			.withSoftLimits(Rotations.of(-0.4), Rotations.of(0.4))
-			.withHardLimit(Rotations.of(-0.45), Rotations.of(0.45)) // Hard limit bc wiring prevents infinite
-															// spinning
+			// .withSoftLimits(Degrees.of(-60), Degrees.of(60))
+			// .withHardLimit(Degrees.of(-80), Degrees.of(80))
+			// Hard limit bc wiring prevents infinite
+			// spinning
 			.withTelemetry("TurretMech", TelemetryVerbosity.HIGH) // Telemetry
 			.withMOI(Meters.of(0.25), Pounds.of(4)); // MOI Calculation
 
@@ -109,12 +106,17 @@ public class TurretSubsystem extends SubsystemBase {
 	public TurretSubsystem() {
 
 	}
-  	// Robot to turret transform, from center of robot to turret.
-  	private final Transform3d roboToTurret = new Transform3d(Feet.of(-1.5), Feet.of(0), Feet.of(0.5), Rotation3d.kZero);
 
-	public Command setAngle(Angle angle) {
-		return turret.setAngle(angle);
-	}
+	// Robot to turret transform, from center of robot to turret.
+	private final Transform3d roboToTurret = new Transform3d(Feet.of(-1.5),
+			Feet.of(0),
+			Feet.of(0.5),
+			Rotation3d.kZero);
+
+	// public Command setAngle(Angle angle) {
+	// 	return turret.setAngle(angle);
+	// }
+
 	public Command setAngleDashboard() {
 		// Read the dashboard value at command execution time instead of capturing
 		// the value when this method is called. Using runOnce will set the turret
@@ -126,7 +128,7 @@ public class TurretSubsystem extends SubsystemBase {
 			setAngleSetpoint(Degrees.of(requested));
 		}, this);
 	}
-	
+
 	public Angle getAngle() {
 		return turret.getAngle();
 	}
@@ -152,41 +154,39 @@ public class TurretSubsystem extends SubsystemBase {
 		turret.updateTelemetry();
 		// SmartDashboard.putNumber("relative Angle Raw", getAngle());
 
-		dashboard_turret_angle = SmartDashboard.getNumber("Turret Angle Requested", 0);
-
 	}
 
 	@Override
 	public void simulationPeriodic() {
 		turret.simIterate();
 	}
-	public void setAngleSetpoint(Angle measure)
-  {
-    turret.setMechanismPositionSetpoint(measure);
-  }
 
-  public Pose2d getPose(Pose2d robotPose)
-  {
-    return robotPose.plus(new Transform2d(
-        roboToTurret.getTranslation().toTranslation2d(), roboToTurret.getRotation().toRotation2d()));
-  }
+	public void setAngleSetpoint(Angle measure) {
+		Angle min = Degrees.of(-60);
+		Angle max = Degrees.of(60);
+		double valDeg = measure.in(Degrees);
+		double clampedDeg = Math.max(min.in(Degrees), Math.min(max.in(Degrees), valDeg));
+		turret.setMechanismPositionSetpoint(Degrees.of(clampedDeg));
+	}
 
-  public ChassisSpeeds getVelocity(ChassisSpeeds robotVelocity, Angle robotAngle)
-  {
-    var robotAngleRads = robotAngle.in(Radians);
-    double turretVelocityX =
-        robotVelocity.vxMetersPerSecond
-        + robotVelocity.omegaRadiansPerSecond
-          * (roboToTurret.getY() * Math.cos(robotAngleRads)
-             - roboToTurret.getX() * Math.sin(robotAngleRads));
-    double turretVelocityY =
-        robotVelocity.vyMetersPerSecond
-        + robotVelocity.omegaRadiansPerSecond
-          * (roboToTurret.getX() * Math.cos(robotAngleRads)
-             - roboToTurret.getY() * Math.sin(robotAngleRads));
+	public Pose2d getPose(Pose2d robotPose) {
+		return robotPose.plus(new Transform2d(
+				roboToTurret.getTranslation().toTranslation2d(), roboToTurret.getRotation().toRotation2d()));
+	}
 
-    return new ChassisSpeeds(turretVelocityX,
-                             turretVelocityY,
-                             robotVelocity.omegaRadiansPerSecond + turretSMC.getMechanismVelocity().in(RadiansPerSecond));
-  }
+	public ChassisSpeeds getVelocity(ChassisSpeeds robotVelocity, Angle robotAngle) {
+		var robotAngleRads = robotAngle.in(Radians);
+		double turretVelocityX = robotVelocity.vxMetersPerSecond
+				+ robotVelocity.omegaRadiansPerSecond
+						* (roboToTurret.getY() * Math.cos(robotAngleRads)
+								- roboToTurret.getX() * Math.sin(robotAngleRads));
+		double turretVelocityY = robotVelocity.vyMetersPerSecond
+				+ robotVelocity.omegaRadiansPerSecond
+						* (roboToTurret.getX() * Math.cos(robotAngleRads)
+								- roboToTurret.getY() * Math.sin(robotAngleRads));
+
+		return new ChassisSpeeds(turretVelocityX,
+				turretVelocityY,
+				robotVelocity.omegaRadiansPerSecond + turretSMC.getMechanismVelocity().in(RadiansPerSecond));
+	}
 }

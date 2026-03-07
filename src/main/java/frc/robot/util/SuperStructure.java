@@ -64,23 +64,28 @@ public class SuperStructure extends SubsystemBase {
 	// //.alongWith(HoodSubsystem.setAngle(Rotations.of(2)));
 	// }
 
-	// public Command SetHoodandFlywheelZero() {
-	// return
-	// FlywheelSubsystem.setVelocity(RPM.of(0))
-	// .alongWith(_HoodSubsystem.homing(Amps.of(20))
-	// .alongWith(HopperRollerSubsystem.setDutyCycle(0))
-	// .alongWith(kickerSubsystem.setDutyCycle(0)));
-	// }
+	public Command SetAllMidOff() {
+	return
+	//FlywheelSubsystem.setVelocity(RPM.of(0))
+	//.alongWith(_HoodSubsystem.homing(Amps.of(20))
+	HopperRollerSubsystem.setDutyCycle(0)
+	.alongWith(kickerSubsystem.setDutyCycle(0));
+	}
 
-	// public Command SetAllMid() {
-	// return
-	// 	FlywheelSubsystem.setVelocity(RPM.of(0))//-3500))
-	// 	.alongWith(_HoodSubsystem.setAngle(Rotations.of(0.0))
-	// 	// .alongWith(HoodSubsystem.setAngle(Rotations.of(1)))
-	// 	.andThen(kickerSubsystem.setDutyCycle(-0.8))
-	// 	.alongWith(new WaitCommand(1)
-	// 	.andThen(HopperRollerSubsystem.setDutyCycle(0.6)).repeatedly()));
-	// }
+	public Command SetAllMid() {
+	return
+		//FlywheelSubsystem.setVelocity(RPM.of(0))//-3500))
+		//HoodSubsystem.setAngle(Rotations.of(0.0))
+		// .alongWith(HoodSubsystem.setAngle(Rotations.of(1)))
+		kickerSubsystem.setDutyCycle(-0.9)
+		.alongWith(new WaitCommand(1.25)
+		.andThen(HopperRollerSubsystem.setVelocity(RPM.of(2500))).repeatedly());
+	}
+
+	public Command BackDrveKicker() {
+	return
+		kickerSubsystem.setDutyCycle(0.8);
+	}
 
 	// public Command SetTurretPWR(double power) {
 	// return TurretSubsytem.setDutyCycle(power);

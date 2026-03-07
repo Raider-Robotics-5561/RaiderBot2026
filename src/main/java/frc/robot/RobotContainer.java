@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.measure.Angle;
@@ -12,17 +13,21 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RPM;
 
 import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Commands.ClimberDownCommand;
 import frc.robot.Commands.ClimberUpCommand;
+import frc.robot.Commands.ShootOnTheMoveCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.HopperSysytem.HopperExtenderSubsystem;
@@ -34,14 +39,7 @@ import frc.robot.util.SuperStructure;
 import frc.robot.util.Setpoints.Turret.Hood;
 import swervelib.SwerveInputStream;
 
-/**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a "declarative" paradigm, very
- * little robot logic should actually be handled in the {@link Robot} periodic
- * methods (other than the scheduler calls).
- * Instead, the structure of the robot (including subsystems, commands, and
- * trigger mappings) should be declared here.
- */
+
 public class RobotContainer {
 	private final SuperStructure SuperStructure = new SuperStructure();
 	public final ClimberSubsystem m_climber = new ClimberSubsystem();
@@ -52,8 +50,18 @@ public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
 			"swerve"));
+	//======================Auton_Stuff=========================
 
-	private SendableChooser<Command> autoChooser;
+ 	 private final Command teston;
+
+
+
+ 	 SendableChooser<Command> m_chooser;
+
+ 	 //=======================================================
+	
+
+	private Pose2d goalPos = new Pose2d(Inches.of(182.11), Inches.of(158.84), new Rotation3d(0, 0, 0).toRotation2d()); // Note - Update ME
 
 	SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
 			() -> DriveController.getLeftY() * -1,
@@ -116,7 +124,13 @@ public class RobotContainer {
 		configureBindings();
 		DriverStation.silenceJoystickConnectionWarning(true);
 
-		// ======================================================================================
+	m_chooser = new SendableChooser<Command>();
+
+	teston = drivebase.getAutonomousCommand("teston");
+
+	m_chooser.addOption("teston", teston);
+
+    // SmartDashboard.putData(m_chooser);	
 
 	}
 
@@ -146,8 +160,8 @@ public class RobotContainer {
 		/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
          DriveController.start().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
 
-		// DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
-     	// DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
+		DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
+     	DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
 
 		DriveController.b().onTrue(SuperStructure.SetIntakePWR(-0.8)); // This should should be neative to run the intake in
 		DriveController.y().onTrue(SuperStructure.SetIntakePWR(0));
@@ -170,16 +184,26 @@ public class RobotContainer {
 			SuperStructure.HoodSubsystem.homing()
 		);
 
-		// DriveController.a().onTrue(SuperStructure.SetAllMid());	
+		DriveController.povLeft().onTrue(SuperStructure.SetAllMid());	
+		DriveController.povRight().onTrue(SuperStructure.SetAllMidOff());
+		DriveController.povUp().onTrue(SuperStructure.BackDrveKicker());
+
 		// DriveController.x().onTrue(SuperStructure.SetHoodandFlywheelZero());
 
 		// DriveController.leftBumper().onTrue(SuperStructure.SetHopperPos());
-		DriveController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3)).or(DriveController.rightBumper().onTrue(
-			SuperStructure.SetHopperExtenderPower(-0.3)
-		)).whileFalse(
-			SuperStructure.SetHopperExtenderPower(0)
-		);
-		
+		// DriveController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3)).or(DriveController.rightBumper().onTrue(
+		// 	SuperStructure.SetHopperExtenderPower(-0.3)
+		// )).whileFalse(
+		// 	SuperStructure.SetHopperExtenderPower(0)
+		// );
+
+		DriveController.back().onTrue(new ShootOnTheMoveCommand(drivebase::getPose, 
+																drivebase::getRobotVelocity, 
+																goalPos, 
+																SuperStructure.TurretSubsytem, 
+																SuperStructure.HoodSubsystem, 
+																SuperStructure.FlywheelSubsystem));
+																
 
 
 		// DriveController.povLeft().onTrue(SuperStructure.SetTurretPWR(0.2)).or(DriveController.povRight().onTrue(
@@ -216,21 +240,23 @@ public class RobotContainer {
 	
 
 
-	public void setupAutonomous() {
-		// Named Commands go here
-		// NamedCommands.registerCommand("GUI NAME", theCommand());
-		autoChooser = AutoBuilder.buildAutoChooser();
-		SmartDashboard.putData(autoChooser);
+	public void setupAutonomous() { 	 
+		m_chooser = AutoBuilder.buildAutoChooser();
+		SmartDashboard.putData(m_chooser);
 	}
 
-	/**
-	 * Gets the selected autonomous command.
-	 *
-	 * @return the selected {@link Command}.
-	 */
-	public Command getAutonomousCommand() {
-		return autoChooser.getSelected();
-	}
+/**
+ * Gets the selected autonomous command.
+ *
+ * @return the selected {@link Command}.
+ */
+// public Command getAutonomousCommand() {
+// 	return m_chooser.getSelected();
+// }
+public Command getAutonomousCommand() {
+	// Build and return a Command using the drivebase helper for the "Teston" path
+	return drivebase.getAutonomousCommand("Teston");
+}
 
 	public void setMotorBrake(boolean brake)
 	{

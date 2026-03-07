@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TurretSystem.HoodSubsystem;
@@ -68,9 +69,13 @@ public class ShootOnTheMoveCommand extends Command
 
     // Test Results
     //MAKE MORE POINTS FOR DISTANCE, FLYWHEEL SPEED, HOOD ANGLE
-    for (var entry : List.of(Pair.of(Meters.of(1), RPM.of((1000))),
-                             Pair.of(Meters.of(2), RPM.of(2000)),
-                             Pair.of(Meters.of(3), RPM.of(3000)))
+    for (var entry : List.of(Pair.of(Meters.of(1), RPM.of((0))),
+                             Pair.of(Meters.of(1.5), RPM.of(0)),
+                             Pair.of(Meters.of(2.0), RPM.of(2800)),
+                             Pair.of(Meters.of(2.5), RPM.of(3000)),
+                             Pair.of(Meters.of(3), RPM.of(3100)),
+                             Pair.of(Meters.of(3.5), RPM.of(3250)),
+                             Pair.of(Meters.of(4), RPM.of(3500)))
     )
     {shooterTable.put(entry.getFirst().in(Meters), entry.getSecond().in(RPM));}
 
@@ -122,15 +127,19 @@ public class ShootOnTheMoveCommand extends Command
     double ratio    = Math.min(newHorizontalSpeed / totalExitVelocity, 1.0);
     double newPitch = Math.acos(ratio);
     double clampedPitch = MathUtil.clamp(newPitch, HoodSubsystem.softLimitMin.in(Rotations), HoodSubsystem.softLimitMax.in(Rotations));
-    double clampedTurretAngle = MathUtil.clamp(turretAngle, TurretSubsystem.softLimitMin.in(Degrees), TurretSubsystem.softLimitMax.in(Degrees));
+    double clampedTurretAngle = -MathUtil.clamp(turretAngle, TurretSubsystem.softLimitMin.in(Degrees), TurretSubsystem.softLimitMax.in(Degrees));
     //Drive team can move robot 
 
 
-    // 7. SET OUTPUTS
-    m_turret.setAngle(Degrees.of(clampedTurretAngle)); // Could also just set the swerveDrive to point towards this angle like AlignToGoal
-    m_hood.setAngle(Degrees.of(Math.toDegrees(clampedPitch)));
-    m_launcher.setRPM(MetersPerSecond.of(totalExitVelocity));
+    SmartDashboard.putNumber("SOTM: Clamped Turret Angle", clampedTurretAngle);
+    SmartDashboard.putNumber("SOTM: Clamped Hood Angle", clampedPitch);
+    SmartDashboard.putNumber("SOTM: Total Exit Velocity", totalExitVelocity);
 
+    // 7. SET OUTPUTS
+    m_turret.setAngleSetpoint(Degrees.of(clampedTurretAngle)); // Could also just set the swerveDrive to point towards this angle like AlignToGoal
+    // m_hood.setAngle(Degrees.of(Math.toDegrees(clampedPitch)));
+    // m_launcher.setRPM(MetersPerSecond.of(totalExitVelocity));
+    // NOTE - Disabled for testing
   }
 
   @Override

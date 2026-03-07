@@ -38,13 +38,13 @@ public class FlywheelSubsystem extends SubsystemBase {
 	TalonFX flywheelMotor = new TalonFX(10, canbus);
 
 	private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
-			.withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
+			.withClosedLoopController(0.35, 0.000, 0, RPM.of(6000), RotationsPerSecondPerSecond.of(8000))
 			.withGearing(new MechanismGearing(1))
 			.withIdleMode(MotorMode.COAST)
 			.withTelemetry("FlywheelMotor", TelemetryVerbosity.HIGH)
 			.withStatorCurrentLimit(Amps.of(40))
 			.withMotorInverted(false)
-			.withClosedLoopRampRate(Seconds.of(0.15))
+			.withClosedLoopRampRate(Seconds.of(0.01))
 			.withOpenLoopRampRate(Seconds.of(0.25))
 			.withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557)) // TODO - Add correct FF values
 			.withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
@@ -57,8 +57,8 @@ public class FlywheelSubsystem extends SubsystemBase {
 			.withDiameter(Inches.of(4))
 			.withMass(Pounds.of(1))
 			.withTelemetry("FlywheelMech", TelemetryVerbosity.HIGH)
-			.withSoftLimit(RPM.of(-5000), RPM.of(5000))
-			.withSpeedometerSimulation(RPM.of(5000));
+			.withSoftLimit(RPM.of(-5800), RPM.of(5800))
+			.withSpeedometerSimulation(RPM.of(5800));
 
 	private final FlyWheel flywheel = new FlyWheel(flywheelConfig);
 
