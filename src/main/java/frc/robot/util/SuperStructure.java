@@ -33,13 +33,13 @@ import frc.robot.subsystems.TurretSystem.TurretSubsystem;
 import frc.robot.util.ShooterTargetingSystem.Shot;
 
 public class SuperStructure extends SubsystemBase {
-	// private final FlywheelSubsystem 	  FlywheelSubsystem 	  = new FlywheelSubsystem();
-	// private final HoodSubsystem 		  _HoodSubsystem 		  = new HoodSubsystem();
-	// private final TurretSubsystem 		  TurretSubsytem 		  = new TurretSubsystem();
-	private final IntakeSubsystem 		  IntakeSubsystem         = new IntakeSubsystem();
-	private final HopperExtenderSubsystem HopperExtenderSubsystem = new HopperExtenderSubsystem();
-	private final HopperRollerSubsystem   HopperRollerSubsystem   = new HopperRollerSubsystem();
-	private final KickerSubsystem 		  kickerSubsystem         = new KickerSubsystem();
+	public final FlywheelSubsystem 	  FlywheelSubsystem 	  = new FlywheelSubsystem();
+	public final HoodSubsystem 		  HoodSubsystem 		  = new HoodSubsystem();
+ 	public final TurretSubsystem 		  TurretSubsytem 		  = new TurretSubsystem();
+	public final IntakeSubsystem 		  IntakeSubsystem         = new IntakeSubsystem();
+	public final HopperExtenderSubsystem HopperExtenderSubsystem = new HopperExtenderSubsystem();
+	public final HopperRollerSubsystem   HopperRollerSubsystem   = new HopperRollerSubsystem();
+	public final KickerSubsystem 		  kickerSubsystem         = new KickerSubsystem();
 
 	/**
 	 * Initializer for the Control superstructure.
@@ -98,27 +98,6 @@ public class SuperStructure extends SubsystemBase {
 	// 	return _HoodSubsystem.setAngle(Rotations.of(0.1));//Rotation.of(5));
 	// }
 	
-
-	// public Command homing(Current threshold) {
-	// 	Debouncer currentDebouncer = new Debouncer(0.1); // Current threshold is only detected if exceeded for 0.1
-	// 														// seconds.
-	// 	Voltage StopVolts = Volts.of(0); // Set Volts to zero when we are done with the command 
-	// 										// is inverted.
-	// 	Voltage runVolts = Volts.of(-8); // Volts required to run the mechanism down. Could be negative if the mechanism
-	// 										// is inverted.
-	// 	Angle limitHit = _HoodSubsystem.hardLowerLimit; // Limit which gets hit. Could be the lower limit if the volts makes the hood
-	// 										// go down.
-
-	// 	return Commands.startRun(_HoodSubsystem.hoodSMC::stopClosedLoopController, // Stop the closed loop controller
-	// 			() -> _HoodSubsystem.hoodSMC.setVoltage(runVolts)) // Set the voltage of the motor
-	// 			.until(() -> currentDebouncer.calculate(_HoodSubsystem.hoodSMC.getStatorCurrent().gte(threshold)))
-
-	// 			.finallyDo(() -> {
-	// 				_HoodSubsystem.hoodSMC.setVoltage(StopVolts);
-	// 				_HoodSubsystem.hoodSMC.setEncoderPosition(limitHit);
-	// 				_HoodSubsystem.hoodSMC.startClosedLoopController();
-	// 			});
-	// }
 	//start hopper NEED TO FIX
 	public Command SetHopperPos() {
 		return HopperExtenderSubsystem.setHeight(Meters.of(0.5));

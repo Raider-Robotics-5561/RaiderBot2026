@@ -37,9 +37,13 @@ public class HoodSubsystem extends SubsystemBase {
 	public static final Angle softLimitMax = Degrees.of(35);
 	public Angle HoodAngle = Degrees.of(0);
 
+	public final Current homeingCurrentThreshold = Amps.of(10); // Current threshold to detect when the hood has hit its hard limit during homing
+	Debouncer currentDebouncer = new Debouncer(0.001); // Current threshold is only detected if exceeded for 0.1
+	Voltage runVolts = Volts.of(-1); // Volts required to run the mechanism down. Could be negative if the mechanism
+
 	private final SmartMotorControllerConfig hoodMotorConfig = new SmartMotorControllerConfig(this)
-			.withClosedLoopController(100, 10,0, RPM.of(6000), RotationsPerSecondPerSecond.of(500))
-			.withFeedforward(new SimpleMotorFeedforward(2, 0.1))
+			.withClosedLoopController(650, 10,0, RPM.of(7000), RotationsPerSecondPerSecond.of(7000))
+			.withFeedforward(new SimpleMotorFeedforward(8, 4))
 			.withGearing(new MechanismGearing(533.25))
 			.withIdleMode(MotorMode.BRAKE)
 			.withTelemetry("HoodMotor", TelemetryVerbosity.HIGH)
@@ -48,8 +52,8 @@ public class HoodSubsystem extends SubsystemBase {
 			.withMotorInverted(false) // NOTE - May need to fix based on direction of motor
 			.withClosedLoopRampRate(Seconds.of(0.25))
 			.withOpenLoopRampRate(Seconds.of(0.25))
-			//.withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
-			.withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
+			//.withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557)) // NOTE - Not Sure where these came form but I will keep them
+			//.withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
 			.withControlMode(ControlMode.CLOSED_LOOP);
 
 	public final SmartMotorController hoodSMC = new TalonFXWrapper(hoodMotor, DCMotor.getKrakenX44(1),
@@ -58,9 +62,9 @@ public class HoodSubsystem extends SubsystemBase {
 	private final ArmConfig hoodConfig = new ArmConfig(hoodSMC)
 			.withLength(Inches.of(6)).withMass(Pound.of(1))
 			.withStartingPosition(Degrees.of(0))
-			.withTelemetry("HoodMech", TelemetryVerbosity.HIGH)
-			.withSoftLimits(Degrees.of(0), Degrees.of(35))
-			.withHardLimit(Degrees.of(0), Degrees.of(40)); // The Hood can be modeled as an arm since it has a
+			.withTelemetry("HoodMech", TelemetryVerbosity.HIGH);
+			//.withSoftLimits(Degrees.of(0), Degrees.of(35))
+			//.withHardLimit(Degrees.of(0), Degrees.of(40)); // The Hood can be modeled as an arm since it has a
 															// gravitational force acted upon based on the angle its in
 
 	private final Arm hood = new Arm(hoodConfig);
@@ -80,34 +84,14 @@ public class HoodSubsystem extends SubsystemBase {
 		return hood.getAngle();
 	}
 
-	/**
-	 * Reset the encoder to the lowest position when the current threshold is
-	 * reached. Should be used when the hood
-	 * position is unreliable, like startup. Threshold is only detected if exceeded
-	 * for 0.1 seconds, and the motor moves
-	 * less than 0.2 degrees per second.
-	 *
-	 * @param threshold The current threshold held when the hood is at it's hard
-	 *                  limit.
-	 * @return Command which resets our encoder
-	 */
-	public Command homing(Current threshold) {
-		Debouncer currentDebouncer = new Debouncer(0.1); // Current threshold is only detected if exceeded for 0.1
-															// seconds.
-		Voltage StopVolts = Volts.of(0); // Volts required to run the mechanism down. Could be negative if the mechanism
-											// is inverted.
-		Voltage runVolts = Volts.of(-1); // Volts required to run the mechanism down. Could be negative if the mechanism
-											// is inverted.
-		Angle limitHit = hardLowerLimit; // Limit which gets hit. Could be the lower limit if the volts makes the hood
-											// go down.
-
+	public Command homing() {
 		return Commands.startRun(hoodSMC::stopClosedLoopController, // Stop the closed loop controller
 				() -> hoodSMC.setVoltage(runVolts)) // Set the voltage of the motor
-				.until(() -> currentDebouncer.calculate(hoodSMC.getStatorCurrent().gte(threshold)))
+				.until(() -> currentDebouncer.calculate(hoodSMC.getStatorCurrent().gte(homeingCurrentThreshold)))
 
 				.finallyDo(() -> {
-					hoodSMC.setVoltage(StopVolts);
-					hoodSMC.setEncoderPosition(limitHit);
+					hoodSMC.setVoltage(Volts.of(0)); // Stop the motor
+					hoodSMC.setEncoderPosition(hardLowerLimit);
 					hoodSMC.startClosedLoopController();
 				});
 	}

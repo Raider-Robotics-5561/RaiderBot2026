@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -10,6 +11,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RPM;
 
 import java.io.File;
 
@@ -42,11 +46,7 @@ public class RobotContainer {
 	private final SuperStructure SuperStructure = new SuperStructure();
 	public final ClimberSubsystem m_climber = new ClimberSubsystem();
 	//public final ShooterTargetingSystem shooterTargetingSystem = new ShooterTargetingSystem(new Transform3d(0.0,0.0,0.0,new Rotation3d(0, 0, 0)));
-	private final HoodSubsystem m_hood = new HoodSubsystem();
-	private final TurretSubsystem m_turret = new TurretSubsystem();
-	private final FlywheelSubsystem m_flywheel = new FlywheelSubsystem();
-
-  
+ 
 	final CommandXboxController DriveController = new CommandXboxController(0);
 	final CommandXboxController OpController = new CommandXboxController(1);
 	// The robot's subsystems and commands are defined here...
@@ -154,11 +154,21 @@ public class RobotContainer {
 		// DriveController.povLeft().onTrue(SuperStructure.SetTurretangle(0.4));
 		// DriveController.povRight().onTrue(SuperStructure.SetTurretangle(-0.4));
 
-		DriveController.a().onTrue(m_hood.setAngleDashboard()
-		.alongWith(m_turret.setAngleDashboard()
-		.alongWith(m_flywheel.setVelocityDashboard())));	
+		// Schedule a fresh runnable each time A is pressed that reads the
+		// dashboard values at execution time and sets each subsystem's setpoint.
+		DriveController.a().onTrue(Commands.runOnce(() -> {
+			double hoodReq = SmartDashboard.getNumber("Hood Angle Requested", 0);
+			double turretReq = SmartDashboard.getNumber("Turret Angle Requested", 0);
+			double flyReq = SmartDashboard.getNumber("Flywheel RPM Requested", 0);
+			System.out.println("A pressed: hood=" + hoodReq + " turret=" + turretReq + " fly=" + flyReq);
+			SuperStructure.HoodSubsystem.setAngleSetpoint(Degrees.of(hoodReq));
+			SuperStructure.TurretSubsytem.setAngleSetpoint(Degrees.of(turretReq));
+			SuperStructure.FlywheelSubsystem.setVelocitySetpoint(RPM.of(flyReq));
+		}, SuperStructure.HoodSubsystem, SuperStructure.TurretSubsytem, SuperStructure.FlywheelSubsystem));
 
-		DriveController.x().onTrue(m_hood.homing(Amps.of(25)));
+		DriveController.x().onTrue( 
+			SuperStructure.HoodSubsystem.homing()
+		);
 
 		// DriveController.a().onTrue(SuperStructure.SetAllMid());	
 		// DriveController.x().onTrue(SuperStructure.SetHoodandFlywheelZero());
@@ -179,8 +189,10 @@ public class RobotContainer {
 		// );
 
 		// DriveController.povUp().onTrue(HoodSubsystem.SetHoodAngleDashboard());
-		// DriveController.povDown().onTrue(SuperStructure.homing(Amps.of(35)));
-		//0.1)).or(DriveController.povDown().onTrue(
+		//DriveController.povDown().onTrue(SuperStructure.homing(Amps.of(35)));
+		
+		// NOTE - What is this? 
+		// 0.1)).or(DriveController.povDown().onTrue(
 		// 	SuperStructure.SetHoodPWR(-0.1)
 		// )).whileFalse(
 		// 	SuperStructure.SetHoodPWR(0)

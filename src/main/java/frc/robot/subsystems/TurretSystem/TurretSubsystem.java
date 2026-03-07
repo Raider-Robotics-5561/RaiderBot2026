@@ -26,6 +26,7 @@ import static edu.wpi.first.units.Units.Radians;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -53,13 +54,15 @@ import yams.motorcontrollers.SimSupplier;
 
 public class TurretSubsystem extends SubsystemBase {
 	TalonFX turretMotor = new TalonFX(9);
-	CANdi candi = new CANdi(34);
+	//CANdi candi = new CANdi(34);
 	public static Angle softLimitMin = Rotations.of(-0.4); //for testing
     public static Angle softLimitMax = Rotations.of(0.4);
 	final DigitalInput m_forwardLimit = new DigitalInput(0);
 	AbsoluteEncoderSubsystem abs_encoder = new AbsoluteEncoderSubsystem();
 	TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
 	CANdiConfiguration configs = new CANdiConfiguration();
+
+	private double dashboard_turret_angle = 0;
 
 	// // Use CANdi's Quadrature encoder as the motor's feedback sensor
 	// talonConfigs.Feedback.withRemoteCANdiQuadrature(candi);
@@ -70,11 +73,12 @@ public class TurretSubsystem extends SubsystemBase {
 	// talonMotor.getConfigurator().apply(talonConfigs);
 
 	private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
-			.withClosedLoopController(100, 5, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
+			.withClosedLoopController(300, 0, 0, DegreesPerSecond.of(1500), DegreesPerSecondPerSecond.of(1500))
 			.withGearing(new MechanismGearing(35.56))
 			.withIdleMode(MotorMode.BRAKE)
 			.withMotorInverted(false)
-			.withFeedforward(new SimpleMotorFeedforward(1, 0.01))
+			.withFeedforward(new SimpleMotorFeedforward(1.25, 1))
+			
 			// .withExternalEncoder(abs_encoder)
 			// .withExternalEncoderInverted(false)
     	    // .withExternalEncoderGearing(1)
@@ -83,14 +87,14 @@ public class TurretSubsystem extends SubsystemBase {
 			.withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
 			// Power Optimization
 			.withStatorCurrentLimit(Amps.of(40))
-			.withClosedLoopRampRate(Seconds.of(0.25))
+			.withClosedLoopRampRate(Seconds.of(0.01))
 			.withOpenLoopRampRate(Seconds.of(0.25))
 			.withControlMode(ControlMode.CLOSED_LOOP);
 	// .withContinuousWrapping(Rotations.of(0),Rotations.of(360));
 	private final SmartMotorController turretSMC = new TalonFXWrapper(turretMotor, DCMotor.getKrakenX44(1),
 			motorConfig);
 	private final PivotConfig turretConfig = new PivotConfig(turretSMC)
-			.withStartingPosition(Degrees.of(abs_encoder.getAngleDegrees())) // Starting position of the Pivot
+			//.withStartingPosition(Degrees.of(abs_encoder.getAngleDegrees())) // Starting position of the Pivot
 			// .withWrapping(Degrees.of(0), Degrees.of(360)) // Wrapping enabled bc the
 			// pivot can spin
 			// infinitely
@@ -111,11 +115,18 @@ public class TurretSubsystem extends SubsystemBase {
 	public Command setAngle(Angle angle) {
 		return turret.setAngle(angle);
 	}
-
 	public Command setAngleDashboard() {
-		return turret.setAngle(Degrees.of(SmartDashboard.getNumber("Turret Angle Requested", 0)));
+		// Read the dashboard value at command execution time instead of capturing
+		// the value when this method is called. Using runOnce will set the turret
+		// setpoint to the current dashboard value when the command runs.
+		return Commands.runOnce(() -> {
+			double requested = SmartDashboard.getNumber("Turret Angle Requested", 0);
+			System.out.println("Turret dashboard requested (deg): " + requested);
+			// Use the setter helper which forwards to the Pivot's setpoint API.
+			setAngleSetpoint(Degrees.of(requested));
+		}, this);
 	}
-
+	
 	public Angle getAngle() {
 		return turret.getAngle();
 	}
@@ -140,6 +151,8 @@ public class TurretSubsystem extends SubsystemBase {
 	public void periodic() {
 		turret.updateTelemetry();
 		// SmartDashboard.putNumber("relative Angle Raw", getAngle());
+
+		dashboard_turret_angle = SmartDashboard.getNumber("Turret Angle Requested", 0);
 
 	}
 

@@ -42,10 +42,9 @@ public class Robot extends TimedRobot {
 	}
 
 	public void robotInit() {
-				SmartDashboard.putNumber("Hood Angle Requested", 0);
-				SmartDashboard.putNumber("Turret Angle Requested", 0);
-				SmartDashboard.putNumber("Flywheel speed Requested", 0);
-
+		SmartDashboard.putNumber("Hood Angle Requested", 0);
+		SmartDashboard.putNumber("Turret Angle Requested", 0);
+		SmartDashboard.putNumber("Flywheel RPM Requested", 0);
 
 		// Rev Logging
 		DataLogManager.start();
@@ -76,13 +75,15 @@ public class Robot extends TimedRobot {
 		// robot's periodic
 		// block in order for anything in the Command-based framework to work.
 
-		Shot s = ShooterTargetingSystem.getShotData(m_robotContainer.drivebase.getPose(), m_robotContainer.drivebase.getRobotVelocity(), 3);
-		if(s != null) {
+		Shot s = ShooterTargetingSystem.getShotData(m_robotContainer.drivebase.getPose(),
+				m_robotContainer.drivebase.getRobotVelocity(), 3);
+		if (s != null) {
 			SmartDashboard.putNumber("Shot exit vel:", s.exitVelocity());
 			SmartDashboard.putNumber("Shot Hoodangle: ", s.hoodAngle());
 			SmartDashboard.putNumber("Shot Target: ", s.target());
 		}
-		
+
+
 		CommandScheduler.getInstance().run();
 	}
 
