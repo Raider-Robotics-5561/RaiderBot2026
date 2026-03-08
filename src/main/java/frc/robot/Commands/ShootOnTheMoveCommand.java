@@ -48,6 +48,10 @@ public class ShootOnTheMoveCommand extends Command
    */
   private final double                     latency      = 0.15;
   /**
+   * Flywheel diameter in meters (4 inches)
+   */
+  private static final double              FLYWHEEL_DIAMETER_METERS = 0.1016;
+  /**
    * Maps Distance to RPM
    */
   private final InterpolatingDoubleTreeMap shooterTable = new InterpolatingDoubleTreeMap();
@@ -80,6 +84,16 @@ public class ShootOnTheMoveCommand extends Command
     {shooterTable.put(entry.getFirst().in(Meters), entry.getSecond().in(RPM));}
 
     addRequirements();
+  }
+
+  /**
+   * Converts linear exit velocity (m/s) to flywheel RPM
+   * @param exitVelocity the desired exit velocity in m/s
+   * @return the required flywheel RPM
+   */
+  private double calculateRPMFromVelocity(double exitVelocity) {
+    double flywheelRadiusMeters = FLYWHEEL_DIAMETER_METERS / 2;
+    return (exitVelocity * 60) / (2 * Math.PI * flywheelRadiusMeters);
   }
 
   @Override
@@ -133,12 +147,14 @@ public class ShootOnTheMoveCommand extends Command
 
     SmartDashboard.putNumber("SOTM: Clamped Turret Angle", clampedTurretAngle);
     SmartDashboard.putNumber("SOTM: Clamped Hood Angle", clampedPitch);
-    SmartDashboard.putNumber("SOTM: Total Exit Velocity", totalExitVelocity);
+    SmartDashboard.putNumber("SOTM: Total Exit Velocity", calculateRPMFromVelocity(totalExitVelocity));
 
     // 7. SET OUTPUTS
     m_turret.setAngleSetpoint(Degrees.of(clampedTurretAngle)); // Could also just set the swerveDrive to point towards this angle like AlignToGoal
-    // m_hood.setAngle(Degrees.of(Math.toDegrees(clampedPitch)));
-    // m_launcher.setRPM(MetersPerSecond.of(totalExitVelocity));
+    //m_hood.setAngle(Degrees.of(Math.toDegrees(clampedPitch)));
+    
+    double requiredRPM = calculateRPMFromVelocity(totalExitVelocity);
+    //m_launcher.setVelocitySetpoint(RPM.of(requiredRPM));
     // NOTE - Disabled for testing
   }
 
