@@ -160,8 +160,8 @@ public class RobotContainer {
 		/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
          DriveController.start().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
 
-		DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
-     	DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
+		//DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
+     	//DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
 
 		DriveController.b().onTrue(SuperStructure.SetIntakePWR(-0.8)); // This should should be neative to run the intake in
 		DriveController.y().onTrue(SuperStructure.SetIntakePWR(0));
@@ -190,12 +190,12 @@ public class RobotContainer {
 
 		// DriveController.x().onTrue(SuperStructure.SetHoodandFlywheelZero());
 
-		// DriveController.leftBumper().onTrue(SuperStructure.SetHopperPos());
-		// DriveController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3)).or(DriveController.rightBumper().onTrue(
-		// 	SuperStructure.SetHopperExtenderPower(-0.3)
-		// )).whileFalse(
-		// 	SuperStructure.SetHopperExtenderPower(0)
-		// );
+		DriveController.leftBumper().onTrue(SuperStructure.SetHopperPos());
+		DriveController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3)).or(DriveController.rightBumper().onTrue(
+			SuperStructure.SetHopperExtenderPower(-0.3)
+		)).whileFalse(
+			SuperStructure.SetHopperExtenderPower(0)
+		);
 
 		DriveController.back().onTrue(new ShootOnTheMoveCommand(drivebase::getPose, 
 																drivebase::getRobotVelocity, 

@@ -162,8 +162,8 @@ public class TurretSubsystem extends SubsystemBase {
 	}
 
 	public void setAngleSetpoint(Angle measure) {
-		Angle min = Degrees.of(-60);
-		Angle max = Degrees.of(60);
+		Angle min = Degrees.of(-90);
+		Angle max = Degrees.of(90);
 		double valDeg = measure.in(Degrees);
 		double clampedDeg = Math.max(min.in(Degrees), Math.min(max.in(Degrees), valDeg));
 		turret.setMechanismPositionSetpoint(Degrees.of(clampedDeg));

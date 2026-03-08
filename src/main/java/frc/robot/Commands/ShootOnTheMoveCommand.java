@@ -10,6 +10,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -131,8 +132,23 @@ public class ShootOnTheMoveCommand extends Command
     Translation2d shotVec     = targetVec.div(dist).times(idealHorizontalSpeed).minus(robotVelVec);
 
     // 5. CONVERT TO CONTROLS
-    double turretAngle        = shotVec.getAngle().getDegrees();
-    double newHorizontalSpeed = shotVec.getNorm();
+    double fieldSpaceTurretAngle = shotVec.getAngle().getDegrees();
+    double newHorizontalSpeed    = shotVec.getNorm();
+
+    // 5b. ACCOUNT FOR ROBOT ROTATION (Gyro compensation)
+    // Convert from field-space to robot-space by subtracting the robot's heading
+    double robotHeadingDegrees = robotPose.get().getRotation().getDegrees();
+    SmartDashboard.putNumber("SOTM: Robot Heading", robotHeadingDegrees);
+
+    // Add 180 degrees because turret is mounted facing backwards
+    double turretAngle = fieldSpaceTurretAngle - robotHeadingDegrees - 180;
+    // Normalize angle to [-180, 180] range using proper modulo arithmetic
+    while (turretAngle > 180) {
+      turretAngle -= 360;
+    }
+    while (turretAngle < -180) {
+      turretAngle += 360;
+    }
 
     // 6. SOLVE FOR NEW PITCH/RPM
     // Assuming constant total exit velocity, variable hood:
@@ -141,7 +157,10 @@ public class ShootOnTheMoveCommand extends Command
     double ratio    = Math.min(newHorizontalSpeed / totalExitVelocity, 1.0);
     double newPitch = Math.acos(ratio);
     double clampedPitch = MathUtil.clamp(newPitch, HoodSubsystem.softLimitMin.in(Rotations), HoodSubsystem.softLimitMax.in(Rotations));
-    double clampedTurretAngle = -MathUtil.clamp(turretAngle, TurretSubsystem.softLimitMin.in(Degrees), TurretSubsystem.softLimitMax.in(Degrees));
+    // Convert turret angle to rotations to match soft limit units, then clamp
+    double turretAngleRotations = turretAngle / 360.0;
+    double clampedTurretAngleRotations = MathUtil.clamp(turretAngleRotations, TurretSubsystem.softLimitMin.in(Rotations), TurretSubsystem.softLimitMax.in(Rotations));
+    double clampedTurretAngle = -clampedTurretAngleRotations * 360.0;
     //Drive team can move robot 
 
 
@@ -151,8 +170,7 @@ public class ShootOnTheMoveCommand extends Command
 
     // 7. SET OUTPUTS
     m_turret.setAngleSetpoint(Degrees.of(clampedTurretAngle)); // Could also just set the swerveDrive to point towards this angle like AlignToGoal
-    //m_hood.setAngle(Degrees.of(Math.toDegrees(clampedPitch)));
-    
+    m_hood.setAngle(Degrees.of(Math.toDegrees(clampedPitch)));
     double requiredRPM = calculateRPMFromVelocity(totalExitVelocity);
     //m_launcher.setVelocitySetpoint(RPM.of(requiredRPM));
     // NOTE - Disabled for testing
