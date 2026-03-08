@@ -74,7 +74,7 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("Battery Voltage", voltage);
 
 		double MatchTime = DriverStation.getMatchTime();
-		SmartDashboard.putNumber("Match Time", MatchTime);	
+		SmartDashboard.putNumber("Match Time", MatchTime);
 
 		String gameData = DriverStation.getGameSpecificMessage();
       	SmartDashboard.putString("FMS Game Data", gameData);
