@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
 
 import java.io.File;
@@ -42,7 +43,9 @@ public class RobotContainer {
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),"swerve"));
 
 	// Goal Position for SOTM
-	private Pose2d goalPos = new Pose2d(Inches.of(182.11), Inches.of(158.84), new Rotation3d(0, 0, 0).toRotation2d()); // Note - Update ME
+	private Pose2d goalPos = new Pose2d(Inches.of(182.11), Inches.of(158.84), new Rotation3d(0, 0, 0).toRotation2d()); // Note - Update ME\
+	// Drive to pose testing poition (Red alliance)
+	private Pose2d DriveToPose = new Pose2d(Meters.of(14), Meters.of(1.5), new Rotation3d(0, 0, 0).toRotation2d()); // Note - Update ME
 
 	//======================Auton_Config=========================
  	 private final Command Teston;
@@ -173,6 +176,7 @@ public class RobotContainer {
 
 	/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
     DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+	// DriveController.x().whileTrue(drivebase.driveToPose(DriveToPose));
 
 	// This is our boost control Right Trigger
 	DriveController.axisGreaterThan(3, 0.01).onChange(Commands.runOnce(() -> {
