@@ -45,7 +45,7 @@ public class RobotContainer {
 	private Pose2d goalPos = new Pose2d(Inches.of(182.11), Inches.of(158.84), new Rotation3d(0, 0, 0).toRotation2d()); // Note - Update ME
 
 	//======================Auton_Config=========================
- 	 private final Command teston;
+ 	 private final Command Teston;
  	 SendableChooser<Command> m_chooser;
 	 
  	 //=======================================================
@@ -97,9 +97,9 @@ public class RobotContainer {
 		configureBindings();
 		DriverStation.silenceJoystickConnectionWarning(true);
 		//Secondary Auton Configs
-	 	teston = drivebase.getAutonomousCommand("teston");
+	 	Teston = drivebase.getAutonomousCommand("Teston");
 		m_chooser = new SendableChooser<Command>();
-		m_chooser.addOption("teston", teston);
+		m_chooser.addOption("Teston", Teston);
 		SmartDashboard.putData(m_chooser);
 	}
 
