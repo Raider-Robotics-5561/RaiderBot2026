@@ -73,7 +73,7 @@ public class VisionSubsystem extends SubsystemBase
                                   0.50209),
                 VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(20)), VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(10))),
 
-        //Right (Robot Relative) Side Camera
+        // Right (Robot Relative) Side Camera
         Camera3("Camera3",
                 new Rotation3d(0, Units.degreesToRadians(-12.5), Units.degreesToRadians(-90)),
                 new Translation3d(0.2664, 
