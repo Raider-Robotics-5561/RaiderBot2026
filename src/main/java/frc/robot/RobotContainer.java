@@ -131,21 +131,7 @@ public class RobotContainer {
 		Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
 		drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 	
-
-	// if (Robot.isSimulation())
-	// {
-	// DriveController.start().onTrue(Commands.runOnce(() ->
-	// drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-	// DriveController.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
-
-	// REV 11--1817
-
-	/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
-	DriveController.start().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
-
-	// DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
-	// DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
-
+	// Operator Controls
 	// Intake Rollers
 	OperatorController.b().onTrue(SuperStructure.SetIntakePWR(-0.8)); // This should should be neative to run the intake
 																		// in
@@ -155,17 +141,17 @@ public class RobotContainer {
 	OperatorController.povLeft().onTrue(SuperStructure.HoodSubsystem.homing());
 
 	// Kicker and Belly Control
-	OperatorController.a().onTrue(SuperStructure.SetKickerAndBelly());OperatorController.x().onTrue(SuperStructure.SetKickerBellyOff());OperatorController.povUp().onTrue(SuperStructure.BackDrveKicker());
+	OperatorController.a().onTrue(SuperStructure.SetKickerAndBelly());
+	OperatorController.x().onTrue(SuperStructure.SetKickerBellyOff());
+	OperatorController.povUp().onTrue(SuperStructure.BackDriveKicker());
 
 	// Hopper Extender Control
-	OperatorController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3)).or(OperatorController.rightBumper().onTrue(SuperStructure.SetHopperExtenderPower(-0.3))).whileFalse(SuperStructure.SetHopperExtenderPower(0));
+	OperatorController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3))
+	.or(OperatorController.rightBumper().onTrue(SuperStructure.SetHopperExtenderPower(-0.3)))
+	.whileFalse(SuperStructure.SetHopperExtenderPower(0));
 
-	// SOTM control
-	DriveController.x().onTrue(new ShootOnTheMoveCommand(drivebase::getPose,drivebase::getRobotVelocity,goalPos,SuperStructure.TurretSubsytem,SuperStructure.HoodSubsystem,SuperStructure.FlywheelSubsystem));
-
-	if(ManualControl==true)
-
-	{
+	/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
+	if(ManualControl==true){
 		// Manual Dashboard control for hood, flywheel, and turret
 		DriveController.y().onTrue(Commands.runOnce(() -> {
 			double hoodReq = SmartDashboard.getNumber("Hood Angle Requested", 0);
@@ -178,35 +164,17 @@ public class RobotContainer {
 		}, SuperStructure.HoodSubsystem, SuperStructure.TurretSubsytem, SuperStructure.FlywheelSubsystem));
 	}
 
-	/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
 	DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
 	// DriveController.x().whileTrue(drivebase.driveToPose(DriveToPose));
+	DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
+	DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
+	DriveController.x().onTrue(new ShootOnTheMoveCommand(drivebase::getPose,
+															drivebase::getRobotVelocity,
+															goalPos,
+															SuperStructure.TurretSubsytem,
+															SuperStructure.HoodSubsystem,
+															SuperStructure.FlywheelSubsystem));
 
-	DriveController.x().onTrue(SuperStructure.HoodSubsystem.homing());
-
-	DriveController.povLeft().onTrue(SuperStructure.SetAllMid());DriveController.povRight().onTrue(SuperStructure.SetAllMidOff());DriveController.povUp().onTrue(SuperStructure.BackDrveKicker());
-
-	// DriveController.x().onTrue(SuperStructure.SetHoodandFlywheelZero());
-
-	DriveController.leftBumper().onTrue(SuperStructure.SetHopperPos());DriveController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3)).or(DriveController.rightBumper().onTrue(SuperStructure.SetHopperExtenderPower(-0.3))).whileFalse(SuperStructure.SetHopperExtenderPower(0));
-
-	DriveController.back().onTrue(new ShootOnTheMoveCommand(drivebase::getPose,drivebase::getRobotVelocity,goalPos,SuperStructure.TurretSubsytem,SuperStructure.HoodSubsystem,SuperStructure.FlywheelSubsystem));
-
-	// DriveController.povLeft().onTrue(SuperStructure.SetTurretPWR(0.2)).or(DriveController.povRight().onTrue(
-	// SuperStructure.SetTurretPWR(-0.2)
-	// )).whileFalse(
-	// SuperStructure.SetTurretPWR(0)
-	// );
-
-	// DriveController.povUp().onTrue(HoodSubsystem.SetHoodAngleDashboard());
-	// DriveController.povDown().onTrue(SuperStructure.homing(Amps.of(35)));
-
-	// NOTE - What is this?
-	// 0.1)).or(DriveController.povDown().onTrue(
-	// SuperStructure.SetHoodPWR(-0.1)
-	// )).whileFalse(
-	// SuperStructure.SetHoodPWR(0)
-	// );
 
 	// This is our boost control Right Trigger
 	DriveController.axisGreaterThan(3,0.01).onChange(Commands.runOnce(()->
@@ -220,7 +188,6 @@ public class RobotContainer {
 		driveAngularVelocity.scaleTranslation(0.25);
 		driveAngularVelocity.scaleRotation(0.15);
 	}).repeatedly());
-
 	}
 
 	// Gets the selected autonomous command.

@@ -82,7 +82,7 @@ public class SuperStructure extends SubsystemBase {
 		.andThen(HopperRollerSubsystem.setVelocity(RPM.of(2500))).repeatedly());
 	}
 
-	public Command BackDrveKicker() {
+	public Command BackDriveKicker() {
 	return
 		kickerSubsystem.setDutyCycle(0.8);
 	}
