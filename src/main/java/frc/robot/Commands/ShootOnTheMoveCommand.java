@@ -22,16 +22,8 @@ import frc.robot.subsystems.TurretSystem.TurretSubsystem;
 
 import java.util.List;
 import java.util.function.Supplier;
-//NOTE - Check below
-//CONTINUE WORKING ON THE ENTIRE SOTM METHOD FOLLOWING THIS REPO: https://github.com/BroncBotz3481/FRC2026/blob/main/src/main/java/frc/robot/systems/ShooterTargetingSystem.java
-//Currently "copying" their method but will work to fit our needs. 12am code time isnt the time for this. 
-//Tomorrow will be the time to make this work for us as well as adding 2 controllers.
 
 
-
-/**
- * Largely written by Eeshwar based off their blog at https://blog.eeshwark.com/robotblog/shooting-on-the-fly
- */
 public class ShootOnTheMoveCommand extends Command
 {
 
@@ -106,12 +98,6 @@ public class ShootOnTheMoveCommand extends Command
   @Override
   public void execute()
   {
-    // Please look here for the original authors work!
-    // https://blog.eeshwark.com/robotblog/shooting-on-the-fly
-    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    // YASS did not come up with this
-    // -------------------------------------------------------
-
     var robotSpeed = fieldOrientedChassisSpeeds.get();
     // 1. LATENCY COMP
     Translation2d futurePos = robotPose.get().getTranslation().plus(
