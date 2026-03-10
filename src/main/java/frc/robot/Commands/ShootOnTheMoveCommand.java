@@ -72,7 +72,10 @@ public class ShootOnTheMoveCommand extends Command
                              Pair.of(Meters.of(2.5), RPM.of(3000)),
                              Pair.of(Meters.of(3), RPM.of(3100)),
                              Pair.of(Meters.of(3.5), RPM.of(3250)),
-                             Pair.of(Meters.of(4), RPM.of(3500)))
+                             Pair.of(Meters.of(4), RPM.of(3500)),
+                             Pair.of(Meters.of(4.5), RPM.of(4000)),
+                             Pair.of(Meters.of(5), RPM.of(4500)),
+                             Pair.of(Meters.of(5.5), RPM.of(5500)))
     )
     {shooterTable.put(entry.getFirst().in(Meters), entry.getSecond().in(RPM));}
 
