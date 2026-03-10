@@ -64,7 +64,7 @@ public class SuperStructure extends SubsystemBase {
 	// //.alongWith(HoodSubsystem.setAngle(Rotations.of(2)));
 	// }
 
-	public Command SetKickerBellyOff() {
+	public Command SetKickerAndBellyOff() {
 	return
 	//FlywheelSubsystem.setVelocity(RPM.of(0))
 	//.alongWith(_HoodSubsystem.homing(Amps.of(20))
@@ -74,9 +74,6 @@ public class SuperStructure extends SubsystemBase {
 
 	public Command SetKickerAndBelly() {
 	return
-		//FlywheelSubsystem.setVelocity(RPM.of(0))//-3500))
-		//HoodSubsystem.setAngle(Rotations.of(0.0))
-		// .alongWith(HoodSubsystem.setAngle(Rotations.of(1)))
 		kickerSubsystem.setDutyCycle(-0.9)
 		.alongWith(new WaitCommand(1.0)
 		.andThen(HopperRollerSubsystem.setVelocity(RPM.of(2500))).repeatedly());
@@ -90,13 +87,14 @@ public class SuperStructure extends SubsystemBase {
 	
 	//start hopper NEED TO FIX
 	public Command SetHopperPos() {
-		return HopperExtenderSubsystem.setHeight(Meters.of(30));
-				//.alongWith(new WaitCommand(2).andThen(() -> HopperExtenderSubsystem.set(0)));
+		return HopperExtenderSubsystem.setHeight(Meters.of(30))
+									  .andThen(HopperExtenderSubsystem.stop());
+				
 	}
 
 	public Command SetHopperPosZero() {
-		return HopperExtenderSubsystem.setHeight(Meters.of(0));
-			  // .andThen(() -> HopperExtenderSubsystem.Hoppersmc.stopClosedLoopController());
+		return HopperExtenderSubsystem.setHeight(Meters.of(0))
+									  .andThen(HopperExtenderSubsystem.stop());
 	}
 	//end hopper
 

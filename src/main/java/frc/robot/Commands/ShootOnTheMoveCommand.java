@@ -24,7 +24,7 @@ public class ShootOnTheMoveCommand extends Command
 
   private final Supplier<Pose2d>        robotPose;
   private final Supplier<ChassisSpeeds> fieldOrientedChassisSpeeds;
-  private final Pose2d                  goalPose;
+  private final Pose2d                  goalPosee;
 
   private TurretSubsystem m_turret;
   // HoodSubsystem disabled - hood not in use
@@ -67,7 +67,7 @@ public class ShootOnTheMoveCommand extends Command
 
     robotPose = currentPose;
     this.fieldOrientedChassisSpeeds = fieldOrientedChassisSpeeds;
-    this.goalPose = goal;
+    this.goalPosee = goal;
 
     // Build the interpolation table from hardcoded defaults on first construction.
     // Call rebuildFromDashboard() (bind it to a button) to reload from NT/dashboard.
@@ -130,7 +130,7 @@ public class ShootOnTheMoveCommand extends Command
                                                                    );
 
     // 2. GET TARGET VECTOR
-    Translation2d goalLocation = goalPose.getTranslation();
+    Translation2d goalLocation = goalPosee.getTranslation();
     Translation2d targetVec    = goalLocation.minus(futurePos);
     double        dist         = targetVec.getNorm();
 

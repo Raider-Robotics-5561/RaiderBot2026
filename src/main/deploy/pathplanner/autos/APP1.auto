@@ -5,39 +5,60 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Allience Path Pos1(Left)"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "DeployHopper"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeRollerOn"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Allience Path Pos1(Left)"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "wait",
+          "type": "sequential",
           "data": {
-            "waitTime": 3.5
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "DeployHopper"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 9.5
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeRollerOn"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootOnTheMoveCommand"
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 8.0
+                }
+              },
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ShootOnTheMoveCommand"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "BellyFeed"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]
