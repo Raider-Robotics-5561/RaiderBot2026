@@ -89,7 +89,7 @@ public class TurretSubsystem extends SubsystemBase {
 	private final SmartMotorController turretSMC = new TalonFXWrapper(turretMotor, DCMotor.getKrakenX44(1),
 			motorConfig);
 	private final PivotConfig turretConfig = new PivotConfig(turretSMC)
-			.withStartingPosition(Degrees.of(abs_encoder.getAngleDegrees())) // Starting
+			// .withStartingPosition(Degrees.of(abs_encoder.getAngleDegrees())) // Starting
 			// position of the Pivot
 			// .withWrapping(Degrees.of(0), Degrees.of(360)) // Wrapping enabled bc the
 			// pivot can spin

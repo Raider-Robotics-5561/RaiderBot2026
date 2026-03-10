@@ -39,7 +39,7 @@ public class ShootOnTheMoveCommand extends Command
   /**
    * Time in seconds between when the robot is told to move and when the shooter actually shoots.
    */
-  private final double                     latency      = 0.15;
+  private final double                     latency      = 0.001;
   /**
    * Flywheel diameter in meters (4 inches)
    */
@@ -109,9 +109,13 @@ public class ShootOnTheMoveCommand extends Command
     Translation2d targetVec    = goalLocation.minus(futurePos);
     double        dist         = targetVec.getNorm();
 
+    SmartDashboard.putNumber("SOTM: dist", dist);
+
     // 3. CALCULATE IDEAL SHOT (Stationary)
     // Note: This returns HORIZONTAL velocity component
     double idealHorizontalSpeed = shooterTable.get(dist);
+
+    SmartDashboard.putNumber("SOTM: Ideal Horizontal Speed", idealHorizontalSpeed);
 
     // 4. VECTOR SUBTRACTION
     Translation2d robotVelVec = new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond);
@@ -137,8 +141,11 @@ public class ShootOnTheMoveCommand extends Command
     }
 
     // 6. SOLVE FOR NEW PITCH/RPM
-    // Assuming constant total exit velocity, variable hood:
-    double totalExitVelocity = 15.0; // m/s
+    // Get RPM from shooter table based on distance
+    double requiredRPM = -shooterTable.get(dist);
+    
+    // Convert RPM back to exit velocity to calculate pitch
+    double totalExitVelocity = (requiredRPM * 2 * Math.PI * (FLYWHEEL_DIAMETER_METERS / 2)) / 60;
     // Clamp to avoid domain errors if we need more speed than possible
     double ratio    = Math.min(newHorizontalSpeed / totalExitVelocity, 1.0);
     double newPitch = Math.acos(ratio);
@@ -152,13 +159,12 @@ public class ShootOnTheMoveCommand extends Command
 
     SmartDashboard.putNumber("SOTM: Clamped Turret Angle", clampedTurretAngle);
     SmartDashboard.putNumber("SOTM: Clamped Hood Angle", clampedPitch);
-    SmartDashboard.putNumber("SOTM: Total Exit Velocity", calculateRPMFromVelocity(totalExitVelocity));
+    SmartDashboard.putNumber("SOTM: Required RPM", requiredRPM);
 
     // 7. SET OUTPUTS
     m_turret.setAngleSetpoint(Degrees.of(clampedTurretAngle)); // Could also just set the swerveDrive to point towards this angle like AlignToGoal
     m_hood.setAngle(Degrees.of(Math.toDegrees(clampedPitch)));
-    double requiredRPM = calculateRPMFromVelocity(totalExitVelocity);
-    //m_launcher.setVelocitySetpoint(RPM.of(requiredRPM));
+    m_launcher.setVelocitySetpoint(RPM.of(requiredRPM));
     // NOTE - Disabled for testing
   }
 
@@ -174,6 +180,8 @@ public class ShootOnTheMoveCommand extends Command
   @Override
   public void end(boolean interrupted)
   {
-
+    // Stop all subsystems when command ends
+    m_launcher.setVelocitySetpoint(RPM.of(0));
+    m_turret.setAngleSetpoint(Degrees.of(0));
   }
 }

@@ -36,7 +36,7 @@ public class HopperExtenderSubsystem extends SubsystemBase {
 	private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
       // Mechanism Circumference is the distance traveled by each mechanism rotation converting rotations to meters.
       .withMechanismCircumference(Meters.of(Inches.of(19.4882).in(Meters) * 18)) //- Fix to be correct
-			.withClosedLoopController(6.6544, 0, 4.833)
+			.withClosedLoopController(0.5, 0, 0)
 			.withGearing(new MechanismGearing(3))
 			.withIdleMode(MotorMode.COAST)
 			.withTelemetry("HopperExtender", TelemetryVerbosity.HIGH)
@@ -49,7 +49,7 @@ public class HopperExtenderSubsystem extends SubsystemBase {
 			// .withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
 			.withControlMode(ControlMode.CLOSED_LOOP);
 
-	private final SmartMotorController Hoppersmc = new SparkWrapper(HopperExtender, DCMotor.getNEO(1), motorConfig);
+	public final SmartMotorController Hoppersmc = new SparkWrapper(HopperExtender, DCMotor.getNEO(1), motorConfig);
 
 	private ElevatorConfig HopperConfig = new ElevatorConfig(Hoppersmc)
       .withStartingHeight(Meters.of(0))
@@ -77,7 +77,7 @@ public class HopperExtenderSubsystem extends SubsystemBase {
    * @return A Command
    */
   // public Command setHeightAndStop(Distance height) {
-	//  return Hopper.runTo(height);
+	//  return Hopper.run(height);
 	// }
   
   /**
@@ -107,4 +107,5 @@ public class HopperExtenderSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
     Hopper.simIterate();
   }
+  
 }

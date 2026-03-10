@@ -16,6 +16,8 @@ import static edu.wpi.first.units.Units.RPM;
 import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Commands.ClimberDownCommand;
@@ -37,7 +39,7 @@ public class RobotContainer {
 
 	// NOTE - This is for Dashboard control - True = Dashbaord setting enabled,
 	// False = no dashboard control
-	boolean ManualControl = false;
+	boolean ManualControl = true;
 
 	// Swerve initialization
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
@@ -104,9 +106,31 @@ public class RobotContainer {
 	// The container for the robot. Contains subsystems, OI devices, and commands.
 
 	public RobotContainer() {
-		configureBindings();
-		DriverStation.silenceJoystickConnectionWarning(true);
+		NamedCommands.registerCommand("ShootOnTheMoveCommand", 
+  				new ShootOnTheMoveCommand(drivebase::getPose,
+										  drivebase::getRobotVelocity,
+										  goalPos,
+										  SuperStructure.TurretSubsytem,
+										  SuperStructure.HoodSubsystem,
+										  SuperStructure.FlywheelSubsystem));
+										
 
+		NamedCommands.registerCommand("DeployHopper", SuperStructure.SetHopperPos());
+				
+		
+		NamedCommands.registerCommand("RetractHopper", Commands.run(() -> {
+  				SuperStructure.SetHopperPosZero();
+				}));
+		
+		NamedCommands.registerCommand("IntakeRollerOn", SuperStructure.SetIntakePWR(-0.8));
+		NamedCommands.registerCommand("BellyFeed", SuperStructure.SetKickerAndBelly());
+
+  				
+
+		NamedCommands.registerCommand("IntakeRollerOff", Commands.run(() -> {
+  				SuperStructure.SetIntakePWR(0);
+				}));	
+				
 		// Secondary Auton Configs
 		Teston = drivebase.getAutonomousCommand("Teston");
 		APP1 = drivebase.getAutonomousCommand("APP1");
@@ -123,7 +147,11 @@ public class RobotContainer {
 		m_chooser.addOption("Nuetral_Right", Nuetral_Right);
 		m_chooser.addOption("A_Center_1", A_Center_1);
 		SmartDashboard.putData(m_chooser);
-	}
+
+		configureBindings();
+		DriverStation.silenceJoystickConnectionWarning(true);
+
+		}
 
 	// Button Bindings for Drive and Operator controllers
 	private void configureBindings() {
@@ -165,15 +193,20 @@ public class RobotContainer {
 	}
 
 	DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+	DriveController.povUp().onTrue(SuperStructure.SetHopperPos());
+	DriveController.povDown().onTrue(SuperStructure.SetHopperPosZero());
+
 	// DriveController.x().whileTrue(drivebase.driveToPose(DriveToPose));
 	DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
 	DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
-	DriveController.x().onTrue(new ShootOnTheMoveCommand(drivebase::getPose,
+	DriveController.x().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
 															drivebase::getRobotVelocity,
 															goalPos,
 															SuperStructure.TurretSubsytem,
 															SuperStructure.HoodSubsystem,
 															SuperStructure.FlywheelSubsystem));
+						
+															
 
 
 	// This is our boost control Right Trigger

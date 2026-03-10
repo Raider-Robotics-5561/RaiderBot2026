@@ -78,7 +78,7 @@ public class SuperStructure extends SubsystemBase {
 		//HoodSubsystem.setAngle(Rotations.of(0.0))
 		// .alongWith(HoodSubsystem.setAngle(Rotations.of(1)))
 		kickerSubsystem.setDutyCycle(-0.9)
-		.alongWith(new WaitCommand(1.25)
+		.alongWith(new WaitCommand(1.0)
 		.andThen(HopperRollerSubsystem.setVelocity(RPM.of(2500))).repeatedly());
 	}
 
@@ -87,29 +87,16 @@ public class SuperStructure extends SubsystemBase {
 		kickerSubsystem.setDutyCycle(0.8);
 	}
 
-	// public Command SetTurretPWR(double power) {
-	// return TurretSubsytem.setDutyCycle(power);
-	// }
-
-	// public Command SetTurretangle(double angle) {
-	// return TurretSubsytem.setAngle(Rotations.of(angle));
-	// }
-
-	// public Command SetHoodPWR(double power) {
-	// return _HoodSubsystem.setDutyCycle(power);
-	// }
-
-	// public Command SetHoodAngle() {
-	// 	return _HoodSubsystem.setAngle(Rotations.of(0.1));//Rotation.of(5));
-	// }
 	
 	//start hopper NEED TO FIX
 	public Command SetHopperPos() {
-		return HopperExtenderSubsystem.setHeight(Meters.of(0.5));
+		return HopperExtenderSubsystem.setHeight(Meters.of(30));
+				//.alongWith(new WaitCommand(2).andThen(() -> HopperExtenderSubsystem.set(0)));
 	}
 
 	public Command SetHopperPosZero() {
-		return HopperExtenderSubsystem.setHeight(Meters.of(-0.3));
+		return HopperExtenderSubsystem.setHeight(Meters.of(0));
+			  // .andThen(() -> HopperExtenderSubsystem.Hoppersmc.stopClosedLoopController());
 	}
 	//end hopper
 
