@@ -39,21 +39,16 @@ public class RobotContainer {
 
 	// NOTE - This is for Dashboard control - True = Dashbaord setting enabled,
 	// False = no dashboard control
-	boolean ManualControl = true;
+	boolean ManualControl = false;
 
 	// Swerve initialization
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
 	// Goal Position for SOTM
-	private Pose2d goalPos = new Pose2d(Inches.of(182.11), Inches.of(158.84), new Rotation3d(0, 0, 0).toRotation2d()); // Note
+	private Pose2d goalPose = new Pose2d(Inches.of(182.11), Inches.of(158.84), new Rotation3d(0, 0, 0).toRotation2d()); // Note
 																														// -
 																														// Update
 																														// ME\
-	// Drive to pose testing poition (Red alliance)
-	private Pose2d DriveToPose = new Pose2d(Meters.of(14), Meters.of(1.5), new Rotation3d(0, 0, 0).toRotation2d()); // Note
-																													// -
-																													// Update
-																													// ME
 
 	// ======================Auton_Config=========================
 	private final Command Teston;
@@ -106,32 +101,20 @@ public class RobotContainer {
 	// The container for the robot. Contains subsystems, OI devices, and commands.
 
 	public RobotContainer() {
+		// Secondary Auton Configs
 		NamedCommands.registerCommand("ShootOnTheMoveCommand", 
-  				new ShootOnTheMoveCommand(drivebase::getPose,
+  					  new ShootOnTheMoveCommand(drivebase::getPose,
 										  drivebase::getRobotVelocity,
-										  goalPos,
+										  goalPose,
 										  SuperStructure.TurretSubsytem,
 										  SuperStructure.HoodSubsystem,
 										  SuperStructure.FlywheelSubsystem));
-										
-
 		NamedCommands.registerCommand("DeployHopper", SuperStructure.SetHopperPos());
-				
-		
-		NamedCommands.registerCommand("RetractHopper", Commands.run(() -> {
-  				SuperStructure.SetHopperPosZero();
-				}));
-		
+		NamedCommands.registerCommand("RetractHopper", SuperStructure.SetHopperPosZero());
 		NamedCommands.registerCommand("IntakeRollerOn", SuperStructure.SetIntakePWR(-0.8));
 		NamedCommands.registerCommand("BellyFeed", SuperStructure.SetKickerAndBelly());
+		NamedCommands.registerCommand("IntakeRollerOff", SuperStructure.SetIntakePWR(0));
 
-  				
-
-		NamedCommands.registerCommand("IntakeRollerOff", Commands.run(() -> {
-  				SuperStructure.SetIntakePWR(0);
-				}));	
-				
-		// Secondary Auton Configs
 		Teston = drivebase.getAutonomousCommand("Teston");
 		APP1 = drivebase.getAutonomousCommand("APP1");
 		APP2 = drivebase.getAutonomousCommand("APP2");
@@ -161,22 +144,32 @@ public class RobotContainer {
 	
 	// Operator Controls
 	// Intake Rollers
-	OperatorController.b().onTrue(SuperStructure.SetIntakePWR(-0.8)); // This should should be neative to run the intake
-																		// in
-	OperatorController.y().onTrue(SuperStructure.SetIntakePWR(0));
+	OperatorController.leftTrigger().whileTrue(SuperStructure.SetIntakePWR(-0.8))
+									.whileFalse(SuperStructure.SetIntakePWR(0));
+																		
+	
 
 	// Hood Homeing
-	OperatorController.povLeft().onTrue(SuperStructure.HoodSubsystem.homing());
+	OperatorController.a().onTrue(SuperStructure.HoodSubsystem.homing());
 
 	// Kicker and Belly Control
-	OperatorController.a().onTrue(SuperStructure.SetKickerAndBelly());
-	OperatorController.x().onTrue(SuperStructure.SetKickerBellyOff());
-	OperatorController.povUp().onTrue(SuperStructure.BackDriveKicker());
+	OperatorController.rightTrigger().whileTrue(SuperStructure.SetKickerAndBelly())
+									 .whileFalse(SuperStructure.SetKickerAndBellyOff());
+									 
+	OperatorController.x().onTrue(SuperStructure.BackDriveKicker());
 
 	// Hopper Extender Control
 	OperatorController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3))
 	.or(OperatorController.rightBumper().onTrue(SuperStructure.SetHopperExtenderPower(-0.3)))
 	.whileFalse(SuperStructure.SetHopperExtenderPower(0));
+
+	// SOTM
+	OperatorController.povDown().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
+																		drivebase::getRobotVelocity,
+																		goalPose,
+																		SuperStructure.TurretSubsytem,
+																		SuperStructure.HoodSubsystem,
+																		SuperStructure.FlywheelSubsystem));
 
 	/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
 	if(ManualControl==true){
@@ -193,21 +186,11 @@ public class RobotContainer {
 	}
 
 	DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-	DriveController.povUp().onTrue(SuperStructure.SetHopperPos());
-	DriveController.povDown().onTrue(SuperStructure.SetHopperPosZero());
 
-	// DriveController.x().whileTrue(drivebase.driveToPose(DriveToPose));
+	// Climber Control
 	DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
 	DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
-	DriveController.x().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
-															drivebase::getRobotVelocity,
-															goalPos,
-															SuperStructure.TurretSubsytem,
-															SuperStructure.HoodSubsystem,
-															SuperStructure.FlywheelSubsystem));
 						
-															
-
 
 	// This is our boost control Right Trigger
 	DriveController.axisGreaterThan(3,0.01).onChange(Commands.runOnce(()->

@@ -29,7 +29,7 @@ public class ShootOnTheMoveCommand extends Command
 
   private final Supplier<Pose2d>        robotPose;
   private final Supplier<ChassisSpeeds> fieldOrientedChassisSpeeds;
-  private final Pose2d                  goalPose;
+  private final Pose2d                  goalPosee;
 
   private TurretSubsystem m_turret;
   private HoodSubsystem m_hood;
@@ -62,7 +62,7 @@ public class ShootOnTheMoveCommand extends Command
 
     robotPose = currentPose;
     this.fieldOrientedChassisSpeeds = fieldOrientedChassisSpeeds;
-    this.goalPose = goal;
+    this.goalPosee = goal;
 
     // Test Results
     //MAKE MORE POINTS FOR DISTANCE, FLYWHEEL SPEED, HOOD ANGLE
@@ -108,7 +108,7 @@ public class ShootOnTheMoveCommand extends Command
                                                                    );
 
     // 2. GET TARGET VECTOR
-    Translation2d goalLocation = goalPose.getTranslation();
+    Translation2d goalLocation = goalPosee.getTranslation();
     Translation2d targetVec    = goalLocation.minus(futurePos);
     double        dist         = targetVec.getNorm();
 

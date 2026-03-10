@@ -107,5 +107,11 @@ public class HopperExtenderSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
     Hopper.simIterate();
   }
-  
+
+  public Command stop() {
+        return this.runOnce(() -> {
+        Hoppersmc.stopClosedLoopController();
+            Hoppersmc.setDutyCycle(0);
+        });
+    }
 }
