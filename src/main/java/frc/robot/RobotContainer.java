@@ -111,7 +111,6 @@ public class RobotContainer {
 										  drivebase::getRobotVelocity,
 										  goalPos,
 										  SuperStructure.TurretSubsytem,
-										  SuperStructure.HoodSubsystem,
 										  SuperStructure.FlywheelSubsystem));
 										
 
@@ -203,7 +202,6 @@ public class RobotContainer {
 															drivebase::getRobotVelocity,
 															goalPos,
 															SuperStructure.TurretSubsytem,
-															SuperStructure.HoodSubsystem,
 															SuperStructure.FlywheelSubsystem));
 						
 															
