@@ -7,17 +7,9 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.RPM;
-
+import static edu.wpi.first.units.Units.*;
 import java.io.File;
-
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Commands.ClimberDownCommand;
@@ -104,10 +96,10 @@ public class RobotContainer {
 		// Secondary Auton Configs
 		NamedCommands.registerCommand("ShootOnTheMoveCommand", 
   					  new ShootOnTheMoveCommand(drivebase::getPose,
-										  drivebase::getRobotVelocity,
-										  goalPose,
-										  SuperStructure.TurretSubsytem,
-										  SuperStructure.FlywheelSubsystem));
+										  		drivebase::getRobotVelocity,
+										  		goalPose,
+										  		SuperStructure.TurretSubsytem,
+										  		SuperStructure.FlywheelSubsystem));
 		NamedCommands.registerCommand("DeployHopper", SuperStructure.SetHopperPos());
 		NamedCommands.registerCommand("RetractHopper", SuperStructure.SetHopperPosZero());
 		NamedCommands.registerCommand("IntakeRollerOn", SuperStructure.SetIntakePWR(-0.8));
@@ -167,7 +159,6 @@ public class RobotContainer {
 																		drivebase::getRobotVelocity,
 																		goalPose,
 																		SuperStructure.TurretSubsytem,
-																		SuperStructure.HoodSubsystem,
 																		SuperStructure.FlywheelSubsystem));
 
 	/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -189,13 +180,6 @@ public class RobotContainer {
 	// Climber Control
 	DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
 	DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
-	DriveController.x().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
-															drivebase::getRobotVelocity,
-															goalPos,
-															SuperStructure.TurretSubsytem,
-															SuperStructure.HoodSubsystem,
-															SuperStructure.FlywheelSubsystem));
-						
 															
 
 

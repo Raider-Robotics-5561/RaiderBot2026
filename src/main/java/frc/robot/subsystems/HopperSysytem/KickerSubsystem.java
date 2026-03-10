@@ -1,13 +1,6 @@
 package frc.robot.subsystems.HopperSysytem;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -15,10 +8,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import java.util.function.Supplier;
-
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
@@ -42,7 +32,7 @@ public class KickerSubsystem extends SubsystemBase {
 			.withMotorInverted(false) // Pos (+) should be going into the turret
 			.withClosedLoopRampRate(Seconds.of(0.25))
 			.withOpenLoopRampRate(Seconds.of(0.25))
-			.withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557)) // TODO - Add correct FF values
+			.withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557)) 
 			.withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
 			.withControlMode(ControlMode.OPEN_LOOP);
 

@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.spark.config.FeedForwardConfig;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.Debouncer;
@@ -32,7 +31,6 @@ public class HoodSubsystem extends SubsystemBase {
 	final CANBus canbus = new CANBus("Turret");
 	TalonFX hoodMotor = new TalonFX(12, canbus);
 	public final Angle hardLowerLimit = Degrees.of(0);
-	private final Angle hardUpperLimit = Degrees.of(40);
 	public static final Angle softLimitMin = Degrees.of(0);
 	public static final Angle softLimitMax = Degrees.of(35);
 	public Angle HoodAngle = Degrees.of(0);

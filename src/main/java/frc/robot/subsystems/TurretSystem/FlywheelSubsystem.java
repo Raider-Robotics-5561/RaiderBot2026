@@ -46,7 +46,7 @@ public class FlywheelSubsystem extends SubsystemBase {
 			.withMotorInverted(false)
 			.withClosedLoopRampRate(Seconds.of(0.01))
 			.withOpenLoopRampRate(Seconds.of(0.25))
-			.withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557)) // TODO - Add correct FF values
+			.withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
 			.withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
 			.withControlMode(ControlMode.CLOSED_LOOP)
 			.withFollowers(Pair.of(new TalonFX(11, canbus), true));

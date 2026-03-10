@@ -1,28 +1,15 @@
 package frc.robot.util;
 
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.Seconds;
+
 import static edu.wpi.first.units.Units.*;
 
 
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Voltage;
-import frc.robot.subsystems.SwerveSubsystem;
+
 import frc.robot.subsystems.HopperSysytem.HopperExtenderSubsystem;
 import frc.robot.subsystems.HopperSysytem.HopperRollerSubsystem;
 import frc.robot.subsystems.HopperSysytem.IntakeSubsystem;
@@ -30,7 +17,6 @@ import frc.robot.subsystems.HopperSysytem.KickerSubsystem;
 import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
 import frc.robot.subsystems.TurretSystem.HoodSubsystem;
 import frc.robot.subsystems.TurretSystem.TurretSubsystem;
-import frc.robot.util.ShooterTargetingSystem.Shot;
 
 public class SuperStructure extends SubsystemBase {
 	public final FlywheelSubsystem 	  FlywheelSubsystem 	  = new FlywheelSubsystem();
