@@ -7,25 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Allience Path Pos2(Right)"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.25
+            "pathName": "TrenchShootLeft"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "DeployHopper"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 7.7
           }
         },
         {
@@ -37,7 +25,13 @@
         {
           "type": "named",
           "data": {
-            "name": "DeployHopper"
+            "name": "ShootOnTheMoveCommand"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "TrenchShootLeftRePos"
           }
         }
       ]

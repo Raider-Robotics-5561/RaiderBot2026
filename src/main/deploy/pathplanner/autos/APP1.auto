@@ -19,7 +19,7 @@
         {
           "type": "named",
           "data": {
-            "name": "IntakeRun"
+            "name": "DeployHopper"
           }
         },
         {
@@ -31,13 +31,13 @@
         {
           "type": "named",
           "data": {
-            "name": "IntakeStop"
+            "name": "IntakeRollerOn"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "TurretRun"
+            "name": "ShootOnTheMoveCommand"
           }
         }
       ]
