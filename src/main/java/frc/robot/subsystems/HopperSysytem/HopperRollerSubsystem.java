@@ -34,16 +34,16 @@ public class HopperRollerSubsystem extends SubsystemBase {
 
 	private SmartMotorControllerConfig HopperRollerConfig = new SmartMotorControllerConfig(this)
 			.withControlMode(ControlMode.CLOSED_LOOP)
-			.withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
+			.withClosedLoopController(1, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
 			.withSimClosedLoopController(1, 0, 0)
 			.withStatorCurrentLimit(Amps.of(40))
-			.withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+			.withFeedforward(new SimpleMotorFeedforward(0.5, 0.0001))
 			.withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
 			.withTelemetry("HopperRollerMotor", TelemetryVerbosity.HIGH)
 			.withGearing(new MechanismGearing(1))
 			.withMotorInverted(false)
 			.withIdleMode(MotorMode.COAST)
-			.withControlMode(ControlMode.OPEN_LOOP);
+			.withControlMode(ControlMode.CLOSED_LOOP);
 			//.withStatorCurrentLimit(Amps.of(40));
 
 	// Create our SmartMotorController from our Spark and config with the NEO.

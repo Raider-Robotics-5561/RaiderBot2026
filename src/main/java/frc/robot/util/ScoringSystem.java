@@ -70,6 +70,7 @@ public class ScoringSystem {
   public Command shootBall() {
 
     // just transfer and shoot
-    return m_turret.setAngle(Degrees.zero()).alongWith(m_flywheel.setVelocity(RPM.of(3500)), m_bellyrollers.setDutyCycle(0.6), m_kicker.indexShoot());
+   // return m_turret.setAngle(Degrees.zero()).alongWith(m_flywheel.setVelocity(RPM.of(3500)), m_bellyrollers.setDutyCycle(0.6), m_kicker.indexShoot());
+    return Commands.none();
   }
 }

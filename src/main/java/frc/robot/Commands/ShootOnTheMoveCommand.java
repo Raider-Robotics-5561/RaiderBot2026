@@ -10,8 +10,10 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TurretSystem.HoodSubsystem;
@@ -20,16 +22,8 @@ import frc.robot.subsystems.TurretSystem.TurretSubsystem;
 
 import java.util.List;
 import java.util.function.Supplier;
-//NOTE - Check below
-//CONTINUE WORKING ON THE ENTIRE SOTM METHOD FOLLOWING THIS REPO: https://github.com/BroncBotz3481/FRC2026/blob/main/src/main/java/frc/robot/systems/ShooterTargetingSystem.java
-//Currently "copying" their method but will work to fit our needs. 12am code time isnt the time for this. 
-//Tomorrow will be the time to make this work for us as well as adding 2 controllers.
 
 
-
-/**
- * Largely written by Eeshwar based off their blog at https://blog.eeshwark.com/robotblog/shooting-on-the-fly
- */
 public class ShootOnTheMoveCommand extends Command
 {
 
@@ -46,6 +40,10 @@ public class ShootOnTheMoveCommand extends Command
    * Time in seconds between when the robot is told to move and when the shooter actually shoots.
    */
   private final double                     latency      = 0.15;
+  /**
+   * Flywheel diameter in meters (4 inches)
+   */
+  private static final double              FLYWHEEL_DIAMETER_METERS = 0.1016;
   /**
    * Maps Distance to RPM
    */
@@ -68,13 +66,27 @@ public class ShootOnTheMoveCommand extends Command
 
     // Test Results
     //MAKE MORE POINTS FOR DISTANCE, FLYWHEEL SPEED, HOOD ANGLE
-    for (var entry : List.of(Pair.of(Meters.of(1), RPM.of((1000))),
-                             Pair.of(Meters.of(2), RPM.of(2000)),
-                             Pair.of(Meters.of(3), RPM.of(3000)))
+    for (var entry : List.of(Pair.of(Meters.of(1), RPM.of((0))),
+                             Pair.of(Meters.of(1.5), RPM.of(0)),
+                             Pair.of(Meters.of(2.0), RPM.of(2800)),
+                             Pair.of(Meters.of(2.5), RPM.of(3000)),
+                             Pair.of(Meters.of(3), RPM.of(3100)),
+                             Pair.of(Meters.of(3.5), RPM.of(3250)),
+                             Pair.of(Meters.of(4), RPM.of(3500)))
     )
     {shooterTable.put(entry.getFirst().in(Meters), entry.getSecond().in(RPM));}
 
     addRequirements();
+  }
+
+  /**
+   * Converts linear exit velocity (m/s) to flywheel RPM
+   * @param exitVelocity the desired exit velocity in m/s
+   * @return the required flywheel RPM
+   */
+  private double calculateRPMFromVelocity(double exitVelocity) {
+    double flywheelRadiusMeters = FLYWHEEL_DIAMETER_METERS / 2;
+    return (exitVelocity * 60) / (2 * Math.PI * flywheelRadiusMeters);
   }
 
   @Override
@@ -86,12 +98,6 @@ public class ShootOnTheMoveCommand extends Command
   @Override
   public void execute()
   {
-    // Please look here for the original authors work!
-    // https://blog.eeshwark.com/robotblog/shooting-on-the-fly
-    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    // YASS did not come up with this
-    // -------------------------------------------------------
-
     var robotSpeed = fieldOrientedChassisSpeeds.get();
     // 1. LATENCY COMP
     Translation2d futurePos = robotPose.get().getTranslation().plus(
@@ -112,8 +118,23 @@ public class ShootOnTheMoveCommand extends Command
     Translation2d shotVec     = targetVec.div(dist).times(idealHorizontalSpeed).minus(robotVelVec);
 
     // 5. CONVERT TO CONTROLS
-    double turretAngle        = shotVec.getAngle().getDegrees();
-    double newHorizontalSpeed = shotVec.getNorm();
+    double fieldSpaceTurretAngle = shotVec.getAngle().getDegrees();
+    double newHorizontalSpeed    = shotVec.getNorm();
+
+    // 5b. ACCOUNT FOR ROBOT ROTATION (Gyro compensation)
+    // Convert from field-space to robot-space by subtracting the robot's heading
+    double robotHeadingDegrees = robotPose.get().getRotation().getDegrees();
+    SmartDashboard.putNumber("SOTM: Robot Heading", robotHeadingDegrees);
+
+    // Add 180 degrees because turret is mounted facing backwards
+    double turretAngle = fieldSpaceTurretAngle - robotHeadingDegrees - 180;
+    // Normalize angle to [-180, 180] range using proper modulo arithmetic
+    while (turretAngle > 180) {
+      turretAngle -= 360;
+    }
+    while (turretAngle < -180) {
+      turretAngle += 360;
+    }
 
     // 6. SOLVE FOR NEW PITCH/RPM
     // Assuming constant total exit velocity, variable hood:
@@ -122,15 +143,23 @@ public class ShootOnTheMoveCommand extends Command
     double ratio    = Math.min(newHorizontalSpeed / totalExitVelocity, 1.0);
     double newPitch = Math.acos(ratio);
     double clampedPitch = MathUtil.clamp(newPitch, HoodSubsystem.softLimitMin.in(Rotations), HoodSubsystem.softLimitMax.in(Rotations));
-    double clampedTurretAngle = MathUtil.clamp(turretAngle, TurretSubsystem.softLimitMin.in(Degrees), TurretSubsystem.softLimitMax.in(Degrees));
+    // Convert turret angle to rotations to match soft limit units, then clamp
+    double turretAngleRotations = turretAngle / 360.0;
+    double clampedTurretAngleRotations = MathUtil.clamp(turretAngleRotations, TurretSubsystem.softLimitMin.in(Rotations), TurretSubsystem.softLimitMax.in(Rotations));
+    double clampedTurretAngle = -clampedTurretAngleRotations * 360.0;
     //Drive team can move robot 
 
 
-    // 7. SET OUTPUTS
-    m_turret.setAngle(Degrees.of(clampedTurretAngle)); // Could also just set the swerveDrive to point towards this angle like AlignToGoal
-    m_hood.setAngle(Degrees.of(Math.toDegrees(clampedPitch)));
-    m_launcher.setRPM(MetersPerSecond.of(totalExitVelocity));
+    SmartDashboard.putNumber("SOTM: Clamped Turret Angle", clampedTurretAngle);
+    SmartDashboard.putNumber("SOTM: Clamped Hood Angle", clampedPitch);
+    SmartDashboard.putNumber("SOTM: Total Exit Velocity", calculateRPMFromVelocity(totalExitVelocity));
 
+    // 7. SET OUTPUTS
+    m_turret.setAngleSetpoint(Degrees.of(clampedTurretAngle)); // Could also just set the swerveDrive to point towards this angle like AlignToGoal
+    m_hood.setAngle(Degrees.of(Math.toDegrees(clampedPitch)));
+    double requiredRPM = calculateRPMFromVelocity(totalExitVelocity);
+    //m_launcher.setVelocitySetpoint(RPM.of(requiredRPM));
+    // NOTE - Disabled for testing
   }
 
   @Override
