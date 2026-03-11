@@ -13,8 +13,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.util.TurretSystem.FlywheelSubsystem;
-import frc.robot.util.TurretSystem.TurretSubsystem;
+import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
+import frc.robot.subsystems.TurretSystem.TurretSubsystem;
 
 import java.util.function.Supplier;
 
@@ -133,18 +133,22 @@ public class ShootOnTheMoveCommand extends Command
   @Override
   public void execute()
   {
+    
+
+
     var robotSpeed = fieldOrientedChassisSpeeds.get();
+    
     // 1. LATENCY COMP
+    double totalLatency = latency; // start with base latency. will be updated after ToF calculation
     Translation2d futurePos = robotPose.get().getTranslation().plus(
-        new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond).times(latency)
-                                                                   );
+            new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond).times(totalLatency));
 
     // 2. GET TARGET VECTOR
     Translation2d goalLocation = goalPosee.getTranslation();
     Translation2d targetVec    = goalLocation.minus(futurePos);
     double        dist         = targetVec.getNorm();
-
     SmartDashboard.putNumber("SOTM: dist", dist);
+
 
     // 3. CALCULATE IDEAL SHOT (Stationary)
     // Note: shooterTable stores RPM, but we need m/s for vector math
@@ -156,12 +160,16 @@ public class ShootOnTheMoveCommand extends Command
 
     // 4. VECTOR SUBTRACTION
     Translation2d robotVelVec = new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond);
-    Translation2d shotVec     = targetVec.div(dist).times(idealHorizontalSpeedMs).plus(robotVelVec.times(1));
+    Translation2d shotVec     = targetVec.div(dist).times(idealHorizontalSpeedMs).minus(robotVelVec); //.times(1)); Why was this here?
 
     // 5. CONVERT TO CONTROLS
     double fieldSpaceTurretAngle = shotVec.getAngle().getDegrees();
     double newHorizontalSpeed    = shotVec.getNorm();
+    //ToF
+    double ballFlightTime = dist / idealHorizontalSpeedMs; // approx 10-15 m/s
+    totalLatency = latency + ballFlightTime; // update previously-declared totalLatency with time-of-flight
 
+    
     // Debug: show how much the velocity compensation shifted the turret angle
     double uncompensatedAngle = targetVec.getAngle().getDegrees();
     SmartDashboard.putNumber("SOTM: Uncompensated Field Angle", uncompensatedAngle);
@@ -191,12 +199,17 @@ public class ShootOnTheMoveCommand extends Command
 
     // Clamp turret angle to soft limits
     double clampedTurretAngle = -MathUtil.clamp(turretAngle, TurretSubsystem.softLimitMin.in(Degrees), TurretSubsystem.softLimitMax.in(Degrees));
+    double angleDifference = Math.abs(clampedTurretAngle - m_turret.getAngle().in(Degrees));
 
     SmartDashboard.putNumber("SOTM: Clamped Turret Angle", clampedTurretAngle);
     SmartDashboard.putNumber("SOTM: Required RPM", requiredRPM);
 
     // 7. SET OUTPUTS
-    m_turret.setAngleSetpoint(Degrees.of(clampedTurretAngle)); // Could also just set the swerveDrive to point towards this angle like AlignToGoal
+    //m_turret.setAngleSetpoint(Degrees.of(clampedTurretAngle));
+
+    if (angleDifference > 0.5) { 
+    m_turret.setAngleSetpoint(Degrees.of(clampedTurretAngle));
+    }
     // m_hood.setAngle() - hood disabled
     m_launcher.setVelocitySetpoint(RPM.of(requiredRPM));
   }

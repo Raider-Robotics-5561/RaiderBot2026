@@ -15,9 +15,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.util.ShooterTargetingSystem;
-import frc.robot.util.ShooterTargetingSystem.Shot;
-import frc.robot.util.TurretSystem.HoodSubsystem;
+// import frc.robot.util.ShooterTargetingSystem;
+// import frc.robot.util.ShooterTargetingSystem.Shot;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -79,13 +78,13 @@ public class Robot extends TimedRobot {
 		String gameData = DriverStation.getGameSpecificMessage();
       	SmartDashboard.putString("FMS Game Data", gameData);
 
-		Shot s = ShooterTargetingSystem.getShotData(m_robotContainer.drivebase.getPose(),
-				m_robotContainer.drivebase.getRobotVelocity(), 3);
-		if (s != null) {
-			SmartDashboard.putNumber("Shot exit vel:", s.exitVelocity());
-			SmartDashboard.putNumber("Shot Hoodangle: ", s.hoodAngle());
-			SmartDashboard.putNumber("Shot Target: ", s.target());
-		}
+		// Shot s = ShooterTargetingSystem.getShotData(m_robotContainer.drivebase.getPose(),
+		// 		m_robotContainer.drivebase.getRobotVelocity(), 3);
+		// if (s != null) {
+		// 	SmartDashboard.putNumber("Shot exit vel:", s.exitVelocity());
+		// 	SmartDashboard.putNumber("Shot Hoodangle: ", s.hoodAngle());
+		// 	SmartDashboard.putNumber("Shot Target: ", s.target());
+		// }
 
 
 		CommandScheduler.getInstance().run();

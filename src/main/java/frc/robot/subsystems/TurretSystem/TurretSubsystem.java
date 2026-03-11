@@ -1,4 +1,4 @@
-package frc.robot.util.TurretSystem;
+package frc.robot.subsystems.TurretSystem;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;

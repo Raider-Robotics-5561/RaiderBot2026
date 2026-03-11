@@ -14,9 +14,9 @@ import frc.robot.subsystems.HopperSysytem.HopperExtenderSubsystem;
 import frc.robot.subsystems.HopperSysytem.HopperRollerSubsystem;
 import frc.robot.subsystems.HopperSysytem.IntakeSubsystem;
 import frc.robot.subsystems.HopperSysytem.KickerSubsystem;
-import frc.robot.util.TurretSystem.FlywheelSubsystem;
-import frc.robot.util.TurretSystem.HoodSubsystem;
-import frc.robot.util.TurretSystem.TurretSubsystem;
+import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
+import frc.robot.subsystems.TurretSystem.HoodSubsystem;
+import frc.robot.subsystems.TurretSystem.TurretSubsystem;
 
 public class SuperStructure extends SubsystemBase {
 	public final FlywheelSubsystem 	  FlywheelSubsystem 	  = new FlywheelSubsystem();
