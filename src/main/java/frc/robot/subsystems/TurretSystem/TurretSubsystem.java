@@ -50,6 +50,7 @@ public class TurretSubsystem extends SubsystemBase {
 			.withStatorCurrentLimit(Amps.of(40))
 			.withClosedLoopRampRate(Seconds.of(0.01))
 			.withOpenLoopRampRate(Seconds.of(0.25))
+			// .withStartingPosition(Degrees.of(0))
 			.withControlMode(ControlMode.CLOSED_LOOP);
 	private final SmartMotorController turretSMC = new TalonFXWrapper(turretMotor, DCMotor.getKrakenX44(1),
 			motorConfig);
