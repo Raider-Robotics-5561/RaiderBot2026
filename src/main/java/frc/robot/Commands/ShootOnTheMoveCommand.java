@@ -137,9 +137,17 @@ public class ShootOnTheMoveCommand extends Command
 
 
     var robotSpeed = fieldOrientedChassisSpeeds.get();
-    
+
+    // 1. Calculate Time of Flight (ToF) FIRST based on current distance
+    double currentDist = robotPose.get().getTranslation().getDistance(goalPosee.getTranslation());
+    double staticRPM = shooterTable.get(currentDist);
+    double staticVel = calculateVelocityFromRPM(staticRPM);
+    double ballFlightTime = currentDist / staticVel;
+
+    // 2. NOW calculate Total Latency
+    double totalLatency = latency + ballFlightTime; 
+
     // 1. LATENCY COMP
-    double totalLatency = latency; // start with base latency. will be updated after ToF calculation
     Translation2d futurePos = robotPose.get().getTranslation().plus(
             new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond).times(totalLatency));
 
@@ -165,9 +173,7 @@ public class ShootOnTheMoveCommand extends Command
     // 5. CONVERT TO CONTROLS
     double fieldSpaceTurretAngle = shotVec.getAngle().getDegrees();
     double newHorizontalSpeed    = shotVec.getNorm();
-    //ToF
-    double ballFlightTime = dist / idealHorizontalSpeedMs; // approx 10-15 m/s
-    totalLatency = latency + ballFlightTime; // update previously-declared totalLatency with time-of-flight
+    
 
     
     // Debug: show how much the velocity compensation shifted the turret angle
@@ -213,6 +219,12 @@ public class ShootOnTheMoveCommand extends Command
     // m_hood.setAngle() - hood disabled
     m_launcher.setVelocitySetpoint(RPM.of(requiredRPM));
   }
+
+    /** Helper to reverse your RPM calculation */
+    private double calculateVelocityFromRPM(double rpm) { 
+       double flywheelRadiusMeters = FLYWHEEL_DIAMETER_METERS / 2;
+       return (rpm * 2 * Math.PI * flywheelRadiusMeters) / 60.0;
+    }   
 
   @Override
   public boolean isFinished()
