@@ -1,6 +1,5 @@
 package frc.robot.util.TurretSystem;
 
-import com.ctre.phoenix6.hardware.CANdi;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

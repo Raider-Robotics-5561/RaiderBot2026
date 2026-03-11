@@ -3,16 +3,10 @@ package frc.robot.subsystems.HopperSysytem;
 import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.units.measure.Distance;
 
-
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.mechanisms.config.ElevatorConfig;
@@ -35,7 +29,7 @@ public class HopperExtenderSubsystem extends SubsystemBase {
 
 	private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
       // Mechanism Circumference is the distance traveled by each mechanism rotation converting rotations to meters.
-      .withMechanismCircumference(Meters.of(Inches.of(19.4882).in(Meters) * 18)) //- Fix to be correct
+      .withMechanismCircumference(Meters.of(Inches.of(19.4882).in(Meters) * 18)) 
 			.withClosedLoopController(0.5, 0, 0)
 			.withGearing(new MechanismGearing(3))
 			.withIdleMode(MotorMode.COAST)

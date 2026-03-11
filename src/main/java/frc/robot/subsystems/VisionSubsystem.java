@@ -1,8 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Microseconds;
-import static edu.wpi.first.units.Units.Seconds;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -19,12 +16,9 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import java.awt.Desktop;
@@ -43,8 +37,6 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import swervelib.SwerveDrive;
 import swervelib.telemetry.SwerveDriveTelemetry;
-import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.VisionSubsystem.Cameras;
 
 /**
  * Example PhotonVision class to aid in the pursuit of accurate odometry. Taken from
@@ -103,7 +95,7 @@ public class VisionSubsystem extends SubsystemBase
         /// Results list to be updated periodically and cached to avoid unnecessary queries.
         public        List<PhotonPipelineResult>   resultsList       = new ArrayList<>();
         /// Last read from the camera timestamp to prevent lag due to slow data fetches.
-        private       double                       lastReadTimestamp = Microseconds.of(NetworkTablesJNI.now()).in(Seconds);
+        // private       double                       lastReadTimestamp = Microseconds.of(NetworkTablesJNI.now()).in(Seconds);
 
         /**
          * Construct a Photon Camera class with help. Standard deviations are fake values, experiment, and determine
@@ -472,7 +464,6 @@ public class VisionSubsystem extends SubsystemBase
      * @param pose Estimated robot pose.
      * @return Could be empty if there isn't a good reading.
      */
-    @Deprecated(since = "2024", forRemoval = true)
     private Optional<EstimatedRobotPose> filterPose(Optional<EstimatedRobotPose> pose)
     {
         if (pose.isPresent())
@@ -600,12 +591,4 @@ public class VisionSubsystem extends SubsystemBase
 
         field2d.getObject("tracked targets").setPoses(poses);
     }
-
-    //TODO - This is a WiP "zero" command which NEEDS to be used when zeroing the gyro.
-//     public void ResetVisionHeading(){
-//         for(Cameras cam : Cameras.values()){
-//             cam.poseEstimator.resetHeadingData(Timer.getFPGATimestamp(), SwerveSubsystem);
-//         }
-//
-//     }
 }

@@ -1,28 +1,9 @@
 package frc.robot.util.TurretSystem;
 
-import com.ctre.phoenix6.configs.CANdiConfiguration;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.Feet;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Radians;
-
 import java.util.function.Supplier;
-
+import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -39,15 +20,13 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.PivotConfig;
-import yams.mechanisms.config.SensorConfig;
 import yams.mechanisms.positional.Pivot;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
-import yams.motorcontrollers.simulation.Sensor;
-import yams.motorcontrollers.SimSupplier;
+
 
 public class TurretSubsystem extends SubsystemBase {
 	TalonFX turretMotor = new TalonFX(9);
@@ -55,17 +34,10 @@ public class TurretSubsystem extends SubsystemBase {
 	public static Angle softLimitMin = Rotations.of(-0.4); // for testing
 	public static Angle softLimitMax = Rotations.of(0.4);
 	final DigitalInput m_forwardLimit = new DigitalInput(0);
-	AbsoluteEncoderSubsystem abs_encoder = new AbsoluteEncoderSubsystem();
+	// AbsoluteEncoderSubsystem abs_encoder = new AbsoluteEncoderSubsystem();
 	TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
-	CANdiConfiguration configs = new CANdiConfiguration();
+	// CANdiConfiguration configs = new CANdiConfiguration();
 
-	// // Use CANdi's Quadrature encoder as the motor's feedback sensor
-	// talonConfigs.Feedback.withRemoteCANdiQuadrature(candi);
-
-	// // Use CANdi's S1 input as a remote forward limit switch
-	// talonConfigs.HardwareLimitSwitch.withForwardLimitRemoteCANdi(candi, S1);
-
-	// talonMotor.getConfigurator().apply(talonConfigs);
 
 	private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
 			.withClosedLoopController(150, 0, 0, DegreesPerSecond.of(3000), DegreesPerSecondPerSecond.of(3000))
@@ -73,28 +45,15 @@ public class TurretSubsystem extends SubsystemBase {
 			.withIdleMode(MotorMode.BRAKE)
 			.withMotorInverted(false)
 			.withFeedforward(new SimpleMotorFeedforward(1.25, 1))
-
-			// .withExternalEncoder(abs_encoder)
-			// .withExternalEncoderInverted(false)
-			// .withExternalEncoderGearing(1)
-			// .withExternalEncoderZeroOffset(Degrees.of(33.25))
-			// .withUseExternalFeedbackEncoder(true)
 			.withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
 			// Power Optimization
 			.withStatorCurrentLimit(Amps.of(40))
 			.withClosedLoopRampRate(Seconds.of(0.01))
 			.withOpenLoopRampRate(Seconds.of(0.25))
 			.withControlMode(ControlMode.CLOSED_LOOP);
-	// .withContinuousWrapping(Rotations.of(0),Rotations.of(360));
 	private final SmartMotorController turretSMC = new TalonFXWrapper(turretMotor, DCMotor.getKrakenX44(1),
 			motorConfig);
 	private final PivotConfig turretConfig = new PivotConfig(turretSMC)
-			// .withStartingPosition(Degrees.of(abs_encoder.getAngleDegrees())) // Starting
-			// position of the Pivot
-			// .withWrapping(Degrees.of(0), Degrees.of(360)) // Wrapping enabled bc the
-			// pivot can spin
-			// infinitely
-			// .withSoftLimits(Degrees.of(-60), Degrees.of(60))
 			// HARD LIMIT IS FOR SIM
 			.withHardLimit(Degrees.of(-80), Degrees.of(80))
 			.withTelemetry("TurretMech", TelemetryVerbosity.HIGH) // Telemetry
