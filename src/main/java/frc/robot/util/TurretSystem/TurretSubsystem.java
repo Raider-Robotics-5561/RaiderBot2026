@@ -1,4 +1,4 @@
-package frc.robot.subsystems.TurretSystem;
+package frc.robot.util.TurretSystem;
 
 import com.ctre.phoenix6.configs.CANdiConfiguration;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -68,7 +68,7 @@ public class TurretSubsystem extends SubsystemBase {
 	// talonMotor.getConfigurator().apply(talonConfigs);
 
 	private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
-			.withClosedLoopController(300, 0, 0, DegreesPerSecond.of(1500), DegreesPerSecondPerSecond.of(1500))
+			.withClosedLoopController(150, 0, 0, DegreesPerSecond.of(3000), DegreesPerSecondPerSecond.of(3000))
 			.withGearing(new MechanismGearing(35.56))
 			.withIdleMode(MotorMode.BRAKE)
 			.withMotorInverted(false)

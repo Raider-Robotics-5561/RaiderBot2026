@@ -15,9 +15,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.TurretSystem.HoodSubsystem;
 import frc.robot.util.ShooterTargetingSystem;
 import frc.robot.util.ShooterTargetingSystem.Shot;
+import frc.robot.util.TurretSystem.HoodSubsystem;
 
 /**
  * The methods in this class are called automatically corresponding to each

@@ -13,8 +13,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
-import frc.robot.subsystems.TurretSystem.TurretSubsystem;
+import frc.robot.util.TurretSystem.FlywheelSubsystem;
+import frc.robot.util.TurretSystem.TurretSubsystem;
 
 import java.util.function.Supplier;
 
@@ -34,26 +34,36 @@ public class ShootOnTheMoveCommand extends Command
   /**
    * Time in seconds between when the robot is told to move and when the shooter actually shoots.
    */
-  private final double                     latency      = 0.3; 
+  private final double                     latency      = 0.1; 
   /**
    * Flywheel diameter in meters (4 inches)
    */
   private static final double              FLYWHEEL_DIAMETER_METERS = 0.1016;
   /**
-   * Maps Distance (meters) to exit velocity (m/s)
+   * Maps Distance (meters) to flywheel RPM
    */
-  private final InterpolatingDoubleTreeMap shooterTable = new InterpolatingDoubleTreeMap();
+  private final static InterpolatingDoubleTreeMap shooterTable = new InterpolatingDoubleTreeMap();
 
   /** NetworkTable used to expose shooter table entries for live tuning. */
-  private final NetworkTable tuningTable = NetworkTableInstance.getDefault().getTable("SOTM/ShooterTable");
+  private final static NetworkTable tuningTable = NetworkTableInstance.getDefault().getTable("SOTM/ShooterTable");
 
   /**
-   * Default distance/velocity pairs. Values are pushed to NetworkTables on
+   * Default distance/RPM pairs. Values are pushed to NetworkTables on
    * construction so they appear in SmartDashboard/Elastic immediately.
    * Edit them live on the dashboard — the table is rebuilt every execute() loop.
    */
-  private static final double[] DEFAULT_DISTANCES  = { 1.0,  1.5,  2.0,  2.5,  3.0,  3.5,  4.0,  4.5,  5.0,  5.5 };
-  private static final double[] DEFAULT_VELOCITIES = { 0.0,  0.0, 15.0, 16.0, 16.5, 17.3, 18.6, 21.3, 23.9, 29.2 };
+  private static final double[] DEFAULT_DISTANCES  = { 1.0,   1.5,   2.0,   2.5,   3.0,   3.5,   4.0,   4.5,   5.0,   5.5 };
+  private static final double[] DEFAULT_VELOCITIES = { 0.0, 0.0, 2800.0, 2900.0, 3050.0, 3150.0, 3200.0, 3350.0, 3500.0, 3650.0 };
+
+  /** Static initializer to populate NetworkTable only once */
+  static {
+    for (int i = 0; i < DEFAULT_DISTANCES.length; i++) {
+      String key = DEFAULT_DISTANCES[i] + "m (RPM)";
+      tuningTable.getEntry(key).setDefaultDouble(DEFAULT_VELOCITIES[i]);
+      shooterTable.put(DEFAULT_DISTANCES[i], DEFAULT_VELOCITIES[i]);
+    }
+  }
+
 
 
   public ShootOnTheMoveCommand(Supplier<Pose2d> currentPose, Supplier<ChassisSpeeds> fieldOrientedChassisSpeeds,
@@ -99,11 +109,11 @@ public class ShootOnTheMoveCommand extends Command
    *   controller.a().onTrue(shootOnTheMove.rebuildFromDashboard());
    * </pre>
    */
-  public Command rebuildFromDashboard() {
+  public static Command rebuildFromDashboard() {
     return Commands.runOnce(() -> {
       shooterTable.clear();
       for (int i = 0; i < DEFAULT_DISTANCES.length; i++) {
-        String key      = DEFAULT_DISTANCES[i] + "m (m/s)";
+        String key      = DEFAULT_DISTANCES[i] + "m (RPM)";
         // setDefaultDouble only writes if the key doesn't already exist,
         // so hand-edited dashboard values are always preserved.
         tuningTable.getEntry(key).setDefaultDouble(DEFAULT_VELOCITIES[i]);
@@ -117,7 +127,7 @@ public class ShootOnTheMoveCommand extends Command
   @Override
   public void initialize()
   {
-
+    // NetworkTable is populated once in static initializer, no need to repopulate here
   }
 
   @Override
@@ -137,14 +147,16 @@ public class ShootOnTheMoveCommand extends Command
     SmartDashboard.putNumber("SOTM: dist", dist);
 
     // 3. CALCULATE IDEAL SHOT (Stationary)
-    // Note: This returns HORIZONTAL velocity component
-    double idealHorizontalSpeed = shooterTable.get(dist);
+    // Note: shooterTable stores RPM, but we need m/s for vector math
+    double idealHorizontalSpeedRPM = shooterTable.get(dist);
+    double flywheelRadiusMeters = FLYWHEEL_DIAMETER_METERS / 2;
+    double idealHorizontalSpeedMs = (idealHorizontalSpeedRPM * 2 * Math.PI * flywheelRadiusMeters) / 60;
 
-    SmartDashboard.putNumber("SOTM: Ideal Horizontal Speed", idealHorizontalSpeed);
+    SmartDashboard.putNumber("SOTM: Ideal Horizontal Speed (RPM)", idealHorizontalSpeedRPM);
 
     // 4. VECTOR SUBTRACTION
     Translation2d robotVelVec = new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond);
-    Translation2d shotVec     = targetVec.div(dist).times(idealHorizontalSpeed).minus(robotVelVec);
+    Translation2d shotVec     = targetVec.div(dist).times(idealHorizontalSpeedMs).plus(robotVelVec.times(1));
 
     // 5. CONVERT TO CONTROLS
     double fieldSpaceTurretAngle = shotVec.getAngle().getDegrees();
@@ -171,12 +183,14 @@ public class ShootOnTheMoveCommand extends Command
       turretAngle += 360;
     }
 
-    // 6. CONVERT COMPENSATED VELOCITY TO RPM
-    // newHorizontalSpeed is the compensated exit speed (m/s) after vector subtraction
-    double requiredRPM = calculateRPMFromVelocity(newHorizontalSpeed);
+    // 6. CONVERT TO RPM
+    // The shooterTable.get(dist) already gives us RPM, but we need to account for
+    // the velocity compensation from vector subtraction.
+    // Since newHorizontalSpeed is still calculated in m/s, we use the conversion function
+    double requiredRPM = -calculateRPMFromVelocity(newHorizontalSpeed);
 
     // Clamp turret angle to soft limits
-    double clampedTurretAngle = MathUtil.clamp(turretAngle, TurretSubsystem.softLimitMin.in(Degrees), TurretSubsystem.softLimitMax.in(Degrees));
+    double clampedTurretAngle = -MathUtil.clamp(turretAngle, TurretSubsystem.softLimitMin.in(Degrees), TurretSubsystem.softLimitMax.in(Degrees));
 
     SmartDashboard.putNumber("SOTM: Clamped Turret Angle", clampedTurretAngle);
     SmartDashboard.putNumber("SOTM: Required RPM", requiredRPM);

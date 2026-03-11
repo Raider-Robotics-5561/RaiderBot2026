@@ -25,8 +25,9 @@ import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.util.TurretSystem.FlywheelSubsystem;
+
 import java.util.List;
 import yams.mechanisms.swerve.utility.SwerveInputStream;
 

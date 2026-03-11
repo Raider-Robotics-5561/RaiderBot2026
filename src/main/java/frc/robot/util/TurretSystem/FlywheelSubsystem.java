@@ -1,4 +1,4 @@
-package frc.robot.subsystems.TurretSystem;
+package frc.robot.util.TurretSystem;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;

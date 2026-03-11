@@ -32,9 +32,9 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.TurretSystem.HoodSubsystem;
-import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
-import frc.robot.subsystems.TurretSystem.TurretSubsystem;
+import frc.robot.util.TurretSystem.FlywheelSubsystem;
+import frc.robot.util.TurretSystem.HoodSubsystem;
+import frc.robot.util.TurretSystem.TurretSubsystem;
 
 public class ShooterTargetingSystem {
 

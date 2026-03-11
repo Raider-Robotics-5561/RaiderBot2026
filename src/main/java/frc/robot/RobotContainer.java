@@ -32,7 +32,7 @@ public class RobotContainer {
 	// Subsystem inizialization (Should only be Climber and superstructure)
 	private final SuperStructure SuperStructure = new SuperStructure();
 	public final ClimberSubsystem m_climber = new ClimberSubsystem();
-
+	
 	// Controller initialization
 	final CommandXboxController DriveController = new CommandXboxController(0);
 	final CommandXboxController OperatorController = new CommandXboxController(1);
@@ -167,8 +167,9 @@ public class RobotContainer {
 																		drivebase::getRobotVelocity,
 																		goalPose,
 																		SuperStructure.TurretSubsytem,
-																		SuperStructure.HoodSubsystem,
 																		SuperStructure.FlywheelSubsystem));
+
+	OperatorController.povLeft().whileTrue(ShootOnTheMoveCommand.rebuildFromDashboard());
 
 	/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
 	if(ManualControl==true){
@@ -189,15 +190,10 @@ public class RobotContainer {
 	// Climber Control
 	DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
 	DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
-	DriveController.x().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
-															drivebase::getRobotVelocity,
-															goalPos,
-															SuperStructure.TurretSubsytem,
-															SuperStructure.HoodSubsystem,
-															SuperStructure.FlywheelSubsystem));
-						
-															
+	
 
+
+	
 
 	// This is our boost control Right Trigger
 	DriveController.axisGreaterThan(3,0.01).onChange(Commands.runOnce(()->
