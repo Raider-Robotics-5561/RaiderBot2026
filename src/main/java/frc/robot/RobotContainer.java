@@ -49,6 +49,7 @@ public class RobotContainer {
 	private final Command Nuetral_Left;
 	private final Command Nuetral_Right;
 	private final Command A_Center_1;
+	private final Command RightNuetralToOP;
 	SendableChooser<Command> m_chooser;
 
 	// =======================================================
@@ -107,7 +108,9 @@ public class RobotContainer {
 		NamedCommands.registerCommand("IntakeRollerOff", SuperStructure.SetIntakePWR(RPM.of(0)));
 
 		Teston = drivebase.getAutonomousCommand("Teston");
+		
 		APP1 = drivebase.getAutonomousCommand("APP1");
+		RightNuetralToOP = drivebase.getAutonomousCommand("RightNuetralToOP");
 		APP2 = drivebase.getAutonomousCommand("APP2");
 		Nuetral_Left = drivebase.getAutonomousCommand("Nuetral_Left");
 		Nuetral_Right = drivebase.getAutonomousCommand("Nuetral_Right");
@@ -115,6 +118,7 @@ public class RobotContainer {
 
 		m_chooser = new SendableChooser<Command>();
 		m_chooser.addOption("Teston", Teston);
+		m_chooser.addOption("RightNuetralToOP", RightNuetralToOP);
 		m_chooser.addOption("APP1", APP1);
 		m_chooser.addOption("APP2", APP2);
 		m_chooser.addOption("Nuetral_Left", Nuetral_Left);
