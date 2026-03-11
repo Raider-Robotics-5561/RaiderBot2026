@@ -141,7 +141,7 @@ public class RobotContainer {
 	
 
 	// Hood Homeing
-	OperatorController.a().onTrue(SuperStructure.HoodSubsystem.homing());
+	// OperatorController.a().onTrue(SuperStructure.HoodSubsystem.homing());
 
 	// Kicker and Belly Control
 	OperatorController.rightTrigger().whileTrue(SuperStructure.SetKickerAndBelly())
