@@ -36,6 +36,7 @@ public class HopperExtenderSubsystem extends SubsystemBase {
 			.withTelemetry("HopperExtender", TelemetryVerbosity.HIGH)
 			.withGearing(new MechanismGearing(3))
 			.withStatorCurrentLimit(Amps.of(40))
+			.withSupplyCurrentLimit(Amps.of(40))
 			.withMotorInverted(false)
 			.withClosedLoopRampRate(Seconds.of(0.15))
 			.withOpenLoopRampRate(Seconds.of(0.25))

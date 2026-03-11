@@ -46,8 +46,9 @@ public class TurretSubsystem extends SubsystemBase {
 			.withMotorInverted(false)
 			.withFeedforward(new SimpleMotorFeedforward(1.25, 1))
 			.withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
-			// Power Optimization
 			.withStatorCurrentLimit(Amps.of(40))
+			.withSupplyCurrentLimit(Amps.of(40))
+			// Power Optimization
 			.withClosedLoopRampRate(Seconds.of(0.01))
 			.withOpenLoopRampRate(Seconds.of(0.25))
 			// .withStartingPosition(Degrees.of(0))

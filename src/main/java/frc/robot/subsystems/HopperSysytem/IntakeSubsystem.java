@@ -37,6 +37,7 @@ public class IntakeSubsystem extends SubsystemBase {
 			.withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
 			.withSimClosedLoopController(1, 0, 0)
 			.withStatorCurrentLimit(Amps.of(40))
+			.withSupplyCurrentLimit(Amps.of(40))
 			.withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
 			.withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
 			.withTelemetry("IntakeMotor", TelemetryVerbosity.HIGH)

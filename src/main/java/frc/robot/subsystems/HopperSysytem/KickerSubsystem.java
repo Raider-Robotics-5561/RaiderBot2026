@@ -32,6 +32,8 @@ public class KickerSubsystem extends SubsystemBase {
 			.withMotorInverted(false) // Pos (+) should be going into the turret
 			.withClosedLoopRampRate(Seconds.of(0.25))
 			.withOpenLoopRampRate(Seconds.of(0.25))
+			// .withStatorCurrentLimit(Amps.of(100))
+			// .withSupplyCurrentLimit(Amps.of(40))
 			.withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557)) 
 			.withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
 			.withControlMode(ControlMode.OPEN_LOOP);

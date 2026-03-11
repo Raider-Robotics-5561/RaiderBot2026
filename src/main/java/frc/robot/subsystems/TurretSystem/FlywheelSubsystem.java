@@ -43,6 +43,7 @@ public class FlywheelSubsystem extends SubsystemBase {
 			.withIdleMode(MotorMode.COAST)
 			.withTelemetry("FlywheelMotor", TelemetryVerbosity.HIGH)
 			.withStatorCurrentLimit(Amps.of(40))
+			.withSupplyCurrentLimit(Amps.of(40))
 			.withMotorInverted(false)
 			.withClosedLoopRampRate(Seconds.of(0.01))
 			.withOpenLoopRampRate(Seconds.of(0.25))
