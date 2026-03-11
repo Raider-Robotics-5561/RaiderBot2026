@@ -102,9 +102,9 @@ public class RobotContainer {
 										  		SuperStructure.FlywheelSubsystem));
 		NamedCommands.registerCommand("DeployHopper", SuperStructure.SetHopperPos());
 		NamedCommands.registerCommand("RetractHopper", SuperStructure.SetHopperPosZero());
-		NamedCommands.registerCommand("IntakeRollerOn", SuperStructure.SetIntakePWR(-0.8));
+		NamedCommands.registerCommand("IntakeRollerOn", SuperStructure.SetIntakePWR(RPM.of(-4000)));
 		NamedCommands.registerCommand("BellyFeed", SuperStructure.SetKickerAndBelly());
-		NamedCommands.registerCommand("IntakeRollerOff", SuperStructure.SetIntakePWR(0));
+		NamedCommands.registerCommand("IntakeRollerOff", SuperStructure.SetIntakePWR(RPM.of(0)));
 
 		Teston = drivebase.getAutonomousCommand("Teston");
 		APP1 = drivebase.getAutonomousCommand("APP1");
@@ -135,8 +135,8 @@ public class RobotContainer {
 	
 	// Operator Controls
 	// Intake Rollers
-	OperatorController.leftTrigger().whileTrue(SuperStructure.SetIntakePWR(-0.8))
-									.whileFalse(SuperStructure.SetIntakePWR(0));
+	OperatorController.leftTrigger().whileTrue(SuperStructure.SetIntakePWR(RPM.of(-4000)))
+									.whileFalse(SuperStructure.SetIntakePWR(RPM.of(0)));
 																		
 	
 

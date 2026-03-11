@@ -8,8 +8,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 import static edu.wpi.first.units.Units.*;
 
-
-
+import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.subsystems.HopperSysytem.HopperExtenderSubsystem;
 import frc.robot.subsystems.HopperSysytem.HopperRollerSubsystem;
 import frc.robot.subsystems.HopperSysytem.IntakeSubsystem;
@@ -84,14 +83,6 @@ public class SuperStructure extends SubsystemBase {
 	}
 	//end hopper
 
-	//Intake control
-	public Command SetTrueIntake() {
-		return HopperExtenderSubsystem.setHeight(Meters.of(0.3))
-			   .alongWith(IntakeSubsystem.setDutyCycle(-0.752))
-			   .alongWith(HopperRollerSubsystem.setDutyCycle(0.8));
-	}
-
-	//end intake
 
 
 	public Command SetHopperExtenderPower(double power) {
@@ -99,22 +90,8 @@ public class SuperStructure extends SubsystemBase {
 		return HopperExtenderSubsystem.set(power);
 	}
 
-	public Command SetIntakePWR(double power) {
-
-		return IntakeSubsystem.setDutyCycle(power);
+	public Command SetIntakePWR(AngularVelocity speed) {
+		return IntakeSubsystem.setVelocity(speed);
 	}
-	/**
-	 * Runs a command that sets all LEDs to scrolling rainbow.
-	 *
-	 * @return a {@link Command} that sets all LEDs to scrolling rainbow.
-	 *
-	 *         NOTE - Stole this code from team 5517. Will impliment LED's later
-	 *         once we get an Idea of our LED situation.
-	 *         private Command setLEDRainbow() {
-	 *         return Commands.run(() -> {
-	 *         led.runLED(LEDViews.BOTH, LEDModes.RAINBOW);
-	 *         }).finallyDo(() -> led.runLED(LEDViews.BOTH, LEDModes.OFF));
-	 *         }
-	 */
 
 }
