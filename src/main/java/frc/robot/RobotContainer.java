@@ -43,12 +43,12 @@ public class RobotContainer {
 																														// ME\
 
 	// ======================Auton_Config=========================
-	private final Command Teston;
+	// private final Command Teston;
 	private final Command APP1;
 	private final Command APP2;
-	private final Command Nuetral_Left;
-	private final Command Nuetral_Right;
-	private final Command A_Center_1;
+	// private final Command Nuetral_Left;
+	// private final Command Nuetral_Right;
+	// private final Command A_Center_1;
 	private final Command RightNuetralToOP;
 	private final Command LeftNeutralToDP;
 	SendableChooser<Command> m_chooser;
@@ -109,24 +109,24 @@ public class RobotContainer {
 		NamedCommands.registerCommand("BellyFeed", SuperStructure.SetKickerAndBelly());
 		NamedCommands.registerCommand("IntakeRollerOff", SuperStructure.SetIntakePWR(0));
 
-		Teston = drivebase.getAutonomousCommand("Teston");
+		// Teston = drivebase.getAutonomousCommand("Teston");
 		APP1 = drivebase.getAutonomousCommand("APP1");
 		LeftNeutralToDP = drivebase.getAutonomousCommand("LeftNeutralToDP");
 		RightNuetralToOP = drivebase.getAutonomousCommand("RightNuetralToOP");
 		APP2 = drivebase.getAutonomousCommand("APP2");
-		Nuetral_Left = drivebase.getAutonomousCommand("Nuetral_Left");
-		Nuetral_Right = drivebase.getAutonomousCommand("Nuetral_Right");
-		A_Center_1 = drivebase.getAutonomousCommand("A_Center_1");
+		// Nuetral_Left = drivebase.getAutonomousCommand("Nuetral_Left");
+		// Nuetral_Right = drivebase.getAutonomousCommand("Nuetral_Right");
+		// A_Center_1 = drivebase.getAutonomousCommand("A_Center_1");
 
 		m_chooser = new SendableChooser<Command>();
-		m_chooser.addOption("Teston", Teston);
+		// m_chooser.addOption("Teston", Teston);
 		m_chooser.addOption("LeftNeutralToDP", LeftNeutralToDP);
 		m_chooser.addOption("RightNuetralToOP", RightNuetralToOP);
 		m_chooser.addOption("APP1", APP1);
 		m_chooser.addOption("APP2", APP2);
-		m_chooser.addOption("Nuetral_Left", Nuetral_Left);
-		m_chooser.addOption("Nuetral_Right", Nuetral_Right);
-		m_chooser.addOption("A_Center_1", A_Center_1);
+		// m_chooser.addOption("Nuetral_Left", Nuetral_Left);
+		// m_chooser.addOption("Nuetral_Right", Nuetral_Right);
+		// m_chooser.addOption("A_Center_1", A_Center_1);
 		SmartDashboard.putData(m_chooser);
 
 		configureBindings();
