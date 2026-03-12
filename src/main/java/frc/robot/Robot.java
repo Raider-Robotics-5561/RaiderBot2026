@@ -43,6 +43,7 @@ public class Robot extends TimedRobot {
 	}
 
 	public void robotInit() {
+		RobotController.setBrownoutVoltage(4.0);
 		SmartDashboard.putNumber("Hood Angle Requested", 0);
 		SmartDashboard.putNumber("Turret Angle Requested", 0);
 		SmartDashboard.putNumber("Flywheel RPM Requested", 0);

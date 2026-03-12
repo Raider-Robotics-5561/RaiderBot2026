@@ -27,13 +27,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Test_Path"
+                        "pathName": "Left_Path1"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Test_Path2"
+                        "pathName": "Left_Path2"
                       }
                     },
                     {
@@ -43,7 +43,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "Test_Path3"
+                              "pathName": "Left_Path3"
                             }
                           },
                           {

@@ -69,14 +69,20 @@ public class SuperStructure extends SubsystemBase {
 		kickerSubsystem.setDutyCycle(0.8);
 	}
 
-	
-	//start hopper NEED TO FIX
-	public Command SetHopperPos() {
-		return HopperExtenderSubsystem.setHeight(Meters.of(30))
-									  .andThen(HopperExtenderSubsystem.stop());
-				
+	public Command BackDriveKickeroff() {
+	return
+		kickerSubsystem.setDutyCycle(0);
 	}
 
+	
+	//start hopper NEED TO FIX
+	public Command SetHopperPosAgitate() {
+		return HopperExtenderSubsystem.setHeight(Meters.of(20));
+				
+	}
+	public Command SetHopperPos() {
+		return HopperExtenderSubsystem.setHeight(Meters.of(30));			
+	}
 	public Command SetHopperPosZero() {
 		return HopperExtenderSubsystem.setHeight(Meters.of(0))
 									  .andThen(HopperExtenderSubsystem.stop());
@@ -90,8 +96,8 @@ public class SuperStructure extends SubsystemBase {
 		return HopperExtenderSubsystem.set(power);
 	}
 
-	public Command SetIntakePWR(AngularVelocity speed) {
-		return IntakeSubsystem.setVelocity(speed);
+	public Command SetIntakePWR(double power) {
+		return IntakeSubsystem.setDutyCycle(power);
 	}
 
 }

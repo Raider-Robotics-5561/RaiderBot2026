@@ -4,6 +4,7 @@
   "holonomicMode": true,
   "pathFolders": [
     "NeutralLeft",
+    "NeutralLeft2",
     "NuetralRight",
     "RightTrenchRightToOP"
   ],

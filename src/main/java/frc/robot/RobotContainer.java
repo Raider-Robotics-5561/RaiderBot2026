@@ -50,6 +50,7 @@ public class RobotContainer {
 	private final Command Nuetral_Right;
 	private final Command A_Center_1;
 	private final Command RightNuetralToOP;
+	private final Command LeftNeutralToDP;
 	SendableChooser<Command> m_chooser;
 
 	// =======================================================
@@ -102,14 +103,15 @@ public class RobotContainer {
 										  		SuperStructure.TurretSubsytem,
 										  		SuperStructure.FlywheelSubsystem));
 		NamedCommands.registerCommand("DeployHopper", SuperStructure.SetHopperPos());
+		NamedCommands.registerCommand("SetHopperPosAgitate", SuperStructure.SetHopperPosAgitate());
 		NamedCommands.registerCommand("RetractHopper", SuperStructure.SetHopperPosZero());
-		NamedCommands.registerCommand("IntakeRollerOn", SuperStructure.SetIntakePWR(RPM.of(-4000)));
+		NamedCommands.registerCommand("IntakeRollerOn", SuperStructure.SetIntakePWR(-0.8));
 		NamedCommands.registerCommand("BellyFeed", SuperStructure.SetKickerAndBelly());
-		NamedCommands.registerCommand("IntakeRollerOff", SuperStructure.SetIntakePWR(RPM.of(0)));
+		NamedCommands.registerCommand("IntakeRollerOff", SuperStructure.SetIntakePWR(0));
 
 		Teston = drivebase.getAutonomousCommand("Teston");
-		
 		APP1 = drivebase.getAutonomousCommand("APP1");
+		LeftNeutralToDP = drivebase.getAutonomousCommand("LeftNeutralToDP");
 		RightNuetralToOP = drivebase.getAutonomousCommand("RightNuetralToOP");
 		APP2 = drivebase.getAutonomousCommand("APP2");
 		Nuetral_Left = drivebase.getAutonomousCommand("Nuetral_Left");
@@ -118,6 +120,7 @@ public class RobotContainer {
 
 		m_chooser = new SendableChooser<Command>();
 		m_chooser.addOption("Teston", Teston);
+		m_chooser.addOption("LeftNeutralToDP", LeftNeutralToDP);
 		m_chooser.addOption("RightNuetralToOP", RightNuetralToOP);
 		m_chooser.addOption("APP1", APP1);
 		m_chooser.addOption("APP2", APP2);
@@ -139,8 +142,8 @@ public class RobotContainer {
 	
 	// Operator Controls
 	// Intake Rollers
-	OperatorController.leftTrigger().whileTrue(SuperStructure.SetIntakePWR(RPM.of(-4000)))
-									.whileFalse(SuperStructure.SetIntakePWR(RPM.of(0)));
+	OperatorController.leftTrigger().whileTrue(SuperStructure.SetIntakePWR(-0.8))
+									.whileFalse(SuperStructure.SetIntakePWR(0));
 																		
 	
 
@@ -151,7 +154,8 @@ public class RobotContainer {
 	OperatorController.rightTrigger().whileTrue(SuperStructure.SetKickerAndBelly())
 									 .whileFalse(SuperStructure.SetKickerAndBellyOff());
 									 
-	OperatorController.x().onTrue(SuperStructure.BackDriveKicker());
+	OperatorController.x().whileTrue(SuperStructure.BackDriveKicker())
+						  .whileFalse(SuperStructure.BackDriveKickeroff());
 
 	// Hopper Extender Control
 	OperatorController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3))

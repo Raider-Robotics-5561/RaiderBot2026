@@ -34,7 +34,7 @@ public class ShootOnTheMoveCommand extends Command
   /**
    * Time in seconds between when the robot is told to move and when the shooter actually shoots.
    */
-  private final double                     latency      = 0.1; 
+  private final double                     latency      = 0.0001; 
   /**
    * Flywheel diameter in meters (4 inches)
    */
@@ -168,7 +168,7 @@ public class ShootOnTheMoveCommand extends Command
 
     // 4. VECTOR SUBTRACTION
     Translation2d robotVelVec = new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond);
-    Translation2d shotVec     = targetVec.div(dist).times(idealHorizontalSpeedMs).minus(robotVelVec); //.times(1)); Why was this here?
+    Translation2d shotVec     = targetVec.div(dist).times(idealHorizontalSpeedMs).plus(robotVelVec); //.times(1)); Why was this here?
 
     // 5. CONVERT TO CONTROLS
     double fieldSpaceTurretAngle = shotVec.getAngle().getDegrees();
@@ -205,7 +205,7 @@ public class ShootOnTheMoveCommand extends Command
 
     // Clamp turret angle to soft limits
     double clampedTurretAngle = -MathUtil.clamp(turretAngle, TurretSubsystem.softLimitMin.in(Degrees), TurretSubsystem.softLimitMax.in(Degrees));
-    double angleDifference = Math.abs(clampedTurretAngle - m_turret.getAngle().in(Degrees));
+    // double angleDifference = Math.abs(clampedTurretAngle - m_turret.getAngle().in(Degrees));
 
     SmartDashboard.putNumber("SOTM: Clamped Turret Angle", clampedTurretAngle);
     SmartDashboard.putNumber("SOTM: Required RPM", requiredRPM);
@@ -213,9 +213,9 @@ public class ShootOnTheMoveCommand extends Command
     // 7. SET OUTPUTS
     //m_turret.setAngleSetpoint(Degrees.of(clampedTurretAngle));
 
-    if (angleDifference > 0.5) { 
+    // if (angleDifference > 0.5) { 
     m_turret.setAngleSetpoint(Degrees.of(clampedTurretAngle));
-    }
+    // }
     // m_hood.setAngle() - hood disabled
     m_launcher.setVelocitySetpoint(RPM.of(requiredRPM));
   }
