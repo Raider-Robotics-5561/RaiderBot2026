@@ -3,6 +3,7 @@
   "robotLength": 0.84455,
   "holonomicMode": true,
   "pathFolders": [
+    "LeftTrenchLeftToDP",
     "NeutralLeft",
     "NeutralLeft2",
     "NuetralRight",
