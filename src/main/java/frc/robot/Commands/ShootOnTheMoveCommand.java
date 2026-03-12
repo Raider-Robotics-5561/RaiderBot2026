@@ -34,7 +34,7 @@ public class ShootOnTheMoveCommand extends Command
   /**
    * Time in seconds between when the robot is told to move and when the shooter actually shoots.
    */
-  private final double                     latency      = 0.0001; 
+  private final double                     latency      = 0.4; 
   /**
    * Flywheel diameter in meters (4 inches)
    */
