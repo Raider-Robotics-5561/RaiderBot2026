@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 // import frc.robot.util.ShooterTargetingSystem;
 // import frc.robot.util.ShooterTargetingSystem.Shot;
+import frc.robot.subsystems.LEDsubsytem;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -35,28 +36,15 @@ public class Robot extends TimedRobot {
  	AddressableLEDBuffer m_ledBuffer;
 	private final RobotContainer m_robotContainer;
 
+	public LEDsubsytem led_subsystem = new LEDsubsytem();
+
 	/**
 	 * This function is run when the robot is first started up and should be used
 	 * for any
 	 * initialization code.
 	 */
 	public Robot() {
-		    // PWM port 9
-    	// Must be a PWM header, not MXP or DIO
-    	m_led = new AddressableLED(8);
 
-    	// Reuse buffer
-    	// Default to a length of 60, start empty output
-    	// Length is expensive to set, so only set it once, then just update data
-  		m_ledBuffer = new AddressableLEDBuffer(1500);
-  		m_led.setLength(m_ledBuffer.getLength());
-
-    	// Set the data
-   		 m_led.setData(m_ledBuffer);
-   		 m_led.start();
-		// Instantiate our RobotContainer. This will perform all our button bindings,
-		// and put our
-		// autonomous chooser on the dashboard.
 		m_robotContainer = new RobotContainer();
 	}
 
@@ -97,20 +85,8 @@ public class Robot extends TimedRobot {
 		String gameData = DriverStation.getGameSpecificMessage();
       	SmartDashboard.putString("FMS Game Data", gameData);
 
-		if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
-			for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-          // Sets the specified LED to the GRB values for blue
-          m_ledBuffer.setRGB(i, 0, 0 ,255);
-          m_led.setData(m_ledBuffer);
-		}	
-		} else if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-			for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-          // Sets the specified LED to the GRB values for red
-		  //GRB
-          m_ledBuffer.setRGB(i, 0, 255 ,0);
-          m_led.setData(m_ledBuffer);
-    }
-}
+    
+
 	// 	} else {
 	// 		for (var i = 0; i < m_ledBuffer.getLength(); i++) {
 	// 	  // Sets the specified LED to the GRB values for red

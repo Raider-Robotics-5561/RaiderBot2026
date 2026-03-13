@@ -25,6 +25,7 @@ public class RobotContainer {
 	private final SuperStructure SuperStructure = new SuperStructure();
 	public final ClimberSubsystem m_climber = new ClimberSubsystem();
 	
+	
 	// Controller initialization
 	final CommandXboxController DriveController = new CommandXboxController(0);
 	final CommandXboxController OperatorController = new CommandXboxController(1);
