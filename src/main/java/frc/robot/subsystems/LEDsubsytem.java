@@ -41,7 +41,7 @@ public class LEDsubsytem extends SubsystemBase {
 
   public LEDsubsytem() {
     m_robotContainer = new RobotContainer();
-    m_led = new AddressableLED(0);
+    m_led = new AddressableLED(8);
     m_led.setColorOrder(ColorOrder.kBGR);
     m_ledBuffer = new AddressableLEDBuffer(58);
     m_led.setLength(m_ledBuffer.getLength());

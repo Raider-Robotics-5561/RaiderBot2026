@@ -6,6 +6,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.Supplier;
@@ -80,6 +81,11 @@ public class KickerSubsystem extends SubsystemBase {
 	public void periodic() {
 		flywheel.updateTelemetry();
 
+		if(flywheel.getSpeed().baseUnitMagnitude() > 0) {
+			SmartDashboard.putBoolean("Kicker Status", false);
+		} else {
+			SmartDashboard.putBoolean("Kicker Status", true);	
+		}
 		
 	}
 

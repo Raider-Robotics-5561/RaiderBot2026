@@ -73,7 +73,6 @@ public class SuperStructure extends SubsystemBase {
 	return
 		kickerSubsystem.setDutyCycle(0);
 	}
-
 	
 	//start hopper NEED TO FIX
 	public Command SetHopperPosAgitate() {

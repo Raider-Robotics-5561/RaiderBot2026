@@ -12,9 +12,11 @@ import static edu.wpi.first.units.Units.Volts;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.fasterxml.jackson.databind.node.ShortNode;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -90,6 +92,12 @@ public class IntakeSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 		shooter.updateTelemetry();
+
+		if(shooter.getSpeed().baseUnitMagnitude() > 0) {
+			SmartDashboard.putBoolean("shooter Status", false);
+		} else {
+			SmartDashboard.putBoolean("shooter Status", true);	
+		}
 	}
 
 	@Override

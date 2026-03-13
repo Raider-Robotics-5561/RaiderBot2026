@@ -33,7 +33,7 @@ public class TurretSubsystem extends SubsystemBase {
 	// CANdi candi = new CANdi(34);
 	public static Angle softLimitMin = Rotations.of(-0.4); // for testing
 	public static Angle softLimitMax = Rotations.of(0.4);
-	final DigitalInput m_forwardLimit = new DigitalInput(0);
+	//final DigitalInput m_forwardLimit = new DigitalInput(0);
 	// AbsoluteEncoderSubsystem abs_encoder = new AbsoluteEncoderSubsystem();
 	TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
 	// CANdiConfiguration configs = new CANdiConfiguration();

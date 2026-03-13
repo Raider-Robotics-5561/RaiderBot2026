@@ -36,7 +36,7 @@ public class Robot extends TimedRobot {
  	AddressableLEDBuffer m_ledBuffer;
 	private final RobotContainer m_robotContainer;
 
-	public LEDsubsytem led_subsystem = new LEDsubsytem();
+	//public LEDsubsytem led_subsystem = new LEDsubsytem();
 
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -79,8 +79,8 @@ public class Robot extends TimedRobot {
 		double voltage = RobotController.getBatteryVoltage();
 		SmartDashboard.putNumber("Battery Voltage", voltage);
 
-		double MatchTime = DriverStation.getMatchTime();
-		SmartDashboard.putNumber("Match Time", MatchTime);
+		// double MatchTime = DriverStation.getMatchTime();
+		// SmartDashboard.putNumber("Match Time", MatchTime);
 
 		String gameData = DriverStation.getGameSpecificMessage();
       	SmartDashboard.putString("FMS Game Data", gameData);

@@ -1,7 +1,9 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,8 +26,7 @@ public class RobotContainer {
 	// Subsystem inizialization (Should only be Climber and superstructure)
 	private final SuperStructure SuperStructure = new SuperStructure();
 	public final ClimberSubsystem m_climber = new ClimberSubsystem();
-	
-	
+
 	// Controller initialization
 	final CommandXboxController DriveController = new CommandXboxController(0);
 	final CommandXboxController OperatorController = new CommandXboxController(1);
@@ -37,13 +38,6 @@ public class RobotContainer {
 	// Swerve initialization
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
-	// Goal Position for SOTM
-	private Pose2d HubPose = new Pose2d(Inches.of(182.11), Inches.of(158.84), new Rotation3d(0, 0, 0).toRotation2d()); // Note
-																														// -
-																														// Update
-																														// ME\
-	private Pose2d AllianceWallDepot = new Pose2d(Inches.of(12), Inches.of(24), new Rotation3d(0, 0, 0).toRotation2d());
-	private Pose2d AllianceWallOutpost = new Pose2d(Inches.of(12), Inches.of(293), new Rotation3d(0, 0, 0).toRotation2d());
 	// ======================Auton_Config=========================
 	// private final Command Teston;
 	private final Command APP1;
@@ -56,6 +50,8 @@ public class RobotContainer {
 	SendableChooser<Command> m_chooser;
 
 	// =======================================================
+
+	public Pose2d HubPose, AllianceWallDepot, AllianceWallOutpost;
 
 	SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
 			() -> DriveController.getLeftY() * -1,
@@ -97,13 +93,31 @@ public class RobotContainer {
 	// The container for the robot. Contains subsystems, OI devices, and commands.
 
 	public RobotContainer() {
+		if (DriverStation.getAlliance().isPresent()
+				&& DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+			HubPose = new Pose2d(Inches.of(182.11), Inches.of(158.84),
+					new Rotation3d(0, 0, 0).toRotation2d());
+			AllianceWallDepot = new Pose2d(Inches.of(12), Inches.of(24),
+					new Rotation3d(0, 0, 0).toRotation2d());
+			AllianceWallOutpost = new Pose2d(Inches.of(12), Inches.of(293),
+					new Rotation3d(0, 0, 0).toRotation2d());
+		} else if (DriverStation.getAlliance().isPresent()
+				&& DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+			HubPose = new Pose2d(Inches.of(469.11), Inches.of(158.84),
+					new Rotation3d(0, 0, 0).toRotation2d());
+			AllianceWallDepot = new Pose2d(Inches.of(624.22), Inches.of(24),
+					new Rotation3d(0, 0, 0).toRotation2d());
+			AllianceWallOutpost = new Pose2d(Inches.of(624.22), Inches.of(293),
+					new Rotation3d(0, 0, 0).toRotation2d());
+		}
+
 		// Secondary Auton Configs
-		NamedCommands.registerCommand("ShootOnTheMoveCommand", 
-  					  new ShootOnTheMoveCommand(drivebase::getPose,
-										  		drivebase::getRobotVelocity,
-										  		HubPose,
-										  		SuperStructure.TurretSubsytem,
-										  		SuperStructure.FlywheelSubsystem));
+		NamedCommands.registerCommand("ShootOnTheMoveCommand",
+				new ShootOnTheMoveCommand(drivebase::getPose,
+						drivebase::getRobotVelocity,
+						HubPose,
+						SuperStructure.TurretSubsytem,
+						SuperStructure.FlywheelSubsystem));
 		NamedCommands.registerCommand("DeployHopper", SuperStructure.SetHopperPos());
 		NamedCommands.registerCommand("SetHopperPosAgitate", SuperStructure.SetHopperPosAgitate());
 		NamedCommands.registerCommand("RetractHopper", SuperStructure.SetHopperPosZero());
@@ -134,102 +148,96 @@ public class RobotContainer {
 		configureBindings();
 		DriverStation.silenceJoystickConnectionWarning(true);
 
-		}
+	}
 
 	// Button Bindings for Drive and Operator controllers
 	private void configureBindings() {
 
 		Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
 		drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
-	
-	// Operator Controls
-	// Intake Rollers
-	OperatorController.leftTrigger().whileTrue(SuperStructure.SetIntakePWR(-0.8))
-									.whileFalse(SuperStructure.SetIntakePWR(0));
-																		
-	
 
-	// Hood Homeing
-	// OperatorController.a().onTrue(SuperStructure.HoodSubsystem.homing());
+		// Operator Controls
+		// Intake Rollers
+		OperatorController.leftTrigger().whileTrue(SuperStructure.SetIntakePWR(-0.8))
+				.whileFalse(SuperStructure.SetIntakePWR(0));
 
-	// Kicker and Belly Control
-	OperatorController.rightTrigger().whileTrue(SuperStructure.SetKickerAndBelly())
-									 .whileFalse(SuperStructure.SetKickerAndBellyOff());
-									 
-	OperatorController.x().whileTrue(SuperStructure.BackDriveKicker())
-						  .whileFalse(SuperStructure.BackDriveKickeroff());
+		// Hood Homeing
+		// OperatorController.a().onTrue(SuperStructure.HoodSubsystem.homing());
 
-	// Hopper Extender Control
-	OperatorController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3))
-	.or(OperatorController.rightBumper().onTrue(SuperStructure.SetHopperExtenderPower(-0.3)))
-	.whileFalse(SuperStructure.SetHopperExtenderPower(0));
+		// Kicker and Belly Control
+		OperatorController.rightTrigger().whileTrue(SuperStructure.SetKickerAndBelly())
+				.whileFalse(SuperStructure.SetKickerAndBellyOff());
 
+		OperatorController.x().whileTrue(SuperStructure.BackDriveKicker())
+				.whileFalse(SuperStructure.BackDriveKickeroff());
 
-	OperatorController.y().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
-																		drivebase::getRobotVelocity,
-																		HubPose,
-																		SuperStructure.TurretSubsytem,
-																		SuperStructure.FlywheelSubsystem)
-																.alongWith(SuperStructure.SetKickerAndBelly())
-																).onFalse(SuperStructure.SetKickerAndBellyOff());
+		// Hopper Extender Control
+		OperatorController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3))
+				.or(OperatorController.rightBumper().onTrue(SuperStructure.SetHopperExtenderPower(-0.3)))
+				.whileFalse(SuperStructure.SetHopperExtenderPower(0));
 
-	// SOTM
-	OperatorController.povDown().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
-																		drivebase::getRobotVelocity,
-																		HubPose,
-																		SuperStructure.TurretSubsytem,
-																		SuperStructure.FlywheelSubsystem));
+		// This runs the whole launcher system but does not stop the kicker and belly
+		// when toggled off
+		// OperatorController.y().toggleOnTrue(new
+		// ShootOnTheMoveCommand(drivebase::getPose,
+		// drivebase::getRobotVelocity,
+		// HubPose,
+		// SuperStructure.TurretSubsytem,
+		// SuperStructure.FlywheelSubsystem)
+		// .alongWith(SuperStructure.SetKickerAndBelly())
+		// );
 
-	OperatorController.povLeft().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
-																		drivebase::getRobotVelocity,
-																		AllianceWallDepot,
-																		SuperStructure.TurretSubsytem,
-																		SuperStructure.FlywheelSubsystem));
-	
-	OperatorController.povRight().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
-																		drivebase::getRobotVelocity,
-																		AllianceWallOutpost,
-																		SuperStructure.TurretSubsytem,
-																		SuperStructure.FlywheelSubsystem));
+		// SOTM
+		OperatorController.povDown().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
+				drivebase::getRobotVelocity,
+				HubPose,
+				SuperStructure.TurretSubsytem,
+				SuperStructure.FlywheelSubsystem));
 
-	OperatorController.povLeft().whileTrue(ShootOnTheMoveCommand.rebuildFromDashboard());
+		OperatorController.povLeft().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
+				drivebase::getRobotVelocity,
+				AllianceWallDepot,
+				SuperStructure.TurretSubsytem,
+				SuperStructure.FlywheelSubsystem));
 
-	/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
-	if(ManualControl==true){
-		// Manual Dashboard control for hood, flywheel, and turret
-		DriveController.y().onTrue(Commands.runOnce(() -> {
-			double hoodReq = SmartDashboard.getNumber("Hood Angle Requested", 0);
-			double turretReq = SmartDashboard.getNumber("Turret Angle Requested", 0);
-			double flyReq = SmartDashboard.getNumber("Flywheel RPM Requested", 0);
-			System.out.println("A pressed: hood=" + hoodReq + " turret=" + turretReq + " fly=" + flyReq);
-			SuperStructure.HoodSubsystem.setAngleSetpoint(Degrees.of(hoodReq));
-			SuperStructure.TurretSubsytem.setAngleSetpoint(Degrees.of(turretReq));
-			SuperStructure.FlywheelSubsystem.setVelocitySetpoint(RPM.of(flyReq));
-		}, SuperStructure.HoodSubsystem, SuperStructure.TurretSubsytem, SuperStructure.FlywheelSubsystem));
-	}
+		OperatorController.povRight().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
+				drivebase::getRobotVelocity,
+				AllianceWallOutpost,
+				SuperStructure.TurretSubsytem,
+				SuperStructure.FlywheelSubsystem));
 
-	DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+		// OperatorController.povLeft().whileTrue(ShootOnTheMoveCommand.rebuildFromDashboard());
 
-	// Climber Control
-	DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
-	DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
-	
+		/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
+		if (ManualControl == true) {
+			// Manual Dashboard control for hood, flywheel, and turret
+			DriveController.y().onTrue(Commands.runOnce(() -> {
+				double hoodReq = SmartDashboard.getNumber("Hood Angle Requested", 0);
+				double turretReq = SmartDashboard.getNumber("Turret Angle Requested", 0);
+				double flyReq = SmartDashboard.getNumber("Flywheel RPM Requested", 0);
+				System.out.println("A pressed: hood=" + hoodReq + " turret=" + turretReq + " fly=" + flyReq);
+				SuperStructure.HoodSubsystem.setAngleSetpoint(Degrees.of(hoodReq));
+				SuperStructure.TurretSubsytem.setAngleSetpoint(Degrees.of(turretReq));
+				SuperStructure.FlywheelSubsystem.setVelocitySetpoint(RPM.of(flyReq));
+			}, SuperStructure.HoodSubsystem, SuperStructure.TurretSubsytem, SuperStructure.FlywheelSubsystem));
+		}
 
+		DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
 
-	
+		// Climber Control
+		DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
+		DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
 
-	// This is our boost control Right Trigger
-	DriveController.axisGreaterThan(3,0.01).onChange(Commands.runOnce(()->
-	{
-		driveAngularVelocity.scaleTranslation(DriveController.getRightTriggerAxis() +
-				0.35);
-		driveAngularVelocity.scaleRotation((DriveController.getRightTriggerAxis() *
-				Constants.MiscConstants.RotationSpeedScale) + 0.25);
-	}).repeatedly()).whileFalse(Commands.runOnce(()->
-	{
-		driveAngularVelocity.scaleTranslation(0.25);
-		driveAngularVelocity.scaleRotation(0.15);
-	}).repeatedly());
+		// This is our boost control Right Trigger
+		DriveController.axisGreaterThan(3, 0.01).onChange(Commands.runOnce(() -> {
+			driveAngularVelocity.scaleTranslation(DriveController.getRightTriggerAxis() +
+					0.35);
+			driveAngularVelocity.scaleRotation((DriveController.getRightTriggerAxis() *
+					Constants.MiscConstants.RotationSpeedScale) + 0.25);
+		}).repeatedly()).whileFalse(Commands.runOnce(() -> {
+			driveAngularVelocity.scaleTranslation(0.25);
+			driveAngularVelocity.scaleRotation(0.15);
+		}).repeatedly());
 	}
 
 	// Gets the selected autonomous command.
@@ -237,8 +245,7 @@ public class RobotContainer {
 		return m_chooser.getSelected();
 	}
 
-	public void setMotorBrake(boolean brake)
-	{
-	drivebase.setMotorBrake(false);
+	public void setMotorBrake(boolean brake) {
+		drivebase.setMotorBrake(false);
 	}
 }
