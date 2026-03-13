@@ -8,6 +8,9 @@ import org.littletonrobotics.urcl.URCL;
 
 import com.ctre.phoenix6.SignalLogger;
 
+// import 
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
@@ -28,6 +31,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
 	private Command m_autonomousCommand;
 
+	AddressableLED m_led;
+ 	AddressableLEDBuffer m_ledBuffer;
 	private final RobotContainer m_robotContainer;
 
 	/**
@@ -36,6 +41,19 @@ public class Robot extends TimedRobot {
 	 * initialization code.
 	 */
 	public Robot() {
+		    // PWM port 9
+    	// Must be a PWM header, not MXP or DIO
+    	m_led = new AddressableLED(8);
+
+    	// Reuse buffer
+    	// Default to a length of 60, start empty output
+    	// Length is expensive to set, so only set it once, then just update data
+  		m_ledBuffer = new AddressableLEDBuffer(1500);
+  		m_led.setLength(m_ledBuffer.getLength());
+
+    	// Set the data
+   		 m_led.setData(m_ledBuffer);
+   		 m_led.start();
 		// Instantiate our RobotContainer. This will perform all our button bindings,
 		// and put our
 		// autonomous chooser on the dashboard.
@@ -79,13 +97,28 @@ public class Robot extends TimedRobot {
 		String gameData = DriverStation.getGameSpecificMessage();
       	SmartDashboard.putString("FMS Game Data", gameData);
 
-		// Shot s = ShooterTargetingSystem.getShotData(m_robotContainer.drivebase.getPose(),
-		// 		m_robotContainer.drivebase.getRobotVelocity(), 3);
-		// if (s != null) {
-		// 	SmartDashboard.putNumber("Shot exit vel:", s.exitVelocity());
-		// 	SmartDashboard.putNumber("Shot Hoodangle: ", s.hoodAngle());
-		// 	SmartDashboard.putNumber("Shot Target: ", s.target());
-		// }
+		if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+			for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+          // Sets the specified LED to the GRB values for blue
+          m_ledBuffer.setRGB(i, 0, 0 ,255);
+          m_led.setData(m_ledBuffer);
+		}	
+		} else if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+			for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+          // Sets the specified LED to the GRB values for red
+		  //GRB
+          m_ledBuffer.setRGB(i, 0, 255 ,0);
+          m_led.setData(m_ledBuffer);
+    }
+}
+	// 	} else {
+	// 		for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+	// 	  // Sets the specified LED to the GRB values for red
+	// 	  m_ledBuffer.setRGB(i, 255, 165 ,0);
+	// 	  m_led.setData(m_ledBuffer);
+	// }
+	// 	}
+		
 
 
 		CommandScheduler.getInstance().run();

@@ -73,6 +73,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	 * @param directory Directory of swerve drive config files.
 	 */
 	public SwerveSubsystem(File directory) {
+		//NOTE - CHECK THIS
 		Pose2d startingPose;
 		if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
 			startingPose = new Pose2d(new Translation2d(Meter.of(16),
