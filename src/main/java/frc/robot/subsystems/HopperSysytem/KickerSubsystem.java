@@ -79,6 +79,8 @@ public class KickerSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 		flywheel.updateTelemetry();
+
+		
 	}
 
 	public Command indexShoot(){

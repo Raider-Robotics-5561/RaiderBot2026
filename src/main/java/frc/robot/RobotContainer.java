@@ -37,11 +37,12 @@ public class RobotContainer {
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
 	// Goal Position for SOTM
-	private Pose2d goalPose = new Pose2d(Inches.of(182.11), Inches.of(158.84), new Rotation3d(0, 0, 0).toRotation2d()); // Note
+	private Pose2d HubPose = new Pose2d(Inches.of(182.11), Inches.of(158.84), new Rotation3d(0, 0, 0).toRotation2d()); // Note
 																														// -
 																														// Update
 																														// ME\
-
+	private Pose2d AllianceWallDepot = new Pose2d(Inches.of(12), Inches.of(24), new Rotation3d(0, 0, 0).toRotation2d());
+	private Pose2d AllianceWallOutpost = new Pose2d(Inches.of(12), Inches.of(293), new Rotation3d(0, 0, 0).toRotation2d());
 	// ======================Auton_Config=========================
 	// private final Command Teston;
 	private final Command APP1;
@@ -99,7 +100,7 @@ public class RobotContainer {
 		NamedCommands.registerCommand("ShootOnTheMoveCommand", 
   					  new ShootOnTheMoveCommand(drivebase::getPose,
 										  		drivebase::getRobotVelocity,
-										  		goalPose,
+										  		HubPose,
 										  		SuperStructure.TurretSubsytem,
 										  		SuperStructure.FlywheelSubsystem));
 		NamedCommands.registerCommand("DeployHopper", SuperStructure.SetHopperPos());
@@ -162,10 +163,31 @@ public class RobotContainer {
 	.or(OperatorController.rightBumper().onTrue(SuperStructure.SetHopperExtenderPower(-0.3)))
 	.whileFalse(SuperStructure.SetHopperExtenderPower(0));
 
+
+	OperatorController.y().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
+																		drivebase::getRobotVelocity,
+																		HubPose,
+																		SuperStructure.TurretSubsytem,
+																		SuperStructure.FlywheelSubsystem)
+																.alongWith(SuperStructure.SetKickerAndBelly())
+																).onFalse(SuperStructure.SetKickerAndBellyOff());
+
 	// SOTM
 	OperatorController.povDown().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
 																		drivebase::getRobotVelocity,
-																		goalPose,
+																		HubPose,
+																		SuperStructure.TurretSubsytem,
+																		SuperStructure.FlywheelSubsystem));
+
+	OperatorController.povLeft().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
+																		drivebase::getRobotVelocity,
+																		AllianceWallDepot,
+																		SuperStructure.TurretSubsytem,
+																		SuperStructure.FlywheelSubsystem));
+	
+	OperatorController.povRight().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
+																		drivebase::getRobotVelocity,
+																		AllianceWallOutpost,
 																		SuperStructure.TurretSubsytem,
 																		SuperStructure.FlywheelSubsystem));
 
