@@ -17,7 +17,9 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -63,15 +65,15 @@ public class VisionSubsystem extends SubsystemBase
                 new Translation3d(0.2664, 
                                   0.32926,
                                   0.50209),
-                VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(20)), VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(10)));
+                VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(20)), VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(10))),
 
         // Right (Robot Relative) Side Camera
-        // Camera3("Camera3",
-        //         new Rotation3d(0, Units.degreesToRadians(-12.5), Units.degreesToRadians(-90)),
-        //         new Translation3d(0.2664, 
-        //                           -0.32926,
-        //                           0.50209),
-        //         VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(20)), VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(10)));
+        Camera3("Camera3",
+                new Rotation3d(0, Units.degreesToRadians(-12.5), Units.degreesToRadians(-90)),
+                new Translation3d(0.2664, 
+                                  -0.32926,
+                                  0.50209),
+                VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(20)), VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(10)));
    
 
         /// Latency alert to use when high latency is detected.
@@ -135,6 +137,7 @@ public class VisionSubsystem extends SubsystemBase
                 cameraSim = new PhotonCameraSim(camera, cameraProp);
                 cameraSim.enableDrawWireframe(true);
             }
+            
         }
 
         /**

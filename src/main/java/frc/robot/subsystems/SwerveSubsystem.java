@@ -28,7 +28,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
-import frc.robot.subsystems.VisionSubsystem.Cameras;
+// import frc.robot.subsystems.VisionSubsystem.Cameras;
+import frc.robot.util.PhotonVision.Cameras;
+import frc.robot.util.PhotonVision;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,7 +67,8 @@ public class SwerveSubsystem extends SubsystemBase {
 	/**
      * PhotonVision class to keep an accurate odometry .
      */
-    public       VisionSubsystem      vision;
+    // public       VisionSubsystem      vision;
+	public 		 PhotonVision		  vision;
 
 	/**
 	 * Initialize {@link SwerveDrive} with the directory provided.
@@ -144,7 +147,9 @@ public class SwerveSubsystem extends SubsystemBase {
 	 * Setup the photon vision class.
 	 */
 	public void setupPhotonVision() {
-		vision = new VisionSubsystem(swerveDrive::getPose, swerveDrive.field);
+		// vision = new VisionSubsystem(swerveDrive::getPose, swerveDrive.field);
+		vision = new PhotonVision(swerveDrive::getPose, swerveDrive.field);
+
 	}
 
 	public boolean isMoving(double tolerance) {
