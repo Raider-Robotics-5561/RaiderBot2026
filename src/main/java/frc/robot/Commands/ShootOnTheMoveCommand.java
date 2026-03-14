@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
 import frc.robot.subsystems.TurretSystem.TurretSubsystem;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 
@@ -45,9 +46,15 @@ public class ShootOnTheMoveCommand extends Command
 
   // Tuned Constants
   /**
-   * When true, the turret-tip tangential velocity from robot rotation (e.g. ShakeCommand omega)
-   * is included in the SOTM shot vector calculation.
-   * Set to false to revert to the old behaviour (translational velocity only).
+   * When non-null, rotation compensation is only active while this supplier returns true
+   * (e.g. pass {@code shakeCommand::isScheduled} so compensation only runs during a shake).
+   * When null, the static {@code COMPENSATE_FOR_ROTATION} flag governs the behaviour.
+   */
+  private final BooleanSupplier shakeActive;
+
+  /**
+   * Master enable for turret-tip rotation compensation.
+   * Set to false to disable completely regardless of {@code shakeActive}.
    */
   private static final boolean COMPENSATE_FOR_ROTATION = true;
 
@@ -93,7 +100,7 @@ public class ShootOnTheMoveCommand extends Command
   public ShootOnTheMoveCommand(Supplier<Pose2d> currentPose, Supplier<ChassisSpeeds> fieldOrientedChassisSpeeds,
                                Pose2d goal, TurretSubsystem turret, FlywheelSubsystem launcher)
   {
-    this(currentPose, fieldOrientedChassisSpeeds, () -> goal, turret, launcher, true, () -> {}, () -> {});
+    this(currentPose, fieldOrientedChassisSpeeds, () -> goal, turret, launcher, true, () -> {}, () -> {}, () -> true);
   }
 
   /**
@@ -104,19 +111,22 @@ public class ShootOnTheMoveCommand extends Command
                                Pose2d goal, TurretSubsystem turret, FlywheelSubsystem launcher,
                                boolean runContinuously)
   {
-    this(currentPose, fieldOrientedChassisSpeeds, () -> goal, turret, launcher, runContinuously, () -> {}, () -> {});
+    this(currentPose, fieldOrientedChassisSpeeds, () -> goal, turret, launcher, runContinuously, () -> {}, () -> {}, () -> true);
   }
 
   /**
    * Full teleop constructor with feed control.
    * Goal is a {@code Supplier<Pose2d>} evaluated each loop.
    *
-   * @param feedOn  called each loop when turret + flywheel are both at setpoint
-   * @param feedOff called when the command ends to stop the feed
+   * @param feedOn       called each loop when turret + flywheel are both at setpoint
+   * @param feedOff      called when the command ends to stop the feed
+   * @param shakeActive  returns true while ShakeCommand is running; rotation compensation
+   *                     is only applied when this returns true (pass {@code shakeCmd::isScheduled})
    */
   public ShootOnTheMoveCommand(Supplier<Pose2d> currentPose, Supplier<ChassisSpeeds> fieldOrientedChassisSpeeds,
                                Supplier<Pose2d> goal, TurretSubsystem turret, FlywheelSubsystem launcher,
-                               boolean runContinuously, Runnable feedOn, Runnable feedOff)
+                               boolean runContinuously, Runnable feedOn, Runnable feedOff,
+                               BooleanSupplier shakeActive)
   {
     this.runContinuously = runContinuously;
     this.feedOn  = feedOn;
@@ -126,6 +136,7 @@ public class ShootOnTheMoveCommand extends Command
     robotPose = currentPose;
     this.fieldOrientedChassisSpeeds = fieldOrientedChassisSpeeds;
     this.goalPose = goal;
+    this.shakeActive = shakeActive;
     addRequirements(turret, launcher);
   }
 
@@ -210,8 +221,10 @@ public class ShootOnTheMoveCommand extends Command
     // This accounts for any angular velocity (e.g. from ShakeCommand) that causes
     // the turret — which is offset from the robot center — to have an additional
     // tangential linear velocity that would otherwise throw off the shot vector.
-    // Toggle COMPENSATE_FOR_ROTATION to false to revert to translational-only compensation.
-    ChassisSpeeds turretTipSpeeds = COMPENSATE_FOR_ROTATION
+    // Compensation only activates when shakeActive returns true (i.e. ShakeCommand is scheduled)
+    // and the master COMPENSATE_FOR_ROTATION flag is enabled.
+    boolean doRotationComp = COMPENSATE_FOR_ROTATION && shakeActive.getAsBoolean();
+    ChassisSpeeds turretTipSpeeds = doRotationComp
         ? m_turret.getVelocity(robotSpeed, robotPose.get().getRotation().getMeasure())
         : robotSpeed;
     Translation2d robotVelVec = new Translation2d(turretTipSpeeds.vxMetersPerSecond,
@@ -230,6 +243,7 @@ public class ShootOnTheMoveCommand extends Command
     SmartDashboard.putNumber("SOTM: Compensated Field Angle", fieldSpaceTurretAngle);
     SmartDashboard.putNumber("SOTM: Angle Correction (deg)", fieldSpaceTurretAngle - uncompensatedAngle);
     // Show shake-induced tangential velocity so it's visible during tuning
+    SmartDashboard.putBoolean("SOTM: Shake Compensation Active", doRotationComp);
     SmartDashboard.putNumber("SOTM: Shake Omega (rad-s)", robotSpeed.omegaRadiansPerSecond);
     SmartDashboard.putNumber("SOTM: Turret Tip vX (m-s)", turretTipSpeeds.vxMetersPerSecond);
     SmartDashboard.putNumber("SOTM: Turret Tip vY (m-s)", turretTipSpeeds.vyMetersPerSecond);

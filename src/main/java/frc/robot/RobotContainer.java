@@ -211,6 +211,8 @@ public class RobotContainer {
 		// (shared requirements), and pressing the same direction again turns it off.
 		// feedOn/feedOff are passed in so the command engages the kicker+belly
 		// automatically once turret and flywheel are both at setpoint.
+		// shakeCommand is declared here so it can be passed to SOTM for isScheduled() checks.
+		ShakeCommand shakeCommand = new ShakeCommand(drivebase);
 		ShootOnTheMoveCommand sotmCommand = new ShootOnTheMoveCommand(
 				drivebase::getPose,
 				drivebase::getRobotVelocity,
@@ -219,7 +221,8 @@ public class RobotContainer {
 				SuperStructure.FlywheelSubsystem,
 				true,
 				() -> SuperStructure.SetKickerAndBelly().schedule(),
-				() -> SuperStructure.SetKickerAndBellyOff().schedule());
+				() -> SuperStructure.SetKickerAndBellyOff().schedule(),
+				shakeCommand::isScheduled);
 
 		OperatorController.povDown().toggleOnTrue(Commands.runOnce(() -> sotmTarget = HubPose)
 				.andThen(sotmCommand));
@@ -254,7 +257,7 @@ public class RobotContainer {
 
 		DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
 
-		DriveController.leftTrigger().whileTrue(new ShakeCommand(drivebase));
+		DriveController.leftTrigger().whileTrue(shakeCommand);
 
 		// Climber Control
 		DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
