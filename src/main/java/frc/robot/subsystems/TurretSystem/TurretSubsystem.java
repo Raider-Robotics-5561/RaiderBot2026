@@ -121,12 +121,20 @@ public class TurretSubsystem extends SubsystemBase {
 		turret.simIterate();
 	}
 
+	private Angle m_angleSetpoint = Degrees.of(0);
+
 	public void setAngleSetpoint(Angle measure) {
 		Angle min = Degrees.of(-90);
 		Angle max = Degrees.of(90);
 		double valDeg = measure.in(Degrees);
 		double clampedDeg = Math.max(min.in(Degrees), Math.min(max.in(Degrees), valDeg));
+		m_angleSetpoint = Degrees.of(clampedDeg);
 		turret.setMechanismPositionSetpoint(Degrees.of(clampedDeg));
+	}
+
+	/** Returns true when the turret is within 2 degrees of the last commanded setpoint. */
+	public boolean atSetpoint() {
+		return Math.abs(getAngle().in(Degrees) - m_angleSetpoint.in(Degrees)) < 2.0;
 	}
 
 	public Pose2d getPose(Pose2d robotPose) {

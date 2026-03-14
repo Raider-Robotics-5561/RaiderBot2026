@@ -24,11 +24,24 @@ public class ShootOnTheMoveCommand extends Command
 
   private final Supplier<Pose2d>        robotPose;
   private final Supplier<ChassisSpeeds> fieldOrientedChassisSpeeds;
-  private final Pose2d                  goalPosee;
+  private final Supplier<Pose2d>        goalPose;
 
   private TurretSubsystem m_turret;
   // HoodSubsystem disabled - hood not in use
   private FlywheelSubsystem m_launcher;
+
+  /**
+   * When true the command never self-terminates (teleop toggle use).
+   * When false the command exits once both subsystems reach their setpoints (auto use).
+   */
+  private final boolean runContinuously;
+
+  /**
+   * Called each loop while turret and flywheel are both at setpoint — starts the kicker/belly feed.
+   * Called in end() to ensure feed always stops when the command ends.
+   */
+  private final Runnable feedOn;
+  private final Runnable feedOff;
 
   // Tuned Constants
   /**
@@ -66,26 +79,47 @@ public class ShootOnTheMoveCommand extends Command
 
 
 
+  /**
+   * Teleop constructor — runs continuously until cancelled by the button toggle.
+   * Accepts a fixed {@code Pose2d} goal. No feed control.
+   */
   public ShootOnTheMoveCommand(Supplier<Pose2d> currentPose, Supplier<ChassisSpeeds> fieldOrientedChassisSpeeds,
                                Pose2d goal, TurretSubsystem turret, FlywheelSubsystem launcher)
   {
-    m_launcher = launcher; //flywheel
+    this(currentPose, fieldOrientedChassisSpeeds, () -> goal, turret, launcher, true, () -> {}, () -> {});
+  }
+
+  /**
+   * Auto constructor — exits once both subsystems reach their setpoints.
+   * Accepts a fixed {@code Pose2d} goal. No feed control.
+   */
+  public ShootOnTheMoveCommand(Supplier<Pose2d> currentPose, Supplier<ChassisSpeeds> fieldOrientedChassisSpeeds,
+                               Pose2d goal, TurretSubsystem turret, FlywheelSubsystem launcher,
+                               boolean runContinuously)
+  {
+    this(currentPose, fieldOrientedChassisSpeeds, () -> goal, turret, launcher, runContinuously, () -> {}, () -> {});
+  }
+
+  /**
+   * Full teleop constructor with feed control.
+   * Goal is a {@code Supplier<Pose2d>} evaluated each loop.
+   *
+   * @param feedOn  called each loop when turret + flywheel are both at setpoint
+   * @param feedOff called when the command ends to stop the feed
+   */
+  public ShootOnTheMoveCommand(Supplier<Pose2d> currentPose, Supplier<ChassisSpeeds> fieldOrientedChassisSpeeds,
+                               Supplier<Pose2d> goal, TurretSubsystem turret, FlywheelSubsystem launcher,
+                               boolean runContinuously, Runnable feedOn, Runnable feedOff)
+  {
+    this.runContinuously = runContinuously;
+    this.feedOn  = feedOn;
+    this.feedOff = feedOff;
+    m_launcher = launcher;
     m_turret = turret;
-
-
-
-
     robotPose = currentPose;
     this.fieldOrientedChassisSpeeds = fieldOrientedChassisSpeeds;
-    this.goalPosee = goal;
-
-    // Build the interpolation table from hardcoded defaults on first construction.
-    // Call rebuildFromDashboard() (bind it to a button) to reload from NT/dashboard.
-    for (int i = 0; i < DEFAULT_DISTANCES.length; i++) {
-      shooterTable.put(DEFAULT_DISTANCES[i], DEFAULT_VELOCITIES[i]);
-    }
-
-    addRequirements();
+    this.goalPose = goal;
+    addRequirements(turret, launcher);
   }
 
   /**
@@ -127,19 +161,17 @@ public class ShootOnTheMoveCommand extends Command
   @Override
   public void initialize()
   {
-    // NetworkTable is populated once in static initializer, no need to repopulate here
+   
   }
 
   @Override
   public void execute()
   {
     
-
-
     var robotSpeed = fieldOrientedChassisSpeeds.get();
 
     // 1. Calculate Time of Flight (ToF) FIRST based on current distance
-    double currentDist = robotPose.get().getTranslation().getDistance(goalPosee.getTranslation());
+    double currentDist = robotPose.get().getTranslation().getDistance(goalPose.get().getTranslation());
     double staticRPM = shooterTable.get(currentDist);
     double staticVel = calculateVelocityFromRPM(staticRPM);
     double ballFlightTime = currentDist / staticVel;
@@ -152,7 +184,7 @@ public class ShootOnTheMoveCommand extends Command
             new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond).times(totalLatency));
 
     // 2. GET TARGET VECTOR
-    Translation2d goalLocation = goalPosee.getTranslation();
+    Translation2d goalLocation = goalPose.get().getTranslation();
     Translation2d targetVec    = goalLocation.minus(futurePos);
     double        dist         = targetVec.getNorm();
     SmartDashboard.putNumber("SOTM: dist", dist);
@@ -211,13 +243,17 @@ public class ShootOnTheMoveCommand extends Command
     SmartDashboard.putNumber("SOTM: Required RPM", requiredRPM);
 
     // 7. SET OUTPUTS
-    //m_turret.setAngleSetpoint(Degrees.of(clampedTurretAngle));
-
-    // if (angleDifference > 0.5) { 
     m_turret.setAngleSetpoint(Degrees.of(clampedTurretAngle));
-    // }
     // m_hood.setAngle() - hood disabled
     m_launcher.setVelocitySetpoint(RPM.of(requiredRPM));
+
+    // 8. FEED CONTROL — engage kicker/belly as soon as both subsystems are on target
+    SmartDashboard.putBoolean("SOTM: Ready to Fire", m_launcher.atSetpoint() && m_turret.atSetpoint());
+    if (m_launcher.atSetpoint() && m_turret.atSetpoint()) {
+      feedOn.run();
+    } else {
+      feedOff.run();
+    }
   }
 
     /** Helper to reverse your RPM calculation */
@@ -229,16 +265,15 @@ public class ShootOnTheMoveCommand extends Command
   @Override
   public boolean isFinished()
   {
-    // TODO: Make this return true when this Command no longer needs to run execute()
-
-    
-    return false;
+    if (runContinuously) return false;
+    return m_launcher.atSetpoint() && m_turret.atSetpoint();
   }
 
   @Override
   public void end(boolean interrupted)
   {
-    // Stop all subsystems when command ends
+    // Stop feed, flywheel, and turret when command ends
+    feedOff.run();
     m_launcher.setVelocitySetpoint(RPM.of(0));
     m_turret.setAngleSetpoint(Degrees.of(0));
   }

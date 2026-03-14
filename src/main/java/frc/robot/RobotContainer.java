@@ -50,7 +50,10 @@ public class RobotContainer {
 	public Pose2d HubPose, AllianceWallDepot, AllianceWallOutpost;
 
 	//Default to blue, but will be updated in gameInit() if the alliance is detected correctly
-	public Alliance current_alliance = Alliance.Blue; 
+	public Alliance current_alliance = Alliance.Blue;
+
+	// SOTM target — updated by D-pad buttons before the shared command is toggled.
+	private Pose2d sotmTarget = null;
 
 	SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
 			() -> DriveController.getLeftY() * -1,
@@ -148,7 +151,8 @@ public class RobotContainer {
 						drivebase::getRobotVelocity,
 						HubPose,
 						SuperStructure.TurretSubsytem,
-						SuperStructure.FlywheelSubsystem));
+						SuperStructure.FlywheelSubsystem,
+						false)); // auto mode: exits when turret + flywheel are on target
 		NamedCommands.registerCommand("DeployHopper", SuperStructure.SetHopperPos());
 		NamedCommands.registerCommand("SetHopperPosAgitate", SuperStructure.SetHopperPosAgitate());
 		NamedCommands.registerCommand("RetractHopper", SuperStructure.SetHopperPosZero());
@@ -204,24 +208,35 @@ public class RobotContainer {
 		// .alongWith(SuperStructure.SetKickerAndBelly())
 		// );
 
-		// SOTM
-		OperatorController.povDown().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
+		// SOTM - one shared command reads sotmTarget via supplier so only one instance
+		// ever runs. toggleOnTrue ensures pressing a second direction cancels the first
+		// (shared requirements), and pressing the same direction again turns it off.
+		// feedOn/feedOff are passed in so the command engages the kicker+belly
+		// automatically once turret and flywheel are both at setpoint.
+		ShootOnTheMoveCommand sotmCommand = new ShootOnTheMoveCommand(
+				drivebase::getPose,
 				drivebase::getRobotVelocity,
-				HubPose,
+				() -> sotmTarget,
 				SuperStructure.TurretSubsytem,
-				SuperStructure.FlywheelSubsystem));
+				SuperStructure.FlywheelSubsystem,
+				true,
+				() -> SuperStructure.SetKickerAndBelly().schedule(),
+				() -> SuperStructure.SetKickerAndBellyOff().schedule());
 
-		OperatorController.povLeft().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
-				drivebase::getRobotVelocity,
-				AllianceWallDepot,
-				SuperStructure.TurretSubsytem,
-				SuperStructure.FlywheelSubsystem));
+		OperatorController.povDown().toggleOnTrue(Commands.runOnce(() -> sotmTarget = HubPose)
+				.andThen(sotmCommand));
 
-		OperatorController.povRight().toggleOnTrue(new ShootOnTheMoveCommand(drivebase::getPose,
-				drivebase::getRobotVelocity,
-				AllianceWallOutpost,
-				SuperStructure.TurretSubsytem,
-				SuperStructure.FlywheelSubsystem));
+		OperatorController.povLeft().toggleOnTrue(Commands.runOnce(() -> sotmTarget = AllianceWallDepot)
+				.andThen(sotmCommand));
+
+		OperatorController.povRight().toggleOnTrue(Commands.runOnce(() -> sotmTarget = AllianceWallOutpost)
+				.andThen(sotmCommand));
+
+		// POV Up cancels SOTM and ensures the feed stops immediately
+		OperatorController.povUp().onTrue(Commands.runOnce(() -> {
+			sotmCommand.cancel();
+			SuperStructure.SetKickerAndBellyOff().schedule();
+		}));
 
 		// OperatorController.povLeft().whileTrue(ShootOnTheMoveCommand.rebuildFromDashboard());
 

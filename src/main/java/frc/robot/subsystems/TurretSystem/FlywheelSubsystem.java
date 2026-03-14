@@ -105,9 +105,17 @@ public class FlywheelSubsystem extends SubsystemBase {
 		flywheel.simIterate();
 	}
 
+	private AngularVelocity m_velocitySetpoint = RPM.of(0);
+
 	public void setVelocitySetpoint(AngularVelocity speed)
   {
+    m_velocitySetpoint = speed;
     flywheel.setMechanismVelocitySetpoint(speed);
+  }
+
+  /** Returns true when the flywheel is within 150 RPM of the last commanded setpoint. */
+  public boolean atSetpoint() {
+    return Math.abs(getVelocity().in(RPM) - m_velocitySetpoint.in(RPM)) < 150.0;
   }
 
   public void setDutyCycleSetpoint(double dutyCycle)
