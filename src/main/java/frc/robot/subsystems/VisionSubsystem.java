@@ -17,9 +17,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -469,6 +467,7 @@ public class VisionSubsystem extends SubsystemBase
      * @param pose Estimated robot pose.
      * @return Could be empty if there isn't a good reading.
      */
+    @SuppressWarnings("unused")
     private Optional<EstimatedRobotPose> filterPose(Optional<EstimatedRobotPose> pose)
     {
         if (pose.isPresent())

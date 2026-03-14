@@ -45,6 +45,13 @@ public class ShootOnTheMoveCommand extends Command
 
   // Tuned Constants
   /**
+   * When true, the turret-tip tangential velocity from robot rotation (e.g. ShakeCommand omega)
+   * is included in the SOTM shot vector calculation.
+   * Set to false to revert to the old behaviour (translational velocity only).
+   */
+  private static final boolean COMPENSATE_FOR_ROTATION = true;
+
+  /**
    * Time in seconds between when the robot is told to move and when the shooter actually shoots.
    */
   private final double                     latency      = 0.4; 
@@ -199,7 +206,16 @@ public class ShootOnTheMoveCommand extends Command
     SmartDashboard.putNumber("SOTM: Ideal Horizontal Speed (RPM)", idealHorizontalSpeedRPM);
 
     // 4. VECTOR SUBTRACTION
-    Translation2d robotVelVec = new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond);
+    // Use turret-tip velocity instead of raw robot center velocity.
+    // This accounts for any angular velocity (e.g. from ShakeCommand) that causes
+    // the turret — which is offset from the robot center — to have an additional
+    // tangential linear velocity that would otherwise throw off the shot vector.
+    // Toggle COMPENSATE_FOR_ROTATION to false to revert to translational-only compensation.
+    ChassisSpeeds turretTipSpeeds = COMPENSATE_FOR_ROTATION
+        ? m_turret.getVelocity(robotSpeed, robotPose.get().getRotation().getMeasure())
+        : robotSpeed;
+    Translation2d robotVelVec = new Translation2d(turretTipSpeeds.vxMetersPerSecond,
+                                                  turretTipSpeeds.vyMetersPerSecond);
     Translation2d shotVec     = targetVec.div(dist).times(idealHorizontalSpeedMs).plus(robotVelVec); //.times(1)); Why was this here?
 
     // 5. CONVERT TO CONTROLS
@@ -213,6 +229,10 @@ public class ShootOnTheMoveCommand extends Command
     SmartDashboard.putNumber("SOTM: Uncompensated Field Angle", uncompensatedAngle);
     SmartDashboard.putNumber("SOTM: Compensated Field Angle", fieldSpaceTurretAngle);
     SmartDashboard.putNumber("SOTM: Angle Correction (deg)", fieldSpaceTurretAngle - uncompensatedAngle);
+    // Show shake-induced tangential velocity so it's visible during tuning
+    SmartDashboard.putNumber("SOTM: Shake Omega (rad-s)", robotSpeed.omegaRadiansPerSecond);
+    SmartDashboard.putNumber("SOTM: Turret Tip vX (m-s)", turretTipSpeeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("SOTM: Turret Tip vY (m-s)", turretTipSpeeds.vyMetersPerSecond);
 
     // 5b. ACCOUNT FOR ROBOT ROTATION (Gyro compensation)
     // Convert from field-space to robot-space by subtracting the robot's heading

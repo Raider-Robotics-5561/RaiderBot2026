@@ -13,6 +13,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
     private final SparkMax climberMotor;
 
+    @SuppressWarnings("removal")
     public ClimberSubsystem () {
 
     // Set up the climb motor as a brushless motor

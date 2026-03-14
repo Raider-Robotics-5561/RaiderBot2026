@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Percent;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -8,7 +7,6 @@ import static edu.wpi.first.units.Units.Seconds;
 import java.util.Map;
 import java.util.Optional;
 
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -17,14 +15,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 
 public class LEDsubsytem extends SubsystemBase {
-  private Command m_autonomousCommand;
 
-  private final RobotContainer m_robotContainer;
   private AddressableLED m_led;
   private AddressableLEDBuffer m_ledBuffer;
   private double m_startTime;
@@ -37,10 +31,9 @@ public class LEDsubsytem extends SubsystemBase {
   private final double Shift4 = 25.0;
   private final double Endgame = 30.0;
   // Our LED strip has a density of 120 LEDs per meter
-  private static final Distance kLedSpacing = Meter.of(120);
+  //private static final Distance kLedSpacing = Meter.of(120);
 
   public LEDsubsytem() {
-    m_robotContainer = new RobotContainer();
     m_led = new AddressableLED(8);
     m_led.setColorOrder(ColorOrder.kBGR);
     m_ledBuffer = new AddressableLEDBuffer(58);
