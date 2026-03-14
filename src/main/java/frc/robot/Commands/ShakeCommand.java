@@ -9,7 +9,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class ShakeCommand extends Command {
 
     // Total shake swing: ±3 degrees (6 degrees total)
-    private static final double AMPLITUDE_RAD = Units.degreesToRadians(3.0);
+    private static final double AMPLITUDE_RAD = Units.degreesToRadians(4.0);
     // One full oscillation every 0.5 seconds
     private static final double PERIOD_SECONDS = 0.5;
 
@@ -18,7 +18,7 @@ public class ShakeCommand extends Command {
 
     public ShakeCommand(SwerveSubsystem swerve) {
         m_swerve = swerve;
-        addRequirements(swerve);
+        addRequirements();
     }
 
     // Called when the command is initially scheduled.

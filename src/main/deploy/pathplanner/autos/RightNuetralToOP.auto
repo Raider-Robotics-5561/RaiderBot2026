@@ -41,12 +41,6 @@
                       "data": {
                         "commands": [
                           {
-                            "type": "path",
-                            "data": {
-                              "pathName": "Test_Path3"
-                            }
-                          },
-                          {
                             "type": "named",
                             "data": {
                               "name": "ShootOnTheMoveCommand"
@@ -56,6 +50,12 @@
                             "type": "named",
                             "data": {
                               "name": "BellyFeed"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Shake"
                             }
                           }
                         ]

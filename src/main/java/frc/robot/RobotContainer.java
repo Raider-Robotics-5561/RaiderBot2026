@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Commands.ClimberDownCommand;
 import frc.robot.Commands.ClimberUpCommand;
+import frc.robot.Commands.ShakeCommand;
 import frc.robot.Commands.ShootOnTheMoveCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -52,6 +54,8 @@ public class RobotContainer {
 	// =======================================================
 
 	public Pose2d HubPose, AllianceWallDepot, AllianceWallOutpost;
+
+	public Alliance current_alliance = Alliance.Blue;
 
 	SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
 			() -> DriveController.getLeftY() * -1,
@@ -93,16 +97,31 @@ public class RobotContainer {
 	// The container for the robot. Contains subsystems, OI devices, and commands.
 
 	public RobotContainer() {
-		if (DriverStation.getAlliance().isPresent()
-				&& DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+		try {
+		
+			current_alliance = DriverStation.getAlliance().get();
+			System.out.println("We are: "+current_alliance.toString());
+			SmartDashboard.putString("TEAM:", current_alliance.toString());
+		} catch (Exception e) {
+			System.out.println("Something is wrong defaulting to blue");
+		}
+
+
+		if (current_alliance == DriverStation.Alliance.Blue) {
 			HubPose = new Pose2d(Inches.of(182.11), Inches.of(158.84),
 					new Rotation3d(0, 0, 0).toRotation2d());
 			AllianceWallDepot = new Pose2d(Inches.of(12), Inches.of(24),
 					new Rotation3d(0, 0, 0).toRotation2d());
 			AllianceWallOutpost = new Pose2d(Inches.of(12), Inches.of(293),
 					new Rotation3d(0, 0, 0).toRotation2d());
-		} else if (DriverStation.getAlliance().isPresent()
-				&& DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+		} else if (current_alliance == DriverStation.Alliance.Red) {
+			HubPose = new Pose2d(Inches.of(469.11), Inches.of(158.84),
+					new Rotation3d(0, 0, 0).toRotation2d());
+			AllianceWallDepot = new Pose2d(Inches.of(624.22), Inches.of(24),
+					new Rotation3d(0, 0, 0).toRotation2d());
+			AllianceWallOutpost = new Pose2d(Inches.of(624.22), Inches.of(293),
+					new Rotation3d(0, 0, 0).toRotation2d());
+		} else {
 			HubPose = new Pose2d(Inches.of(469.11), Inches.of(158.84),
 					new Rotation3d(0, 0, 0).toRotation2d());
 			AllianceWallDepot = new Pose2d(Inches.of(624.22), Inches.of(24),
@@ -124,6 +143,7 @@ public class RobotContainer {
 		NamedCommands.registerCommand("IntakeRollerOn", SuperStructure.SetIntakePWR(-0.8));
 		NamedCommands.registerCommand("BellyFeed", SuperStructure.SetKickerAndBelly());
 		NamedCommands.registerCommand("IntakeRollerOff", SuperStructure.SetIntakePWR(0));
+		NamedCommands.registerCommand("Shake", new ShakeCommand(drivebase));
 
 		// Teston = drivebase.getAutonomousCommand("Teston");
 		APP1 = drivebase.getAutonomousCommand("APP1");
@@ -176,6 +196,14 @@ public class RobotContainer {
 				.or(OperatorController.rightBumper().onTrue(SuperStructure.SetHopperExtenderPower(-0.3)))
 				.whileFalse(SuperStructure.SetHopperExtenderPower(0));
 
+		OperatorController.back().onTrue(Commands.run(() -> {
+			if(current_alliance == DriverStation.Alliance.Blue){
+				current_alliance = DriverStation.Alliance.Red; 
+			} 
+			if(current_alliance == DriverStation.Alliance.Red){
+				current_alliance = DriverStation.Alliance.Blue; 
+			} 
+		}));
 		// This runs the whole launcher system but does not stop the kicker and belly
 		// when toggled off
 		// OperatorController.y().toggleOnTrue(new
@@ -223,6 +251,8 @@ public class RobotContainer {
 		}
 
 		DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+
+		DriveController.leftTrigger().whileTrue(new ShakeCommand(drivebase));
 
 		// Climber Control
 		DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));

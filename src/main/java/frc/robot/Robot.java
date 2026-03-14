@@ -36,7 +36,7 @@ public class Robot extends TimedRobot {
  	AddressableLEDBuffer m_ledBuffer;
 	private final RobotContainer m_robotContainer;
 
-	//public LEDsubsytem led_subsystem = new LEDsubsytem();
+	//public LEDsubsytem led_subsystem;
 
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -46,6 +46,7 @@ public class Robot extends TimedRobot {
 	public Robot() {
 
 		m_robotContainer = new RobotContainer();
+		//led_subsystem = new LEDsubsytem();
 	}
 
 	public void robotInit() {
