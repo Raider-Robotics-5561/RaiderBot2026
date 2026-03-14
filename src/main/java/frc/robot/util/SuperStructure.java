@@ -60,7 +60,13 @@ public class SuperStructure extends SubsystemBase {
 	return
 		kickerSubsystem.setDutyCycle(-0.9)
 		.alongWith(new WaitCommand(1.0)
-		.andThen(HopperRollerSubsystem.setVelocity(RPM.of(2500))).repeatedly());
+		.andThen(HopperRollerSubsystem.setVelocity(RPM.of(2500))));
+	}
+
+	public Command SetKickerAndBellyReverse() 
+	{
+		return 	kickerSubsystem.setDutyCycle(0.9)
+		.alongWith(HopperRollerSubsystem.setVelocity(RPM.of(-2500)));
 	}
 
 	public Command BackDriveKicker() {

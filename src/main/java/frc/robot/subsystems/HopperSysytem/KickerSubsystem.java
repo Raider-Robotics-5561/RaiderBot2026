@@ -65,6 +65,14 @@ public class KickerSubsystem extends SubsystemBase {
 		return flywheel.set(dutyCycle);
 	}
 
+	/**
+	 * Directly sets the kicker duty cycle without creating a Command.
+	 * Use this from inside another command's execute() to avoid subsystem conflicts.
+	 */
+	public void setDutyCycleDirect(double dutyCycle) {
+		IndexingMotor.set(dutyCycle);
+	}
+
 	public Command setVelocity(Supplier<AngularVelocity> speed) {
 		return flywheel.setSpeed(speed);
 	}

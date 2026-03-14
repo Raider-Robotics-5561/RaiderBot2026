@@ -115,7 +115,7 @@ public class FlywheelSubsystem extends SubsystemBase {
 
   /** Returns true when the flywheel is within 150 RPM of the last commanded setpoint. */
   public boolean atSetpoint() {
-    return Math.abs(getVelocity().in(RPM) - m_velocitySetpoint.in(RPM)) < 150.0;
+    return Math.abs(getVelocity().in(RPM) - m_velocitySetpoint.in(RPM)) < 500.0;
   }
 
   public void setDutyCycleSetpoint(double dutyCycle)

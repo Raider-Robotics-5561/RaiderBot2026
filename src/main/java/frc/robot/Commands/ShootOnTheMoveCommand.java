@@ -10,9 +10,12 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.HopperSysytem.HopperRollerSubsystem;
+import frc.robot.subsystems.HopperSysytem.KickerSubsystem;
 import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
 import frc.robot.subsystems.TurretSystem.TurretSubsystem;
 
@@ -32,17 +35,23 @@ public class ShootOnTheMoveCommand extends Command
   private FlywheelSubsystem m_launcher;
 
   /**
-   * When true the command never self-terminates (teleop toggle use).
-   * When false the command exits once both subsystems reach their setpoints (auto use).
+   * Kicker and hopper roller subsystems used for feeding.
+   * When non-null, SOTM owns these subsystems and drives them directly
+   * instead of scheduling external commands (avoids subsystem conflicts).
    */
-  private final boolean runContinuously;
+  private final KickerSubsystem m_kicker;
+  private final HopperRollerSubsystem m_hopperRoller;
 
   /**
-   * Called each loop while turret and flywheel are both at setpoint — starts the kicker/belly feed.
-   * Called in end() to ensure feed always stops when the command ends.
+   * Timeout in seconds for auto use. When positive, the command will self-terminate
+   * after this duration even if setpoints are not reached. A value of {@code 0}
+   * (or negative) means the command runs continuously until externally cancelled
+   * (teleop toggle use).
    */
-  private final Runnable feedOn;
-  private final Runnable feedOff;
+  private final double timeoutSeconds;
+
+  /** Timer used to enforce the auto timeout. */
+  private final Timer m_timer = new Timer();
 
   // Tuned Constants
   /**
@@ -100,44 +109,55 @@ public class ShootOnTheMoveCommand extends Command
   public ShootOnTheMoveCommand(Supplier<Pose2d> currentPose, Supplier<ChassisSpeeds> fieldOrientedChassisSpeeds,
                                Pose2d goal, TurretSubsystem turret, FlywheelSubsystem launcher)
   {
-    this(currentPose, fieldOrientedChassisSpeeds, () -> goal, turret, launcher, true, () -> {}, () -> {}, () -> true);
+    this(currentPose, fieldOrientedChassisSpeeds, () -> goal, turret, launcher, 0, null, null, () -> true);
   }
 
   /**
-   * Auto constructor — exits once both subsystems reach their setpoints.
+   * Auto constructor — exits after {@code timeoutSeconds} or once both subsystems reach
+   * their setpoints (whichever comes first). Pass {@code 0} to run continuously.
    * Accepts a fixed {@code Pose2d} goal. No feed control.
    */
   public ShootOnTheMoveCommand(Supplier<Pose2d> currentPose, Supplier<ChassisSpeeds> fieldOrientedChassisSpeeds,
                                Pose2d goal, TurretSubsystem turret, FlywheelSubsystem launcher,
-                               boolean runContinuously)
+                               double timeoutSeconds)
   {
-    this(currentPose, fieldOrientedChassisSpeeds, () -> goal, turret, launcher, runContinuously, () -> {}, () -> {}, () -> true);
+    this(currentPose, fieldOrientedChassisSpeeds, () -> goal, turret, launcher, timeoutSeconds, null, null, () -> true);
   }
 
   /**
-   * Full teleop constructor with feed control.
+   * Full constructor with feed control.
    * Goal is a {@code Supplier<Pose2d>} evaluated each loop.
+   * SOTM directly requires and controls the kicker and hopper roller subsystems
+   * to avoid subsystem conflicts with external bindings.
    *
-   * @param feedOn       called each loop when turret + flywheel are both at setpoint
-   * @param feedOff      called when the command ends to stop the feed
-   * @param shakeActive  returns true while ShakeCommand is running; rotation compensation
-   *                     is only applied when this returns true (pass {@code shakeCmd::isScheduled})
+   * @param timeoutSeconds seconds before the command self-terminates; use {@code 0}
+   *                       (or negative) to run continuously (teleop toggle use)
+   * @param kicker         kicker subsystem (may be null if no feed control needed)
+   * @param hopperRoller   hopper roller subsystem (may be null if no feed control needed)
+   * @param shakeActive    returns true while ShakeCommand is running; rotation compensation
+   *                       is only applied when this returns true (pass {@code shakeCmd::isScheduled})
    */
   public ShootOnTheMoveCommand(Supplier<Pose2d> currentPose, Supplier<ChassisSpeeds> fieldOrientedChassisSpeeds,
                                Supplier<Pose2d> goal, TurretSubsystem turret, FlywheelSubsystem launcher,
-                               boolean runContinuously, Runnable feedOn, Runnable feedOff,
+                               double timeoutSeconds, KickerSubsystem kicker, HopperRollerSubsystem hopperRoller,
                                BooleanSupplier shakeActive)
   {
-    this.runContinuously = runContinuously;
-    this.feedOn  = feedOn;
-    this.feedOff = feedOff;
+    this.timeoutSeconds = timeoutSeconds;
+    this.m_kicker = kicker;
+    this.m_hopperRoller = hopperRoller;
     m_launcher = launcher;
     m_turret = turret;
     robotPose = currentPose;
     this.fieldOrientedChassisSpeeds = fieldOrientedChassisSpeeds;
     this.goalPose = goal;
     this.shakeActive = shakeActive;
-    addRequirements(turret, launcher);
+    // Require turret + flywheel always; also require kicker + hopper if provided
+    // so the scheduler properly interrupts any conflicting commands on those subsystems.
+    if (kicker != null && hopperRoller != null) {
+      addRequirements(turret, launcher, kicker, hopperRoller);
+    } else {
+      addRequirements(turret, launcher);
+    }
   }
 
   /**
@@ -179,7 +199,8 @@ public class ShootOnTheMoveCommand extends Command
   @Override
   public void initialize()
   {
-   
+    m_timer.reset();
+    m_timer.start();
   }
 
   @Override
@@ -283,10 +304,14 @@ public class ShootOnTheMoveCommand extends Command
 
     // 8. FEED CONTROL — engage kicker/belly as soon as both subsystems are on target
     SmartDashboard.putBoolean("SOTM: Ready to Fire", m_launcher.atSetpoint() && m_turret.atSetpoint());
-    if (m_launcher.atSetpoint() && m_turret.atSetpoint()) {
-      feedOn.run();
-    } else {
-      feedOff.run();
+    if (m_kicker != null && m_hopperRoller != null) {
+      if (m_launcher.atSetpoint() && m_turret.atSetpoint()) {
+        m_kicker.setDutyCycleDirect(-0.9);
+        m_hopperRoller.setVelocityDirect(RPM.of(2500));
+      } else {
+        m_kicker.setDutyCycleDirect(-0.9);
+        m_hopperRoller.setDutyCycleDirect(0);
+      }
     }
   }
 
@@ -299,15 +324,21 @@ public class ShootOnTheMoveCommand extends Command
   @Override
   public boolean isFinished()
   {
-    if (runContinuously) return false;
-    return m_launcher.atSetpoint() && m_turret.atSetpoint();
+    // Continuous mode (teleop) — never self-terminate
+    if (timeoutSeconds <= 0) return false;
+    // Auto mode — finish only when the timer expires
+    return m_timer.hasElapsed(timeoutSeconds);
   }
 
   @Override
   public void end(boolean interrupted)
   {
+    m_timer.stop();
     // Stop feed, flywheel, and turret when command ends
-    feedOff.run();
+    if (m_kicker != null && m_hopperRoller != null) {
+      m_kicker.setDutyCycleDirect(0);
+      m_hopperRoller.setDutyCycleDirect(0);
+    }
     m_launcher.setVelocitySetpoint(RPM.of(0));
     m_turret.setAngleSetpoint(Degrees.of(0));
   }

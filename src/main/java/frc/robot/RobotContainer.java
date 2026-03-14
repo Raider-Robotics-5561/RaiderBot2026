@@ -19,6 +19,7 @@ import frc.robot.Commands.ShakeCommand;
 import frc.robot.Commands.ShootOnTheMoveCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
 import frc.robot.util.SuperStructure;
 import swervelib.SwerveInputStream;
 
@@ -150,7 +151,7 @@ public class RobotContainer {
 						HubPose,
 						SuperStructure.TurretSubsytem,
 						SuperStructure.FlywheelSubsystem,
-						false)); // auto mode: exits when turret + flywheel are on target
+						10.0)); // auto mode: exits after 5s or when turret + flywheel are on target
 		NamedCommands.registerCommand("DeployHopper", SuperStructure.SetHopperPos());
 		NamedCommands.registerCommand("SetHopperPosAgitate", SuperStructure.SetHopperPosAgitate());
 		NamedCommands.registerCommand("RetractHopper", SuperStructure.SetHopperPosZero());
@@ -170,22 +171,32 @@ public class RobotContainer {
 		// Operator Controls
 		// Intake Rollers
 		OperatorController.leftTrigger().whileTrue(SuperStructure.SetIntakePWR(-0.8))
-				.whileFalse(SuperStructure.SetIntakePWR(0));
+				.onFalse(SuperStructure.SetIntakePWR(0));
 
 		// Hood Homeing
 		// OperatorController.a().onTrue(SuperStructure.HoodSubsystem.homing());
 
 		// Kicker and Belly Control
 		OperatorController.rightTrigger().whileTrue(SuperStructure.SetKickerAndBelly())
-				.whileFalse(SuperStructure.SetKickerAndBellyOff());
+				.onFalse(SuperStructure.SetKickerAndBellyOff());
 
 		OperatorController.x().whileTrue(SuperStructure.BackDriveKicker())
-				.whileFalse(SuperStructure.BackDriveKickeroff());
+				.onFalse(SuperStructure.BackDriveKickeroff());
 
 		// Hopper Extender Control
 		OperatorController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3))
-				.or(OperatorController.rightBumper().onTrue(SuperStructure.SetHopperExtenderPower(-0.3)))
-				.whileFalse(SuperStructure.SetHopperExtenderPower(0));
+				.or(OperatorController.rightBumper().onTrue(SuperStructure.SetHopperExtenderPower(-0.5)))
+				.onFalse(SuperStructure.SetHopperExtenderPower(0));
+
+		OperatorController.a().onTrue(Commands.run(() -> {
+			SuperStructure.SetIntakePWR(0.8);
+			SuperStructure.FlywheelSubsystem.setVelocity(RPM.of(2000));
+			SuperStructure.SetKickerAndBellyReverse();
+		})).onFalse(Commands.run(() -> {
+			SuperStructure.SetIntakePWR(0);
+			SuperStructure.FlywheelSubsystem.setVelocity(RPM.of(0));
+			SuperStructure.SetKickerAndBellyOff();
+		}));
 
 		OperatorController.back().onTrue(Commands.run(() -> {
 			if(current_alliance == DriverStation.Alliance.Blue){
@@ -209,34 +220,42 @@ public class RobotContainer {
 		// SOTM - one shared command reads sotmTarget via supplier so only one instance
 		// ever runs. toggleOnTrue ensures pressing a second direction cancels the first
 		// (shared requirements), and pressing the same direction again turns it off.
-		// feedOn/feedOff are passed in so the command engages the kicker+belly
-		// automatically once turret and flywheel are both at setpoint.
+		// SOTM now directly requires and controls kicker + hopper roller subsystems,
+		// so the scheduler properly handles conflicts with right trigger bindings.
 		// shakeCommand is declared here so it can be passed to SOTM for isScheduled() checks.
 		ShakeCommand shakeCommand = new ShakeCommand(drivebase);
-		ShootOnTheMoveCommand sotmCommand = new ShootOnTheMoveCommand(
+
+		// Helper to build a fresh SOTM command for each D-pad binding.
+		// Each binding MUST have its own command instance — WPILib forbids reusing
+		// a command that has already been composed into another group.
+		java.util.function.Supplier<ShootOnTheMoveCommand> makeSotm = () -> new ShootOnTheMoveCommand(
 				drivebase::getPose,
 				drivebase::getRobotVelocity,
 				() -> sotmTarget,
 				SuperStructure.TurretSubsytem,
 				SuperStructure.FlywheelSubsystem,
-				true,
-				() -> SuperStructure.SetKickerAndBelly().schedule(),
-				() -> SuperStructure.SetKickerAndBellyOff().schedule(),
+				0,
+				SuperStructure.kickerSubsystem,
+				SuperStructure.HopperRollerSubsystem,
 				shakeCommand::isScheduled);
 
-		OperatorController.povDown().toggleOnTrue(Commands.runOnce(() -> sotmTarget = HubPose)
-				.andThen(sotmCommand));
+		// Store composed SOTM commands so povUp can cancel the whole composition.
+		Command sotmDown  = Commands.runOnce(() -> sotmTarget = HubPose).andThen(makeSotm.get());
+		Command sotmLeft  = Commands.runOnce(() -> sotmTarget = AllianceWallDepot).andThen(makeSotm.get());
+		Command sotmRight = Commands.runOnce(() -> sotmTarget = AllianceWallOutpost).andThen(makeSotm.get());
 
-		OperatorController.povLeft().toggleOnTrue(Commands.runOnce(() -> sotmTarget = AllianceWallDepot)
-				.andThen(sotmCommand));
+		OperatorController.povDown().toggleOnTrue(sotmDown);
+		OperatorController.povLeft().toggleOnTrue(sotmLeft);
+		OperatorController.povRight().toggleOnTrue(sotmRight);
 
-		OperatorController.povRight().toggleOnTrue(Commands.runOnce(() -> sotmTarget = AllianceWallOutpost)
-				.andThen(sotmCommand));
-
-		// POV Up cancels SOTM and ensures the feed stops immediately
+		// POV Up cancels any running SOTM composed command directly,
+		// which properly triggers end() to stop the feed, flywheel, and turret.
 		OperatorController.povUp().onTrue(Commands.runOnce(() -> {
-			sotmCommand.cancel();
-			SuperStructure.SetKickerAndBellyOff().schedule();
+			edu.wpi.first.wpilibj2.command.CommandScheduler scheduler =
+					edu.wpi.first.wpilibj2.command.CommandScheduler.getInstance();
+			if (sotmDown.isScheduled())  scheduler.cancel(sotmDown);
+			if (sotmLeft.isScheduled())  scheduler.cancel(sotmLeft);
+			if (sotmRight.isScheduled()) scheduler.cancel(sotmRight);
 		}));
 
 		// OperatorController.povLeft().whileTrue(ShootOnTheMoveCommand.rebuildFromDashboard());
