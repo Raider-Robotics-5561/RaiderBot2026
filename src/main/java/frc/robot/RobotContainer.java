@@ -41,21 +41,16 @@ public class RobotContainer {
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
 	// ======================Auton_Config=========================
-	// private final Command Teston;
-	private final Command APP1;
-	private final Command APP2;
-	// private final Command Nuetral_Left;
-	// private final Command Nuetral_Right;
-	// private final Command A_Center_1;
-	private final Command RightNuetralToOP;
-	private final Command LeftNeutralToDP;
-	SendableChooser<Command> m_chooser;
+	// Auto chooser stores names only; the command is built in getAutonomousCommand()
+	// after gameInit() has registered all NamedCommands.
+	SendableChooser<String> m_chooser;
 
 	// =======================================================
 
 	public Pose2d HubPose, AllianceWallDepot, AllianceWallOutpost;
 
-	public Alliance current_alliance = Alliance.Blue;
+	//Default to blue, but will be updated in gameInit() if the alliance is detected correctly
+	public Alliance current_alliance = Alliance.Blue; 
 
 	SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
 			() -> DriveController.getLeftY() * -1,
@@ -97,40 +92,57 @@ public class RobotContainer {
 	// The container for the robot. Contains subsystems, OI devices, and commands.
 
 	public RobotContainer() {
-		try {
-		
+
+
+
+
+		//Rather than using a chooser of all of the complied autons, we can just use the string name to build the command in getAutonomousCommand() after gameInit() registers all of the NamedCommands.
+		m_chooser = new SendableChooser<String>();
+		// m_chooser.addOption("Teston", "Teston");
+		m_chooser.addOption("LeftNeutralToDP", "LeftNeutralToDP");
+		m_chooser.addOption("RightNuetralToOP", "RightNuetralToOP");
+		m_chooser.addOption("APP1", "APP1");
+		m_chooser.addOption("APP2", "APP2");
+		// m_chooser.addOption("Nuetral_Left", "Nuetral_Left");
+		// m_chooser.addOption("Nuetral_Right", "Nuetral_Right");
+		// m_chooser.addOption("A_Center_1", "A_Center_1");
+		SmartDashboard.putData(m_chooser);
+
+		configureBindings();
+		DriverStation.silenceJoystickConnectionWarning(true);
+
+	}
+
+	//This runs when ever the bot is enabled, so it runs before auton and teleop. We use this to reset our sensors and set our default commands
+	public void gameInit() {
+		if(DriverStation.getAlliance().isPresent()) {
 			current_alliance = DriverStation.getAlliance().get();
-			System.out.println("We are: "+current_alliance.toString());
-			SmartDashboard.putString("TEAM:", current_alliance.toString());
-		} catch (Exception e) {
-			System.out.println("Something is wrong defaulting to blue");
+
+			if (current_alliance == DriverStation.Alliance.Blue) {
+				HubPose = new Pose2d(Inches.of(182.11), Inches.of(158.84),
+						new Rotation3d(0, 0, 0).toRotation2d());
+				AllianceWallDepot = new Pose2d(Inches.of(12), Inches.of(24),
+						new Rotation3d(0, 0, 0).toRotation2d());
+				AllianceWallOutpost = new Pose2d(Inches.of(12), Inches.of(293),
+						new Rotation3d(0, 0, 0).toRotation2d());
+			} else if (current_alliance == DriverStation.Alliance.Red) {
+				HubPose = new Pose2d(Inches.of(469.11), Inches.of(158.84),
+						new Rotation3d(0, 0, 0).toRotation2d());
+				AllianceWallDepot = new Pose2d(Inches.of(624.22), Inches.of(24),
+						new Rotation3d(0, 0, 0).toRotation2d());
+				AllianceWallOutpost = new Pose2d(Inches.of(624.22), Inches.of(293),
+						new Rotation3d(0, 0, 0).toRotation2d());
+			} 
+		} else { //leaving in this edge case for testing purposes, but this should never be the case on the field
+				HubPose = new Pose2d(Inches.of(182.11), Inches.of(158.84),
+						new Rotation3d(0, 0, 0).toRotation2d());
+				AllianceWallDepot = new Pose2d(Inches.of(12), Inches.of(24),
+						new Rotation3d(0, 0, 0).toRotation2d());
+				AllianceWallOutpost = new Pose2d(Inches.of(12), Inches.of(293),
+						new Rotation3d(0, 0, 0).toRotation2d());
 		}
 
-
-		if (current_alliance == DriverStation.Alliance.Blue) {
-			HubPose = new Pose2d(Inches.of(182.11), Inches.of(158.84),
-					new Rotation3d(0, 0, 0).toRotation2d());
-			AllianceWallDepot = new Pose2d(Inches.of(12), Inches.of(24),
-					new Rotation3d(0, 0, 0).toRotation2d());
-			AllianceWallOutpost = new Pose2d(Inches.of(12), Inches.of(293),
-					new Rotation3d(0, 0, 0).toRotation2d());
-		} else if (current_alliance == DriverStation.Alliance.Red) {
-			HubPose = new Pose2d(Inches.of(469.11), Inches.of(158.84),
-					new Rotation3d(0, 0, 0).toRotation2d());
-			AllianceWallDepot = new Pose2d(Inches.of(624.22), Inches.of(24),
-					new Rotation3d(0, 0, 0).toRotation2d());
-			AllianceWallOutpost = new Pose2d(Inches.of(624.22), Inches.of(293),
-					new Rotation3d(0, 0, 0).toRotation2d());
-		} else {
-			HubPose = new Pose2d(Inches.of(469.11), Inches.of(158.84),
-					new Rotation3d(0, 0, 0).toRotation2d());
-			AllianceWallDepot = new Pose2d(Inches.of(624.22), Inches.of(24),
-					new Rotation3d(0, 0, 0).toRotation2d());
-			AllianceWallOutpost = new Pose2d(Inches.of(624.22), Inches.of(293),
-					new Rotation3d(0, 0, 0).toRotation2d());
-		}
-
-		// Secondary Auton Configs
+		// Named Command Setup for Auto
 		NamedCommands.registerCommand("ShootOnTheMoveCommand",
 				new ShootOnTheMoveCommand(drivebase::getPose,
 						drivebase::getRobotVelocity,
@@ -144,31 +156,8 @@ public class RobotContainer {
 		NamedCommands.registerCommand("BellyFeed", SuperStructure.SetKickerAndBelly());
 		NamedCommands.registerCommand("IntakeRollerOff", SuperStructure.SetIntakePWR(0));
 		NamedCommands.registerCommand("Shake", new ShakeCommand(drivebase));
-
-		// Teston = drivebase.getAutonomousCommand("Teston");
-		APP1 = drivebase.getAutonomousCommand("APP1");
-		LeftNeutralToDP = drivebase.getAutonomousCommand("LeftNeutralToDP");
-		RightNuetralToOP = drivebase.getAutonomousCommand("RightNuetralToOP");
-		APP2 = drivebase.getAutonomousCommand("APP2");
-		// Nuetral_Left = drivebase.getAutonomousCommand("Nuetral_Left");
-		// Nuetral_Right = drivebase.getAutonomousCommand("Nuetral_Right");
-		// A_Center_1 = drivebase.getAutonomousCommand("A_Center_1");
-
-		m_chooser = new SendableChooser<Command>();
-		// m_chooser.addOption("Teston", Teston);
-		m_chooser.addOption("LeftNeutralToDP", LeftNeutralToDP);
-		m_chooser.addOption("RightNuetralToOP", RightNuetralToOP);
-		m_chooser.addOption("APP1", APP1);
-		m_chooser.addOption("APP2", APP2);
-		// m_chooser.addOption("Nuetral_Left", Nuetral_Left);
-		// m_chooser.addOption("Nuetral_Right", Nuetral_Right);
-		// m_chooser.addOption("A_Center_1", A_Center_1);
-		SmartDashboard.putData(m_chooser);
-
-		configureBindings();
-		DriverStation.silenceJoystickConnectionWarning(true);
-
 	}
+
 
 	// Button Bindings for Drive and Operator controllers
 	private void configureBindings() {
@@ -271,8 +260,11 @@ public class RobotContainer {
 	}
 
 	// Gets the selected autonomous command.
+	// Called after gameInit() so NamedCommands are already registered.
 	public Command getAutonomousCommand() {
-		return m_chooser.getSelected();
+		String selected = m_chooser.getSelected();
+		if (selected == null) return Commands.none();
+		return drivebase.getAutonomousCommand(selected);
 	}
 
 	public void setMotorBrake(boolean brake) {

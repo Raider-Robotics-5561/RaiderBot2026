@@ -120,6 +120,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousInit() {
 		// m_robotContainer.setMotorBrake(true);
+		m_robotContainer.gameInit();
 		m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
 		// schedule the autonomous command (example)
@@ -140,6 +141,8 @@ public class Robot extends TimedRobot {
 		// continue until interrupted by another command, remove
 		// this line or comment it out.
 
+		m_robotContainer.gameInit();
+
 		if (m_autonomousCommand != null) {
 			m_autonomousCommand.cancel();
 		} else {
@@ -150,6 +153,7 @@ public class Robot extends TimedRobot {
 	/** This function is called periodically during operator control. */
 	@Override
 	public void teleopPeriodic() {
+
 	}
 
 	@Override
