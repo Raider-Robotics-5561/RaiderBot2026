@@ -34,6 +34,22 @@ public class ShootOnTheMoveCommand extends Command
   // HoodSubsystem disabled - hood not in use
   private FlywheelSubsystem m_launcher;
 
+  private static final InterpolatingDoubleTreeMap               timeOfFlightMap        =
+      new InterpolatingDoubleTreeMap();
+
+      static {    
+      //NOTE - MUST PUT CORRECT VALUES
+      timeOfFlightMap.put(5.5, 1.16);
+      timeOfFlightMap.put(5.0, 1.16);
+      timeOfFlightMap.put(4.5, 1.16);
+      timeOfFlightMap.put(4.0, 1.16);
+      timeOfFlightMap.put(3.5, 1.16);
+      timeOfFlightMap.put(3.0, 1.16);
+      timeOfFlightMap.put(2.5, 1.12);
+      timeOfFlightMap.put(2.0, 1.11);
+      timeOfFlightMap.put(1.5, 1.09);
+      timeOfFlightMap.put(1.0, 0.90);
+      }
   /**
    * Kicker and hopper roller subsystems used for feeding.
    * When non-null, SOTM owns these subsystems and drives them directly
@@ -206,21 +222,20 @@ public class ShootOnTheMoveCommand extends Command
   @Override
   public void execute()
   {
-    
     var robotSpeed = fieldOrientedChassisSpeeds.get();
 
     // 1. Calculate Time of Flight (ToF) FIRST based on current distance
     double currentDist = robotPose.get().getTranslation().getDistance(goalPose.get().getTranslation());
     double staticRPM = shooterTable.get(currentDist);
     double staticVel = calculateVelocityFromRPM(staticRPM);
-    double ballFlightTime = currentDist / staticVel;
+    double ballFlightTime = staticVel > 1e-6 ? currentDist / staticVel : 0.0;
 
-    // 2. NOW calculate Total Latency
-    double totalLatency = latency + ballFlightTime; 
+    // 2. NOW calculate Total Latency (initial guess)
+    double totalLatency = latency + ballFlightTime;
 
-    // 1. LATENCY COMP
+    // 1. LATENCY COMP (initial estimate)
     Translation2d futurePos = robotPose.get().getTranslation().plus(
-            new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond).times(totalLatency));
+        new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond).times(totalLatency));
 
     // 2. GET TARGET VECTOR
     Translation2d goalLocation = goalPose.get().getTranslation();
@@ -228,78 +243,118 @@ public class ShootOnTheMoveCommand extends Command
     double        dist         = targetVec.getNorm();
     SmartDashboard.putNumber("SOTM: dist", dist);
 
-
     // 3. CALCULATE IDEAL SHOT (Stationary)
-    // Note: shooterTable stores RPM, but we need m/s for vector math
+    // shooterTable stores RPM, use helper to convert to m/s
     double idealHorizontalSpeedRPM = shooterTable.get(dist);
-    double flywheelRadiusMeters = FLYWHEEL_DIAMETER_METERS / 2;
-    double idealHorizontalSpeedMs = (idealHorizontalSpeedRPM * 2 * Math.PI * flywheelRadiusMeters) / 60;
+    double idealHorizontalSpeedMs = calculateVelocityFromRPM(idealHorizontalSpeedRPM);
 
     SmartDashboard.putNumber("SOTM: Ideal Horizontal Speed (RPM)", idealHorizontalSpeedRPM);
 
     // 4. VECTOR SUBTRACTION
-    // Use turret-tip velocity instead of raw robot center velocity.
-    // This accounts for any angular velocity (e.g. from ShakeCommand) that causes
-    // the turret — which is offset from the robot center — to have an additional
-    // tangential linear velocity that would otherwise throw off the shot vector.
-    // Compensation only activates when shakeActive returns true (i.e. ShakeCommand is scheduled)
-    // and the master COMPENSATE_FOR_ROTATION flag is enabled.
-    boolean doRotationComp = COMPENSATE_FOR_ROTATION && shakeActive.getAsBoolean();
+    boolean doRotationComp = COMPENSATE_FOR_ROTATION && (shakeActive == null ? true : shakeActive.getAsBoolean());
     ChassisSpeeds turretTipSpeeds = doRotationComp
         ? m_turret.getVelocity(robotSpeed, robotPose.get().getRotation().getMeasure())
         : robotSpeed;
     Translation2d robotVelVec = new Translation2d(turretTipSpeeds.vxMetersPerSecond,
                                                   turretTipSpeeds.vyMetersPerSecond);
-    Translation2d shotVec     = targetVec.div(dist).times(idealHorizontalSpeedMs).plus(robotVelVec); //.times(1)); Why was this here?
+    // shot vector: direction to target * ideal stationary speed, plus turret-tip linear velocity
+    Translation2d shotVec     = dist > 0 ? targetVec.div(dist).times(idealHorizontalSpeedMs).plus(robotVelVec)
+                                        : robotVelVec;
 
-    // 5. CONVERT TO CONTROLS
+    // 5. CONVERT TO CONTROLS (field-space turret angle + required horizontal speed)
     double fieldSpaceTurretAngle = shotVec.getAngle().getDegrees();
     double newHorizontalSpeed    = shotVec.getNorm();
-    
 
-    
-    // Debug: show how much the velocity compensation shifted the turret angle
+    // Debug info
     double uncompensatedAngle = targetVec.getAngle().getDegrees();
     SmartDashboard.putNumber("SOTM: Uncompensated Field Angle", uncompensatedAngle);
     SmartDashboard.putNumber("SOTM: Compensated Field Angle", fieldSpaceTurretAngle);
     SmartDashboard.putNumber("SOTM: Angle Correction (deg)", fieldSpaceTurretAngle - uncompensatedAngle);
-    // Show shake-induced tangential velocity so it's visible during tuning
     SmartDashboard.putBoolean("SOTM: Shake Compensation Active", doRotationComp);
     SmartDashboard.putNumber("SOTM: Shake Omega (rad-s)", robotSpeed.omegaRadiansPerSecond);
     SmartDashboard.putNumber("SOTM: Turret Tip vX (m-s)", turretTipSpeeds.vxMetersPerSecond);
     SmartDashboard.putNumber("SOTM: Turret Tip vY (m-s)", turretTipSpeeds.vyMetersPerSecond);
 
-    // 5b. ACCOUNT FOR ROBOT ROTATION (Gyro compensation)
-    // Convert from field-space to robot-space by subtracting the robot's heading
-    double robotHeadingDegrees = robotPose.get().getRotation().getDegrees();
-    SmartDashboard.putNumber("SOTM: Robot Heading", robotHeadingDegrees);
-
-    // Add 180 degrees because turret is mounted facing backwards
-    double turretAngle = fieldSpaceTurretAngle - robotHeadingDegrees - 180;
-    // Normalize angle to [-180, 180] range using proper modulo arithmetic
-    while (turretAngle > 180) {
-      turretAngle -= 360;
-    }
-    while (turretAngle < -180) {
-      turretAngle += 360;
-    }
-
-    // 6. CONVERT TO RPM
-    // The shooterTable.get(dist) already gives us RPM, but we need to account for
-    // the velocity compensation from vector subtraction.
-    // Since newHorizontalSpeed is still calculated in m/s, we use the conversion function
+    // 6. CONVERT TO RPM (note: keep sign convention used by your flywheel subsystem)
     double requiredRPM = -calculateRPMFromVelocity(newHorizontalSpeed);
+    SmartDashboard.putNumber("SOTM: Pre-TOF Required RPM", requiredRPM);
 
-    // Clamp turret angle to soft limits
-    double clampedTurretAngle = -MathUtil.clamp(turretAngle, TurretSubsystem.softLimitMin.in(Degrees), TurretSubsystem.softLimitMax.in(Degrees));
-    // double angleDifference = Math.abs(clampedTurretAngle - m_turret.getAngle().in(Degrees));
+    // --- Real Time-of-Flight (ToF) correction (iterative) ---
+    double totalLatencyIter = latency;
+    final int maxIters = 8;
+    final double tol = 1e-3;
+    Translation2d futurePosIter = robotPose.get().getTranslation();
+    double distIter = currentDist;
+    for (int i = 0; i < maxIters; i++) {
+      // project robot forward by current latency estimate
+      futurePosIter = robotPose.get().getTranslation().plus(
+        new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond).times(totalLatencyIter));
+      // distance at the (projected) shot moment
+      distIter = goalPose.get().getTranslation().minus(futurePosIter).getNorm();
 
+      // get ToF either from tuning map or approximate from shooter table
+      double tofFromMap = timeOfFlightMap.get(distIter);
+      double tof;
+      if (Double.isFinite(tofFromMap) && tofFromMap > 0.0) {
+        tof = tofFromMap;
+      } else {
+        double rpmForDist = shooterTable.get(distIter);
+        double velForDist = calculateVelocityFromRPM(rpmForDist);
+        tof = velForDist > 1e-6 ? distIter / velForDist : 0.0;
+      }
+
+      double newTotal = latency + tof;
+      if (Math.abs(newTotal - totalLatencyIter) < tol) {
+        totalLatencyIter = newTotal;
+        break;
+      }
+      totalLatencyIter = newTotal;
+    }
+
+    // Recompute using converged latency
+    futurePos = robotPose.get().getTranslation().plus(
+      new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond).times(totalLatencyIter));
+    targetVec = goalPose.get().getTranslation().minus(futurePos);
+    dist = targetVec.getNorm();
+
+    // ideal horizontal speed for corrected distance
+    idealHorizontalSpeedRPM = shooterTable.get(dist);
+    idealHorizontalSpeedMs = calculateVelocityFromRPM(idealHorizontalSpeedRPM);
+
+    // recompute turret-tip compensation
+    turretTipSpeeds = doRotationComp
+      ? m_turret.getVelocity(robotSpeed, robotPose.get().getRotation().getMeasure())
+      : robotSpeed;
+    robotVelVec = new Translation2d(turretTipSpeeds.vxMetersPerSecond, turretTipSpeeds.vyMetersPerSecond);
+    shotVec = dist > 0 ? targetVec.div(dist).times(idealHorizontalSpeedMs).plus(robotVelVec)
+                       : robotVelVec;
+
+    fieldSpaceTurretAngle = shotVec.getAngle().getDegrees();
+    newHorizontalSpeed = shotVec.getNorm();
+    requiredRPM = -calculateRPMFromVelocity(newHorizontalSpeed);
+
+    // Convert field-space turret angle to turret-relative and clamp to soft limits
+    double robotHeadingDegrees = robotPose.get().getRotation().getDegrees();
+
+    // Add 180 degrees because turret is mounted facing backwards.
+    // Convert field angle -> robot-relative turret angle.
+    double correctedTurretAngle = fieldSpaceTurretAngle - robotHeadingDegrees + 180.0;
+
+    // Normalize to (-180, 180]
+    while (correctedTurretAngle > 180) correctedTurretAngle -= 360;
+    while (correctedTurretAngle <= -180) correctedTurretAngle += 360;
+
+    // Clamp to allowed turret travel. TurretSubsystem.softLimitMin/Max should represent -90..90.
+    double minLimitDeg = TurretSubsystem.softLimitMin.in(Degrees);
+    double maxLimitDeg = TurretSubsystem.softLimitMax.in(Degrees);
+    double clampedTurretAngle = -MathUtil.clamp(correctedTurretAngle, minLimitDeg, maxLimitDeg);
+
+    SmartDashboard.putNumber("SOTM: Corrected Turret Angle (pre-clamp)", correctedTurretAngle);
     SmartDashboard.putNumber("SOTM: Clamped Turret Angle", clampedTurretAngle);
     SmartDashboard.putNumber("SOTM: Required RPM", requiredRPM);
 
     // 7. SET OUTPUTS
     m_turret.setAngleSetpoint(Degrees.of(clampedTurretAngle));
-    // m_hood.setAngle() - hood disabled
     m_launcher.setVelocitySetpoint(RPM.of(requiredRPM));
 
     // 8. FEED CONTROL — engage kicker/belly as soon as both subsystems are on target
