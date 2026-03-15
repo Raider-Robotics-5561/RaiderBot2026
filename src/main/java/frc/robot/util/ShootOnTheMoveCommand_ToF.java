@@ -67,16 +67,16 @@ public class ShootOnTheMoveCommand_ToF extends Command
   static
   {
 
-    launchFlywheelSpeedMap.put(1.34, 2100.0);
-    launchFlywheelSpeedMap.put(1.78, 2200.0);
-    launchFlywheelSpeedMap.put(2.17, 2200.0);
-    launchFlywheelSpeedMap.put(2.81, 2300.0);
-    launchFlywheelSpeedMap.put(3.82, 2500.0);
-    launchFlywheelSpeedMap.put(4.09, 2550.0);
-    launchFlywheelSpeedMap.put(4.40, 2600.0);
-    launchFlywheelSpeedMap.put(4.77, 2650.0);
-    launchFlywheelSpeedMap.put(5.57, 2750.0);
-    launchFlywheelSpeedMap.put(5.60, 2900.0);
+    launchFlywheelSpeedMap.put(1.0, 0.0);
+    launchFlywheelSpeedMap.put(1.5, 0.0);
+    launchFlywheelSpeedMap.put(2.0, 2800.0);
+    launchFlywheelSpeedMap.put(2.5, 2900.0);
+    launchFlywheelSpeedMap.put(3.0, 3050.0);
+    launchFlywheelSpeedMap.put(3.5, 3150.0);
+    launchFlywheelSpeedMap.put(4.0, 3200.0);
+    launchFlywheelSpeedMap.put(4.5, 3350.0);
+    launchFlywheelSpeedMap.put(5.0, 3500.0);
+    launchFlywheelSpeedMap.put(5.5, 3650.0);
 
     timeOfFlightMap.put(5.68, 1.16);
     timeOfFlightMap.put(4.55, 1.12);
