@@ -235,7 +235,7 @@ public class ShootOnTheMoveCommand extends Command
 
     // 1. LATENCY COMP (initial estimate)
     Translation2d futurePos = robotPose.get().getTranslation().plus(
-        new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond).times(totalLatency));
+        new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond).times(totalLatency)); // May need to change this to just the latency
 
     // 2. GET TARGET VECTOR
     Translation2d goalLocation = goalPose.get().getTranslation();
@@ -340,7 +340,7 @@ public class ShootOnTheMoveCommand extends Command
     // Convert field angle -> robot-relative turret angle.
     double correctedTurretAngle = fieldSpaceTurretAngle - robotHeadingDegrees + 180.0;
 
-    // Normalize to (-180, 180]
+    // Normalize to (-180, 180)
     while (correctedTurretAngle > 180) correctedTurretAngle -= 360;
     while (correctedTurretAngle <= -180) correctedTurretAngle += 360;
 
