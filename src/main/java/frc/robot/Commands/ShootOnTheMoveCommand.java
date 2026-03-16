@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.HopperSysytem.HopperRollerSubsystem;
+import frc.robot.subsystems.HopperSysytem.BellyRollerSubsystem;
 import frc.robot.subsystems.HopperSysytem.KickerSubsystem;
 import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
 import frc.robot.subsystems.TurretSystem.TurretSubsystem;
@@ -56,7 +56,7 @@ public class ShootOnTheMoveCommand extends Command
    * instead of scheduling external commands (avoids subsystem conflicts).
    */
   private final KickerSubsystem m_kicker;
-  private final HopperRollerSubsystem m_hopperRoller;
+  private final BellyRollerSubsystem m_hopperRoller;
 
   /**
    * Timeout in seconds for auto use. When positive, the command will self-terminate
@@ -155,7 +155,7 @@ public class ShootOnTheMoveCommand extends Command
    */
   public ShootOnTheMoveCommand(Supplier<Pose2d> currentPose, Supplier<ChassisSpeeds> fieldOrientedChassisSpeeds,
                                Supplier<Pose2d> goal, TurretSubsystem turret, FlywheelSubsystem launcher,
-                               double timeoutSeconds, KickerSubsystem kicker, HopperRollerSubsystem hopperRoller,
+                               double timeoutSeconds, KickerSubsystem kicker, BellyRollerSubsystem hopperRoller,
                                BooleanSupplier shakeActive)
   {
     this.timeoutSeconds = timeoutSeconds;

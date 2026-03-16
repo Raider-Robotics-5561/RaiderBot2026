@@ -1,4 +1,4 @@
-package frc.robot.util;
+package frc.robot.util.Unused;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.InchesPerSecond;

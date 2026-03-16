@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import static edu.wpi.first.units.Units.*;
 
 import frc.robot.subsystems.HopperSysytem.HopperExtenderSubsystem;
-import frc.robot.subsystems.HopperSysytem.HopperRollerSubsystem;
-import frc.robot.subsystems.HopperSysytem.IntakeSubsystem;
+import frc.robot.subsystems.HopperSysytem.BellyRollerSubsystem;
+import frc.robot.subsystems.HopperSysytem.IntakeRollerSubsystem;
 import frc.robot.subsystems.HopperSysytem.KickerSubsystem;
 import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
 import frc.robot.subsystems.TurretSystem.HoodSubsystem;
@@ -20,9 +20,9 @@ public class SuperStructure extends SubsystemBase {
 	public final FlywheelSubsystem 	  FlywheelSubsystem 	  = new FlywheelSubsystem();
 	public final HoodSubsystem 		  HoodSubsystem 		  = new HoodSubsystem();
  	public final TurretSubsystem 		  TurretSubsytem 		  = new TurretSubsystem();
-	public final IntakeSubsystem 		  IntakeSubsystem         = new IntakeSubsystem();
+	public final IntakeRollerSubsystem 		  IntakeSubsystem         = new IntakeRollerSubsystem();
 	public final HopperExtenderSubsystem HopperExtenderSubsystem = new HopperExtenderSubsystem();
-	public final HopperRollerSubsystem   HopperRollerSubsystem   = new HopperRollerSubsystem();
+	public final BellyRollerSubsystem   HopperRollerSubsystem   = new BellyRollerSubsystem();
 	public final KickerSubsystem 		  kickerSubsystem         = new KickerSubsystem();
 
 	/**

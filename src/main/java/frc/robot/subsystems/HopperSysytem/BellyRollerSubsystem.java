@@ -30,28 +30,27 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class IntakeSubsystem extends SubsystemBase {
-	TalonFX Intake = new TalonFX(22);
+public class BellyRollerSubsystem extends SubsystemBase {
+	TalonFX HopperRoller = new TalonFX(24);
 
-	private SmartMotorControllerConfig IntakeConfig = new SmartMotorControllerConfig(this)
+	private SmartMotorControllerConfig HopperRollerConfig = new SmartMotorControllerConfig(this)
 			.withControlMode(ControlMode.CLOSED_LOOP)
-			.withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
+			.withClosedLoopController(1, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
 			.withSimClosedLoopController(1, 0, 0)
 			.withStatorCurrentLimit(Amps.of(40))
 			.withSupplyCurrentLimit(Amps.of(40))
-			.withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+			.withFeedforward(new SimpleMotorFeedforward(0.5, 0.0001))
 			.withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
-			.withTelemetry("IntakeMotor", TelemetryVerbosity.HIGH)
-			.withGearing(new MechanismGearing(2))
+			.withTelemetry("HopperRollerMotor", TelemetryVerbosity.HIGH)
+			.withGearing(new MechanismGearing(1))
 			.withMotorInverted(false)
 			.withIdleMode(MotorMode.COAST)
-			.withControlMode(ControlMode.CLOSED_LOOP)
-			.withStatorCurrentLimit(Amps.of(40));
+			.withControlMode(ControlMode.CLOSED_LOOP);
 
 	// Create our SmartMotorController from our Spark and config with the NEO.
-	private final SmartMotorController IntakeMotor = new TalonFXWrapper(Intake, DCMotor.getKrakenX60(1), IntakeConfig);
+	private final SmartMotorController HopperRollerMotor = new TalonFXWrapper(HopperRoller, DCMotor.getKrakenX60(1), HopperRollerConfig);
 
-	private final FlyWheelConfig flywheelConfig = new FlyWheelConfig(IntakeMotor)
+	private final FlyWheelConfig flywheelConfig = new FlyWheelConfig(HopperRollerMotor)
 			// Diameter of the flywheel.
 			.withDiameter(Inches.of(2))
 			// Mass of the flywheel.
@@ -59,48 +58,64 @@ public class IntakeSubsystem extends SubsystemBase {
 			// Maximum speed of the shooter.
 			.withSoftLimit(RPM.of(-5000), RPM.of(5000))
 			// Telemetry name and verbosity for the arm.
-			.withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
+			.withTelemetry("HopperRollers", TelemetryVerbosity.HIGH);
 
 	// Shooter Mechanism
-	private FlyWheel shooter = new FlyWheel(flywheelConfig);
+	private FlyWheel HopperRollers = new FlyWheel(flywheelConfig);
 
 	public AngularVelocity getVelocity() {
-		return shooter.getSpeed();
+		return HopperRollers.getSpeed();
 	}
 
 	public Command setVelocity(AngularVelocity speed) {
-		return shooter.setSpeed(speed);
+		return HopperRollers.setSpeed(speed);
 	}
 
 	public Command setDutyCycle(double dutyCycle) {
-		return shooter.set(dutyCycle);
+		return HopperRollers.set(dutyCycle);
+	}
+
+	/**
+	 * Directly sets the hopper roller velocity without creating a Command.
+	 * Use this from inside another command's execute() to avoid subsystem conflicts.
+	 */
+	public void setVelocityDirect(AngularVelocity speed) {
+		HopperRollers.setMechanismVelocitySetpoint(speed);
+	}
+
+	/**
+	 * Directly sets the hopper roller duty cycle without creating a Command.
+	 * Use this from inside another command's execute() to avoid subsystem conflicts.
+	 */
+	public void setDutyCycleDirect(double dutyCycle) {
+		HopperRoller.set(dutyCycle);
 	}
 
 	public Command setVelocity(Supplier<AngularVelocity> speed) {
-		return shooter.setSpeed(speed);
+		return HopperRollers.setSpeed(speed);
 	}
 
 	public Command setDutyCycle(Supplier<Double> dutyCycle) {
-		return shooter.set(dutyCycle);
+		return HopperRollers.set(dutyCycle);
 	}
 
 	public Command sysId() {
-		return shooter.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));
+		return HopperRollers.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));
 	}
 
 	@Override
 	public void periodic() {
-		shooter.updateTelemetry();
+		HopperRollers.updateTelemetry();
 
-		if(shooter.getSpeed().baseUnitMagnitude() > 0) {
-			SmartDashboard.putBoolean("shooter Status", false);
+		if(HopperRollers.getSpeed().baseUnitMagnitude() > 0) {
+			SmartDashboard.putBoolean("HopperRollers Status", false);
 		} else {
-			SmartDashboard.putBoolean("shooter Status", true);	
+			SmartDashboard.putBoolean("HopperRollers Status", true);	
 		}
 	}
 
 	@Override
 	public void simulationPeriodic() {
-		shooter.simIterate();
+		HopperRollers.simIterate();
 	}
 }
