@@ -236,7 +236,7 @@ public class RobotContainer {
 				SuperStructure.FlywheelSubsystem,
 				0,
 				SuperStructure.kickerSubsystem,
-				SuperStructure.HopperRollerSubsystem,
+				SuperStructure.BellyRollerSubsystem,
 				shakeCommand::isScheduled);
 
 		// Store composed SOTM commands so povUp can cancel the whole composition.

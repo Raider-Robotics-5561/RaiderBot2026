@@ -20,9 +20,9 @@ public class SuperStructure extends SubsystemBase {
 	public final FlywheelSubsystem 	  FlywheelSubsystem 	  = new FlywheelSubsystem();
 	public final HoodSubsystem 		  HoodSubsystem 		  = new HoodSubsystem();
  	public final TurretSubsystem 		  TurretSubsytem 		  = new TurretSubsystem();
-	public final IntakeRollerSubsystem 		  IntakeSubsystem         = new IntakeRollerSubsystem();
+	public final IntakeRollerSubsystem 		  IntakeRollerSubsystem         = new IntakeRollerSubsystem();
 	public final HopperExtenderSubsystem HopperExtenderSubsystem = new HopperExtenderSubsystem();
-	public final BellyRollerSubsystem   HopperRollerSubsystem   = new BellyRollerSubsystem();
+	public final BellyRollerSubsystem   BellyRollerSubsystem   = new BellyRollerSubsystem();
 	public final KickerSubsystem 		  kickerSubsystem         = new KickerSubsystem();
 
 	/**
@@ -52,7 +52,7 @@ public class SuperStructure extends SubsystemBase {
 	return
 	//FlywheelSubsystem.setVelocity(RPM.of(0))
 	//.alongWith(_HoodSubsystem.homing(Amps.of(20))
-	HopperRollerSubsystem.setDutyCycle(0)
+	BellyRollerSubsystem.setDutyCycle(0)
 	.alongWith(kickerSubsystem.setDutyCycle(0));
 	}
 
@@ -60,13 +60,13 @@ public class SuperStructure extends SubsystemBase {
 	return
 		kickerSubsystem.setDutyCycle(-0.9)
 		.alongWith(new WaitCommand(1.0)
-		.andThen(HopperRollerSubsystem.setVelocity(RPM.of(2500))));
+		.andThen(BellyRollerSubsystem.setVelocity(RPM.of(2500))));
 	}
 
 	public Command SetKickerAndBellyReverse() 
 	{
 		return 	kickerSubsystem.setDutyCycle(0.9)
-		.alongWith(HopperRollerSubsystem.setVelocity(RPM.of(-2500)));
+		.alongWith(BellyRollerSubsystem.setVelocity(RPM.of(-2500)));
 	}
 
 	public Command BackDriveKicker() {
@@ -101,7 +101,7 @@ public class SuperStructure extends SubsystemBase {
 	}
 
 	public Command SetIntakePWR(double power) {
-		return IntakeSubsystem.setDutyCycle(power);
+		return IntakeRollerSubsystem.setDutyCycle(power);
 	}
 
 }
