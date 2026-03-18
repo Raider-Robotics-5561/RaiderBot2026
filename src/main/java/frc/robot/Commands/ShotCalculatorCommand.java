@@ -145,8 +145,8 @@ public class ShotCalculatorCommand extends Command {
     // Build and configure the calculator
     ShotCalculator.Config cfg = new ShotCalculator.Config();
     // Turret is mounted 1.5 ft behind robot center (negative X) — match roboToTurret offset
-    cfg.launcherOffsetX = -0.457; // -1.5 ft in meters
-    cfg.launcherOffsetY =  0.0;
+    cfg.launcherOffsetX = -0.06471; // -1.5 ft in meters
+    cfg.launcherOffsetY =  -0.00305;  // meters left of robot center
     cfg.minScoringDistance = 1.0;
     cfg.maxScoringDistance = 5.5;
     // 30 ms vision latency + 20 ms mechanical latency (consistent with ShootOnTheMoveCommand's 0.3 s total)
