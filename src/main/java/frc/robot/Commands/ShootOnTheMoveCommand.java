@@ -39,16 +39,16 @@ public class ShootOnTheMoveCommand extends Command
 
       static {    
       //NOTE - MUST PUT CORRECT VALUES
-      timeOfFlightMap.put(5.5, 1.16);
-      timeOfFlightMap.put(5.0, 1.16);
-      timeOfFlightMap.put(4.5, 1.16);
-      timeOfFlightMap.put(4.0, 1.16);
-      timeOfFlightMap.put(3.5, 1.16);
-      timeOfFlightMap.put(3.0, 1.16);
-      timeOfFlightMap.put(2.5, 1.12);
-      timeOfFlightMap.put(2.0, 1.11);
-      timeOfFlightMap.put(1.5, 1.09);
-      timeOfFlightMap.put(1.0, 0.90);
+      timeOfFlightMap.put(5.5, 1.23);
+      timeOfFlightMap.put(5.0, 1.19);
+      timeOfFlightMap.put(4.5, 1.15);
+      timeOfFlightMap.put(4.0, 1.11);
+      timeOfFlightMap.put(3.5, 1.08);
+      timeOfFlightMap.put(3.0, 1.04);
+      timeOfFlightMap.put(2.5, 1.00);
+      timeOfFlightMap.put(2.0, 0.96);
+      timeOfFlightMap.put(1.5, 0.92);
+      timeOfFlightMap.put(1.0, 0.88);
       }
   /**
    * Kicker and hopper roller subsystems used for feeding.
@@ -86,7 +86,7 @@ public class ShootOnTheMoveCommand extends Command
   /**
    * Time in seconds between when the robot is told to move and when the shooter actually shoots.
    */
-  private final double                     latency      = 0.4; 
+  private final double                     latency      = 0.3; 
   /**
    * Flywheel diameter in meters (4 inches)
    */
@@ -313,7 +313,7 @@ public class ShootOnTheMoveCommand extends Command
 
     // Recompute using converged latency
     futurePos = robotPose.get().getTranslation().plus(
-      new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond).times(totalLatencyIter));
+      new Translation2d(robotSpeed.vxMetersPerSecond, robotSpeed.vyMetersPerSecond).times(totalLatencyIter)); // Changed to standard latency not full latency + ToF
     targetVec = goalPose.get().getTranslation().minus(futurePos);
     dist = targetVec.getNorm();
 

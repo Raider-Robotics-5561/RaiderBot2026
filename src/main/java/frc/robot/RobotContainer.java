@@ -26,7 +26,7 @@ import swervelib.SwerveInputStream;
 public class RobotContainer {
 	// Subsystem inizialization (Should only be Climber and superstructure)
 	private final SuperStructure SuperStructure = new SuperStructure();
-	public final ClimberSubsystem m_climber = new ClimberSubsystem();
+	// public final ClimberSubsystem m_climber = new ClimberSubsystem();
 
 	// Controller initialization
 	final CommandXboxController DriveController = new CommandXboxController(0);
@@ -279,8 +279,8 @@ public class RobotContainer {
 		DriveController.leftTrigger().whileTrue(shakeCommand);
 
 		// Climber Control
-		DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
-		DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
+		// DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
+		// DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
 
 		// This is our boost control Right Trigger
 		DriveController.axisGreaterThan(3, 0.01).onChange(Commands.runOnce(() -> {
