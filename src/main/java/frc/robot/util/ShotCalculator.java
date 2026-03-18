@@ -115,8 +115,8 @@ public class ShotCalculator {
   /** Tuning parameters. Set these to match your robot, or wire them to SmartDashboard/TunableNumber. */
   public static class Config {
     // Launcher geometry (measure from CAD)
-    public double launcherOffsetX = 0.20; // meters forward of robot center
-    public double launcherOffsetY = 0.0;  // meters left of robot center
+    public double launcherOffsetX = -0.06471; // meters forward of robot center
+    public double launcherOffsetY =  -0.00305;  // meters left of robot center
 
     // How close/far you can score from (meters)
     public double minScoringDistance = 0.5;
