@@ -17,7 +17,7 @@ import frc.robot.Commands.ShakeCommand;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.HopperSysytem.KickerSubsystem;
 import frc.robot.util.SuperStructure;
-import frc.robot.util.Unused.ShootOnTheMoveCommand;
+// import frc.robot.util.Unused.ShootOnTheMoveCommand;
 import swervelib.SwerveInputStream;
 import frc.robot.Commands.ShotCalculatorCommand;
 public class RobotContainer {
@@ -231,7 +231,7 @@ java.util.function.Supplier<ShotCalculatorCommand> makeSotm = () ->
 				drivebase::getPose,
 						drivebase::getFieldVelocity,
 						drivebase::getRobotVelocity,
-						HubPose,
+						sotmTarget,
 						SuperStructure.TurretSubsytem,
 						SuperStructure.FlywheelSubsystem,
 						10.0);
