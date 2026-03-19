@@ -17,13 +17,13 @@ import frc.robot.subsystems.TurretSystem.HoodSubsystem;
 import frc.robot.subsystems.TurretSystem.TurretSubsystem;
 
 public class SuperStructure extends SubsystemBase {
-	public final FlywheelSubsystem 	  FlywheelSubsystem 	  = new FlywheelSubsystem();
-	public final HoodSubsystem 		  HoodSubsystem 		  = new HoodSubsystem();
- 	public final TurretSubsystem 		  TurretSubsytem 		  = new TurretSubsystem();
-	public final IntakeRollerSubsystem 		  IntakeRollerSubsystem         = new IntakeRollerSubsystem();
+	public final FlywheelSubsystem 	  	 FlywheelSubsystem 	     = new FlywheelSubsystem();
+	public final HoodSubsystem 		     HoodSubsystem 		     = new HoodSubsystem();
+ 	public final TurretSubsystem 		 TurretSubsytem 	     = new TurretSubsystem();
+	public final IntakeRollerSubsystem 	 IntakeRollerSubsystem   = new IntakeRollerSubsystem();
 	public final HopperExtenderSubsystem HopperExtenderSubsystem = new HopperExtenderSubsystem();
-	public final BellyRollerSubsystem   BellyRollerSubsystem   = new BellyRollerSubsystem();
-	public final KickerSubsystem 		  kickerSubsystem         = new KickerSubsystem();
+	public final BellyRollerSubsystem    BellyRollerSubsystem    = new BellyRollerSubsystem();
+	public final KickerSubsystem 		 kickerSubsystem         = new KickerSubsystem();
 
 	/**
 	 * Initializer for the Control superstructure.

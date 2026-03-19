@@ -13,17 +13,12 @@ import java.io.File;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Commands.ClimberDownCommand;
-import frc.robot.Commands.ClimberUpCommand;
 import frc.robot.Commands.ShakeCommand;
-import frc.robot.Commands.ShootOnTheMoveCommand;
-import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
 import frc.robot.util.SuperStructure;
+import frc.robot.util.Unused.ShootOnTheMoveCommand;
 import swervelib.SwerveInputStream;
 import frc.robot.Commands.ShotCalculatorCommand;
-import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 public class RobotContainer {
 	// Subsystem inizialization (Should only be Climber and superstructure)
 	private final SuperStructure SuperStructure = new SuperStructure();
@@ -34,7 +29,8 @@ public class RobotContainer {
 	final CommandXboxController DriveController = new CommandXboxController(0);
 	final CommandXboxController OperatorController = new CommandXboxController(1);
 
-	// NOTE - This is for Dashboard control - True = Dashbaord setting enabled,
+	// NOTE - This is for Dashboard control 
+	// True = Dashbaord setting enabled,
 	// False = no dashboard control
 	boolean ManualControl = false;
 
