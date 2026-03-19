@@ -290,7 +290,7 @@ public class ShotCalculator {
     double hubY = hubCenter.getY();
 
     // Behind-hub detection: dot product with hub forward vector
-    Translation2d hubForward = inputs.hubForward();
+    // Translation2d hubForward = inputs.hubForward();
     
     // double dot =
     //     (hubX - robotX) * hubForward.getX() + (hubY - robotY) * hubForward.getY();

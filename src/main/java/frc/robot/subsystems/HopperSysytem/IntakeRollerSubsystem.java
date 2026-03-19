@@ -11,7 +11,6 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -35,7 +34,7 @@ public class IntakeRollerSubsystem extends SubsystemBase {
 	TalonFX Intake = new TalonFX(22);
 
 	// VelocityVoltage request with FOC disabled (non-FOC licensed motors / cost reduction)
-	private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withEnableFOC(false);
+	// private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withEnableFOC(false);
 
 	private SmartMotorControllerConfig IntakeConfig = new SmartMotorControllerConfig(this)
 			.withControlMode(ControlMode.CLOSED_LOOP)
@@ -46,12 +45,11 @@ public class IntakeRollerSubsystem extends SubsystemBase {
 			.withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
 			.withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
 			.withTelemetry("IntakeMotor", TelemetryVerbosity.HIGH)
-			.withGearing(new MechanismGearing(2))
+			.withGearing(new MechanismGearing(0.5)) //0.5 for a 1:2 ratio, 2 for a 2:1 ratio
 			.withMotorInverted(false)
 			.withIdleMode(MotorMode.COAST)
-			.withVendorControlRequest(velocityRequest)
-			.withControlMode(ControlMode.CLOSED_LOOP)
-			.withStatorCurrentLimit(Amps.of(40));
+			// .withVendorControlRequest(velocityRequest)
+			.withControlMode(ControlMode.CLOSED_LOOP);
 			
 
 	// Create our SmartMotorController from our Spark and config with the NEO.

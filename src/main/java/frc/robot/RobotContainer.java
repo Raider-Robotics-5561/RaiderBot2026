@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Commands.ShakeCommand;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.HopperSysytem.KickerSubsystem;
 import frc.robot.util.SuperStructure;
 import frc.robot.util.Unused.ShootOnTheMoveCommand;
 import swervelib.SwerveInputStream;
@@ -206,16 +207,7 @@ public class RobotContainer {
 				current_alliance = DriverStation.Alliance.Blue; 
 			} 
 		}));
-		// This runs the whole launcher system but does not stop the kicker and belly
-		// when toggled off
-		// OperatorController.y().toggleOnTrue(new
-		// ShootOnTheMoveCommand(drivebase::getPose,
-		// drivebase::getRobotVelocity,
-		// HubPose,
-		// SuperStructure.TurretSubsytem,
-		// SuperStructure.FlywheelSubsystem)
-		// .alongWith(SuperStructure.SetKickerAndBelly())
-		// );
+		
 
 		// SOTM - one shared command reads sotmTarget via supplier so only one instance
 		// ever runs. toggleOnTrue ensures pressing a second direction cancels the first
@@ -234,17 +226,15 @@ public class RobotContainer {
 																		//  () -> sotmTarget,
 																		//  SuperStructure.TurretSubsytem,
 																		//  SuperStructure.FlywheelSubsystem);
-java.util.function.Supplier<ShootOnTheMoveCommand> makeSotm = () ->
-				new ShootOnTheMoveCommand(
+java.util.function.Supplier<ShotCalculatorCommand> makeSotm = () ->
+				new ShotCalculatorCommand(
 				drivebase::getPose,
-				drivebase::getRobotVelocity,
-				() -> sotmTarget,
-				SuperStructure.TurretSubsytem,
-				SuperStructure.FlywheelSubsystem,
-				0,
-				SuperStructure.kickerSubsystem,
-				SuperStructure.BellyRollerSubsystem,
-				shakeCommand::isScheduled);
+						drivebase::getFieldVelocity,
+						drivebase::getRobotVelocity,
+						HubPose,
+						SuperStructure.TurretSubsytem,
+						SuperStructure.FlywheelSubsystem,
+						10.0);
 
 		// Store composed SOTM commands so povUp can cancel the whole composition.
 		Command sotmDown  = Commands.runOnce(() -> sotmTarget = HubPose).andThen(makeSotm.get());
@@ -282,7 +272,6 @@ java.util.function.Supplier<ShootOnTheMoveCommand> makeSotm = () ->
 		}
 
 		DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-		DriveController.povDown().onTrue(SuperStructure.SetHopperPos());
 		DriveController.leftTrigger().whileTrue(shakeCommand);
 
 		// This is our boost control Right Trigger

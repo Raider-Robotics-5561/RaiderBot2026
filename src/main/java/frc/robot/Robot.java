@@ -8,7 +8,7 @@ import org.littletonrobotics.urcl.URCL;
 
 import com.ctre.phoenix6.SignalLogger;
 
-// import 
+
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -18,8 +18,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-// import frc.robot.util.ShooterTargetingSystem;
-// import frc.robot.util.ShooterTargetingSystem.Shot;
 // import frc.robot.subsystems.LEDsubsytem;
 
 /**
@@ -44,6 +42,13 @@ public class Robot extends TimedRobot {
 	 * initialization code.
 	 */
 	public Robot() {
+		m_led = new AddressableLED(8);
+  		m_ledBuffer = new AddressableLEDBuffer(150);
+  		m_led.setLength(m_ledBuffer.getLength());
+
+    	// Set the data
+   		 m_led.setData(m_ledBuffer);
+   		 m_led.start();
 
 		m_robotContainer = new RobotContainer();
 		//led_subsystem = new LEDsubsytem();
@@ -80,33 +85,31 @@ public class Robot extends TimedRobot {
 		double voltage = RobotController.getBatteryVoltage();
 		SmartDashboard.putNumber("Battery Voltage", voltage);
 
-		// double MatchTime = DriverStation.getMatchTime();
-		// SmartDashboard.putNumber("Match Time", MatchTime);
-
-		String gameData = DriverStation.getGameSpecificMessage();
-      	SmartDashboard.putString("FMS Game Data", gameData);
-
     
-
-	// 	} else {
-	// 		for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-	// 	  // Sets the specified LED to the GRB values for red
-	// 	  m_ledBuffer.setRGB(i, 255, 165 ,0);
-	// 	  m_led.setData(m_ledBuffer);
-	// }
-	// 	}
-		
-
-
+		if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+			for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+          // Sets the specified LED to the GRB values for blue
+          m_ledBuffer.setRGB(i, 0, 0 ,255);
+          m_led.setData(m_ledBuffer);
+		}	
+		} else if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+			for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+          // Sets the specified LED to the GRB values for red
+		  //GRB
+          m_ledBuffer.setRGB(i, 0, 255 ,0);
+          m_led.setData(m_ledBuffer);
+    
+		}
+		}
 		CommandScheduler.getInstance().run();
-	}
+		}
 
 	/** This function is called once each time the robot enters Disabled mode. */
 	@Override
 	public void disabledInit() {
 		DataLogManager.stop();
 		SignalLogger.stop();
-		// m_robotContainer.setMotorBrake(true);
+		m_robotContainer.setMotorBrake(false);
 	}
 
 	@Override
