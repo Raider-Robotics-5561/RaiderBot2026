@@ -120,7 +120,7 @@ public class ShotCalculator {
 
     // How close/far you can score from (meters)
     public double minScoringDistance = 0.5;
-    public double maxScoringDistance = 5.0;
+    public double maxScoringDistance = 6.5;
 
     // Newton solver tuning
     public int maxIterations = 25;
@@ -132,7 +132,7 @@ public class ShotCalculator {
     public double minSOTMSpeed = 0.1;
 
     // Above this speed (m/s), don't shoot, we're outside calibration range
-    public double maxSOTMSpeed = 3.0;
+    public double maxSOTMSpeed = 4.0;
 
     // Latency compensation (ms)
     public double phaseDelayMs = 30.0;  // vision pipeline lag
@@ -158,7 +158,7 @@ public class ShotCalculator {
     // Heading tolerance scales with distance from hub.
     // Farther = tighter because the same angle error produces a larger miss at long range.
     // scaledMaxError *= referenceDistance / distance, clamped [0.5, 2.0].
-    public double headingReferenceDistance = 2.5; // meters
+    public double headingReferenceDistance = 3; // meters
 
     // Suppress firing when pitch or roll exceeds this threshold.
     // Bumps and ramps tilt the robot, which throws off aim. Set to 90 to disable.
@@ -234,8 +234,21 @@ public class ShotCalculator {
    * you're out of range, behind the hub, going too fast, or the inputs are bad.
    */
   public LaunchParameters calculate(ShotInputs inputs) {
+    // System.out.println("inputs" + inputs.toString());
+    // System.out.println("inputs.robovel" + inputs.robotVelocity().toString());
+    // System.out.println("inputs.fieldvel" + inputs.fieldVelocity().toString());
+    // System.out.println("inputs.pose" + inputs.robotPose().toString());
+    // System.out.println("inputs.hubCenter" + inputs.hubCenter().toString());
+    // System.out.println("inputs.hubForward" + inputs.hubForward().toString());
+    // System.out.println("inputs.visionConf" + inputs.visionConfidence());
+    // System.out.println("inputs.pitchDeg" + inputs.pitchDeg());
+    // System.out.println("inputs.rollDeg" + inputs.rollDeg());
+
+
+
     if (inputs == null || inputs.robotPose() == null
         || inputs.fieldVelocity() == null || inputs.robotVelocity() == null) {
+      System.out.println("Line 251: Invalid inputs to ShotCalculator.calculate()");
       return LaunchParameters.INVALID;
     }
 
@@ -247,6 +260,7 @@ public class ShotCalculator {
     double poseY = rawPose.getY();
     if (Double.isNaN(poseX) || Double.isNaN(poseY)
         || Double.isInfinite(poseX) || Double.isInfinite(poseY)) {
+      System.out.println("Line 263: Invalid robot pose in ShotCalculator.calculate()");
       return LaunchParameters.INVALID;
     }
 
@@ -277,16 +291,21 @@ public class ShotCalculator {
 
     // Behind-hub detection: dot product with hub forward vector
     Translation2d hubForward = inputs.hubForward();
-    double dot =
-        (hubX - robotX) * hubForward.getX() + (hubY - robotY) * hubForward.getY();
-    if (dot < 0) {
-      return LaunchParameters.INVALID;
-    }
+    
+    // double dot =
+    //     (hubX - robotX) * hubForward.getX() + (hubY - robotY) * hubForward.getY();
+    // if (dot < 0) {
+    //   System.out.println("Line 297: Robot is behind the hub in ShotCalculator.calculate()");
+    //  // System.out.println("Hub position: (" + hubForward.getX() + ", " + hubForward.getY() + ")");
+    //   return LaunchParameters.INVALID;
+
+    // }
 
     // Tilt gate. Bumps and ramps knock the launcher off-axis, so
     // suppress firing when the chassis is tilted beyond the threshold.
     if (Math.abs(inputs.pitchDeg()) > config.maxTiltDeg
         || Math.abs(inputs.rollDeg()) > config.maxTiltDeg) {
+      System.out.println("Line 305: Robot is tilted (pitch " + inputs.pitchDeg() + " deg, roll " + inputs.rollDeg() + " deg) in ShotCalculator.calculate()");
       return LaunchParameters.INVALID;
     }
 
@@ -311,6 +330,7 @@ public class ShotCalculator {
     double distance = Math.hypot(rx, ry);
 
     if (distance < config.minScoringDistance || distance > config.maxScoringDistance) {
+      System.out.println("Line 330: Target is out of range (distance " + distance + " m) in ShotCalculator.calculate()");
       return LaunchParameters.INVALID;
     }
 
@@ -318,6 +338,7 @@ public class ShotCalculator {
 
     // Speed cap: shots above this speed are out of calibration range
     if (robotSpeed > config.maxSOTMSpeed) {
+      System.out.println("Line 338: Robot speed is too high (speed " + robotSpeed + " m/s) in ShotCalculator.calculate()");
       return LaunchParameters.INVALID;
     }
 

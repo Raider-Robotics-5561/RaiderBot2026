@@ -22,11 +22,13 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
 import frc.robot.util.SuperStructure;
 import swervelib.SwerveInputStream;
-
+import frc.robot.Commands.ShotCalculatorCommand;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 public class RobotContainer {
 	// Subsystem inizialization (Should only be Climber and superstructure)
 	private final SuperStructure SuperStructure = new SuperStructure();
 	// public final ClimberSubsystem m_climber = new ClimberSubsystem();
+
 
 	// Controller initialization
 	final CommandXboxController DriveController = new CommandXboxController(0);
@@ -102,6 +104,7 @@ public class RobotContainer {
 		m_chooser = new SendableChooser<String>();
 		// m_chooser.addOption("Teston", "Teston");
 		m_chooser.addOption("LeftNeutralToDP", "LeftNeutralToDP");
+		m_chooser.addOption("SOTMtest", "SOTMtest");
 		m_chooser.addOption("RightNuetralToOP", "RightNuetralToOP");
 		m_chooser.addOption("APP1", "APP1");
 		m_chooser.addOption("APP2", "APP2");
@@ -146,7 +149,8 @@ public class RobotContainer {
 
 		// Named Command Setup for Auto
 		NamedCommands.registerCommand("ShootOnTheMoveCommand",
-				new ShootOnTheMoveCommand(drivebase::getPose,
+				new ShotCalculatorCommand(drivebase::getPose,
+						drivebase::getFieldVelocity,
 						drivebase::getRobotVelocity,
 						HubPose,
 						SuperStructure.TurretSubsytem,
@@ -228,7 +232,14 @@ public class RobotContainer {
 		// Helper to build a fresh SOTM command for each D-pad binding.
 		// Each binding MUST have its own command instance — WPILib forbids reusing
 		// a command that has already been composed into another group.
-		java.util.function.Supplier<ShootOnTheMoveCommand> makeSotm = () -> new ShootOnTheMoveCommand(
+		// java.util.function.Supplier<ShotCalculatorCommand> makeSotm = () -> new ShotCalculatorCommand(drivebase::getPose,
+																		//  drivebase::getFieldVelocity,
+																		//  drivebase::getRobotVelocity,
+																		//  () -> sotmTarget,
+																		//  SuperStructure.TurretSubsytem,
+																		//  SuperStructure.FlywheelSubsystem);
+java.util.function.Supplier<ShootOnTheMoveCommand> makeSotm = () ->
+				new ShootOnTheMoveCommand(
 				drivebase::getPose,
 				drivebase::getRobotVelocity,
 				() -> sotmTarget,
@@ -275,12 +286,8 @@ public class RobotContainer {
 		}
 
 		DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-
+		DriveController.povDown().onTrue(SuperStructure.SetHopperPos());
 		DriveController.leftTrigger().whileTrue(shakeCommand);
-
-		// Climber Control
-		// DriveController.leftBumper().whileTrue(new ClimberUpCommand(m_climber));
-		// DriveController.rightBumper().whileTrue(new ClimberDownCommand(m_climber));
 
 		// This is our boost control Right Trigger
 		DriveController.axisGreaterThan(3, 0.01).onChange(Commands.runOnce(() -> {

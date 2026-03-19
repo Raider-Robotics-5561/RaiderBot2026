@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -33,6 +34,9 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 public class IntakeRollerSubsystem extends SubsystemBase {
 	TalonFX Intake = new TalonFX(22);
 
+	// VelocityVoltage request with FOC disabled (non-FOC licensed motors / cost reduction)
+	private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withEnableFOC(false);
+
 	private SmartMotorControllerConfig IntakeConfig = new SmartMotorControllerConfig(this)
 			.withControlMode(ControlMode.CLOSED_LOOP)
 			.withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
@@ -45,8 +49,10 @@ public class IntakeRollerSubsystem extends SubsystemBase {
 			.withGearing(new MechanismGearing(2))
 			.withMotorInverted(false)
 			.withIdleMode(MotorMode.COAST)
+			.withVendorControlRequest(velocityRequest)
 			.withControlMode(ControlMode.CLOSED_LOOP)
 			.withStatorCurrentLimit(Amps.of(40));
+			
 
 	// Create our SmartMotorController from our Spark and config with the NEO.
 	private final SmartMotorController IntakeMotor = new TalonFXWrapper(Intake, DCMotor.getKrakenX60(1), IntakeConfig);
@@ -60,8 +66,7 @@ public class IntakeRollerSubsystem extends SubsystemBase {
 			.withSoftLimit(RPM.of(-5000), RPM.of(5000))
 			// Telemetry name and verbosity for the arm.
 			.withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
-
-	// Shooter Mechanism
+			
 	private FlyWheel shooter = new FlyWheel(flywheelConfig);
 
 	public AngularVelocity getVelocity() {
