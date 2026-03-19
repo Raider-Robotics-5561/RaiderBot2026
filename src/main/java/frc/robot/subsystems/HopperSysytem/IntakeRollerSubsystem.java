@@ -51,9 +51,7 @@ public class IntakeRollerSubsystem extends SubsystemBase {
 			// .withVendorControlRequest(velocityRequest)
 			.withControlMode(ControlMode.CLOSED_LOOP);
 			
-
-	// Create our SmartMotorController from our Spark and config with the NEO.
-	private final SmartMotorController IntakeMotor = new TalonFXWrapper(Intake, DCMotor.getKrakenX60(1), IntakeConfig);
+	private final SmartMotorController IntakeMotor = new TalonFXWrapper(Intake, DCMotor.getKrakenX60(1), IntakeConfig).disableFOC();
 
 	private final FlyWheelConfig flywheelConfig = new FlyWheelConfig(IntakeMotor)
 			// Diameter of the flywheel.
