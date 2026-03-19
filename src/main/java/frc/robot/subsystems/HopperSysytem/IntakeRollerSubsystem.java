@@ -33,9 +33,6 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 public class IntakeRollerSubsystem extends SubsystemBase {
 	TalonFX Intake = new TalonFX(22);
 
-	// VelocityVoltage request with FOC disabled (non-FOC licensed motors / cost reduction)
-	// private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withEnableFOC(false);
-
 	private SmartMotorControllerConfig IntakeConfig = new SmartMotorControllerConfig(this)
 			.withControlMode(ControlMode.CLOSED_LOOP)
 			.withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
@@ -48,7 +45,6 @@ public class IntakeRollerSubsystem extends SubsystemBase {
 			.withGearing(new MechanismGearing(0.5)) //0.5 for a 1:2 ratio, 2 for a 2:1 ratio
 			.withMotorInverted(false)
 			.withIdleMode(MotorMode.COAST)
-			// .withVendorControlRequest(velocityRequest)
 			.withControlMode(ControlMode.CLOSED_LOOP);
 			
 	private final SmartMotorController IntakeMotor = new TalonFXWrapper(Intake, DCMotor.getKrakenX60(1), IntakeConfig).disableFOC();
@@ -61,47 +57,47 @@ public class IntakeRollerSubsystem extends SubsystemBase {
 			// Maximum speed of the shooter.
 			.withSoftLimit(RPM.of(-5000), RPM.of(5000))
 			// Telemetry name and verbosity for the arm.
-			.withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
+			.withTelemetry("Intake", TelemetryVerbosity.HIGH);
 			
-	private FlyWheel shooter = new FlyWheel(flywheelConfig);
+	private FlyWheel Intakemotor = new FlyWheel(flywheelConfig);
 
 	public AngularVelocity getVelocity() {
-		return shooter.getSpeed();
+		return Intakemotor.getSpeed();
 	}
 
 	public Command setVelocity(AngularVelocity speed) {
-		return shooter.setSpeed(speed);
+		return Intakemotor.setSpeed(speed);
 	}
 
 	public Command setDutyCycle(double dutyCycle) {
-		return shooter.set(dutyCycle);
+		return Intakemotor.set(dutyCycle);
 	}
 
 	public Command setVelocity(Supplier<AngularVelocity> speed) {
-		return shooter.setSpeed(speed);
+		return Intakemotor.setSpeed(speed);
 	}
 
 	public Command setDutyCycle(Supplier<Double> dutyCycle) {
-		return shooter.set(dutyCycle);
+		return Intakemotor.set(dutyCycle);
 	}
 
 	public Command sysId() {
-		return shooter.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));
+		return Intakemotor.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));
 	}
 
 	@Override
 	public void periodic() {
-		shooter.updateTelemetry();
+		Intakemotor.updateTelemetry();
 
-		if(shooter.getSpeed().baseUnitMagnitude() > 0) {
-			SmartDashboard.putBoolean("shooter Status", false);
+		if(Intakemotor.getSpeed().baseUnitMagnitude() > 0) {
+			SmartDashboard.putBoolean("Intake Status", false);
 		} else {
-			SmartDashboard.putBoolean("shooter Status", true);	
+			SmartDashboard.putBoolean("Intake Status", true);	
 		}
 	}
 
 	@Override
 	public void simulationPeriodic() {
-		shooter.simIterate();
+		Intakemotor.simIterate();
 	}
 }
