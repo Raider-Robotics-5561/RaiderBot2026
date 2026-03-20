@@ -15,16 +15,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Commands.ShakeCommand;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.HopperSysytem.KickerSubsystem;
 import frc.robot.util.SuperStructure;
-// import frc.robot.util.Unused.ShootOnTheMoveCommand;
 import swervelib.SwerveInputStream;
 import frc.robot.Commands.ShotCalculatorCommand;
+
 public class RobotContainer {
 	// Subsystem inizialization (Should only be Climber and superstructure)
 	private final SuperStructure SuperStructure = new SuperStructure();
-	// public final ClimberSubsystem m_climber = new ClimberSubsystem();
-
 
 	// Controller initialization
 	final CommandXboxController DriveController = new CommandXboxController(0);
@@ -93,10 +90,6 @@ public class RobotContainer {
 	// The container for the robot. Contains subsystems, OI devices, and commands.
 
 	public RobotContainer() {
-
-
-
-
 		//Rather than using a chooser of all of the complied autons, we can just use the string name to build the command in getAutonomousCommand() after gameInit() registers all of the NamedCommands.
 		m_chooser = new SendableChooser<String>();
 		m_chooser.addOption("Right_Trench_Double_ToOP", "Right_Trench_Double_ToOP");
