@@ -32,7 +32,7 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class BellyRollerSubsystem extends SubsystemBase {
 	TalonFX HopperRoller = new TalonFX(24);
-
+		//NOTE - Will need to update the CANid to fit the new kraken
 	private SmartMotorControllerConfig HopperRollerConfig = new SmartMotorControllerConfig(this)
 			.withControlMode(ControlMode.CLOSED_LOOP)
 			.withClosedLoopController(1, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
