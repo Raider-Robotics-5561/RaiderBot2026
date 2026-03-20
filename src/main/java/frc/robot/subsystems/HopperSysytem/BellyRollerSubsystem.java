@@ -42,7 +42,7 @@ public class BellyRollerSubsystem extends SubsystemBase {
 			.withFeedforward(new SimpleMotorFeedforward(0.5, 0.0001))
 			.withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
 			.withTelemetry("HopperRollerMotor", TelemetryVerbosity.HIGH)
-			.withGearing(new MechanismGearing(1))
+			.withGearing(new MechanismGearing(1.5))
 			.withMotorInverted(false)
 			.withIdleMode(MotorMode.COAST)
 			.withControlMode(ControlMode.CLOSED_LOOP);

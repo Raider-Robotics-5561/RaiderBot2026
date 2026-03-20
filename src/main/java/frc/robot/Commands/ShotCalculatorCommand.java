@@ -334,7 +334,7 @@ public class ShotCalculatorCommand extends Command {
     if (m_kicker != null && m_hopperRoller != null) {
       if (readyToFire) {
         m_kicker.setDutyCycleDirect(-0.9);
-        m_hopperRoller.setVelocityDirect(RPM.of(1250));
+        m_hopperRoller.setVelocityDirect(RPM.of(-2500));
       } else {
         // Keep kicker primed but hold the ball until we're on target
         m_kicker.setDutyCycleDirect(0); // REVIEW - Not sure if we need to keep this on
