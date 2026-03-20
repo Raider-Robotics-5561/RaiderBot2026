@@ -42,7 +42,7 @@ public class IntakeRollerSubsystem extends SubsystemBase {
 			.withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
 			.withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
 			.withTelemetry("IntakeMotor", TelemetryVerbosity.HIGH)
-			.withGearing(new MechanismGearing(0.5)) //0.5 for a 1:2 ratio, 2 for a 2:1 ratio
+			.withGearing(new MechanismGearing(2))
 			.withMotorInverted(false)
 			.withIdleMode(MotorMode.COAST)
 			.withControlMode(ControlMode.CLOSED_LOOP);

@@ -153,6 +153,53 @@ public class RobotContainer {
 						SuperStructure.TurretSubsytem,
 						SuperStructure.FlywheelSubsystem,
 						10.0)); // auto mode: exits after 5s or when turret + flywheel are on target
+
+		// Non-blocking auton SOTM: one instance per target.
+		// Start commands fire instantly (runOnce) and return immediately — path following
+		// and all other auton actions continue unblocked in parallel.
+		// ShotCalculatorStop cancels all three instances at once, triggering end() on
+		// whichever one is running so hardware is always stopped cleanly.
+		ShotCalculatorCommand autonSotmGoal = new ShotCalculatorCommand(
+				drivebase::getPose,
+				drivebase::getFieldVelocity,
+				drivebase::getRobotVelocity,
+				() -> HubPose,
+				SuperStructure.TurretSubsytem,
+				SuperStructure.FlywheelSubsystem,
+				SuperStructure.kickerSubsystem,
+				SuperStructure.BellyRollerSubsystem);
+		ShotCalculatorCommand autonSotmOutpost = new ShotCalculatorCommand(
+				drivebase::getPose,
+				drivebase::getFieldVelocity,
+				drivebase::getRobotVelocity,
+				() -> AllianceWallOutpost,
+				SuperStructure.TurretSubsytem,
+				SuperStructure.FlywheelSubsystem,
+				SuperStructure.kickerSubsystem,
+				SuperStructure.BellyRollerSubsystem);
+		ShotCalculatorCommand autonSotmDepot = new ShotCalculatorCommand(
+				drivebase::getPose,
+				drivebase::getFieldVelocity,
+				drivebase::getRobotVelocity,
+				() -> AllianceWallDepot,
+				SuperStructure.TurretSubsytem,
+				SuperStructure.FlywheelSubsystem,
+				SuperStructure.kickerSubsystem,
+				SuperStructure.BellyRollerSubsystem);
+
+		NamedCommands.registerCommand("ShotCalculatorStart_Goal",
+				Commands.runOnce(autonSotmGoal::schedule));
+		NamedCommands.registerCommand("ShotCalculatorStart_Outpost",
+				Commands.runOnce(autonSotmOutpost::schedule));
+		NamedCommands.registerCommand("ShotCalculatorStart_Depot",
+				Commands.runOnce(autonSotmDepot::schedule));
+
+		// Stop cancels all three — safe to call even if only one (or none) is running.
+		NamedCommands.registerCommand("ShotCalculatorStop", Commands.runOnce(() -> {
+			autonSotmGoal.cancel();
+			autonSotmOutpost.cancel();
+			autonSotmDepot.cancel();
+		}));
 		NamedCommands.registerCommand("DeployHopper", SuperStructure.SetHopperPos());
 		NamedCommands.registerCommand("SetHopperPosAgitate", SuperStructure.SetHopperPosAgitate());
 		NamedCommands.registerCommand("RetractHopper", SuperStructure.SetHopperPosZero());
@@ -227,14 +274,16 @@ public class RobotContainer {
 																		//  SuperStructure.TurretSubsytem,
 																		//  SuperStructure.FlywheelSubsystem);
 java.util.function.Supplier<ShotCalculatorCommand> makeSotm = () ->
-				new ShotCalculatorCommand(
-				drivebase::getPose,
-						drivebase::getFieldVelocity,
-						drivebase::getRobotVelocity,
-						sotmTarget,
-						SuperStructure.TurretSubsytem,
-						SuperStructure.FlywheelSubsystem,
-						10.0);
+	new ShotCalculatorCommand(
+		drivebase::getPose,
+		drivebase::getFieldVelocity,
+		drivebase::getRobotVelocity,
+		() -> sotmTarget,
+		SuperStructure.TurretSubsytem,
+		SuperStructure.FlywheelSubsystem,
+		SuperStructure.kickerSubsystem,
+		SuperStructure.BellyRollerSubsystem
+	);
 
 		// Store composed SOTM commands so povUp can cancel the whole composition.
 		Command sotmDown  = Commands.runOnce(() -> sotmTarget = HubPose).andThen(makeSotm.get());
@@ -274,7 +323,8 @@ java.util.function.Supplier<ShotCalculatorCommand> makeSotm = () ->
 		DriveController.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
 		DriveController.leftTrigger().whileTrue(shakeCommand);
 
-		// This is our boost control Right Trigger
+		// This is our boost control Right Trigger 
+		//REVIEW - Does this limit the max speed to 80%?
 		DriveController.axisGreaterThan(3, 0.01).onChange(Commands.runOnce(() -> {
 			driveAngularVelocity.scaleTranslation(DriveController.getRightTriggerAxis() +
 					0.35);
