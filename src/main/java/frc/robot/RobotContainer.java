@@ -99,15 +99,12 @@ public class RobotContainer {
 
 		//Rather than using a chooser of all of the complied autons, we can just use the string name to build the command in getAutonomousCommand() after gameInit() registers all of the NamedCommands.
 		m_chooser = new SendableChooser<String>();
-		// m_chooser.addOption("Teston", "Teston");
+		m_chooser.addOption("Right_Trench_Double_ToOP", "Right_Trench_Double_ToOP");
 		m_chooser.addOption("LeftNeutralToDP", "LeftNeutralToDP");
 		m_chooser.addOption("SOTMtest", "SOTMtest");
 		m_chooser.addOption("RightNuetralToOP", "RightNuetralToOP");
 		m_chooser.addOption("APP1", "APP1");
 		m_chooser.addOption("APP2", "APP2");
-		// m_chooser.addOption("Nuetral_Left", "Nuetral_Left");
-		// m_chooser.addOption("Nuetral_Right", "Nuetral_Right");
-		// m_chooser.addOption("A_Center_1", "A_Center_1");
 		SmartDashboard.putData(m_chooser);
 
 		configureBindings();
