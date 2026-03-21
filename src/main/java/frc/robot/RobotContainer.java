@@ -155,27 +155,27 @@ public class RobotContainer {
 				drivebase::getRobotVelocity,
 				() -> HubPose,
 				SuperStructure.TurretSubsytem,
-				SuperStructure.FlywheelSubsystem,
-				SuperStructure.kickerSubsystem,
-				SuperStructure.BellyRollerSubsystem);
+				SuperStructure.FlywheelSubsystem);
+				//SuperStructure.kickerSubsystem,
+				//SuperStructure.BellyRollerSubsystem);
 		ShotCalculatorCommand autonSotmOutpost = new ShotCalculatorCommand(
 				drivebase::getPose,
 				drivebase::getFieldVelocity,
 				drivebase::getRobotVelocity,
 				() -> AllianceWallOutpost,
 				SuperStructure.TurretSubsytem,
-				SuperStructure.FlywheelSubsystem,
-				SuperStructure.kickerSubsystem,
-				SuperStructure.BellyRollerSubsystem);
+				SuperStructure.FlywheelSubsystem);
+				// SuperStructure.kickerSubsystem,
+				// SuperStructure.BellyRollerSubsystem);
 		ShotCalculatorCommand autonSotmDepot = new ShotCalculatorCommand(
 				drivebase::getPose,
 				drivebase::getFieldVelocity,
 				drivebase::getRobotVelocity,
 				() -> AllianceWallDepot,
 				SuperStructure.TurretSubsytem,
-				SuperStructure.FlywheelSubsystem,
-				SuperStructure.kickerSubsystem,
-				SuperStructure.BellyRollerSubsystem);
+				SuperStructure.FlywheelSubsystem);
+				// SuperStructure.kickerSubsystem,
+				// SuperStructure.BellyRollerSubsystem);
 
 		NamedCommands.registerCommand("ShotCalculatorStart_Goal",
 				Commands.runOnce(autonSotmGoal::schedule));
@@ -270,9 +270,9 @@ java.util.function.Supplier<ShotCalculatorCommand> makeSotm = () ->
 		drivebase::getRobotVelocity,
 		() -> sotmTarget,
 		SuperStructure.TurretSubsytem,
-		SuperStructure.FlywheelSubsystem,
-		SuperStructure.kickerSubsystem,
-		SuperStructure.BellyRollerSubsystem
+		SuperStructure.FlywheelSubsystem
+		//SuperStructure.kickerSubsystem,
+		//SuperStructure.BellyRollerSubsystem
 	);
 
 		// Store composed SOTM commands so povUp can cancel the whole composition.

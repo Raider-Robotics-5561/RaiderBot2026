@@ -43,7 +43,7 @@
                           {
                             "type": "named",
                             "data": {
-                              "name": "ShootOnTheMoveCommand"
+                              "name": "ShotCalculatorStart_Goal"
                             }
                           },
                           {
@@ -57,14 +57,21 @@
                             "data": {
                               "name": "Shake"
                             }
+                          },
+                          {
+                            "type": "sequential",
+                            "data": {
+                              "commands": [
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "Test_Path3"
+                                  }
+                                }
+                              ]
+                            }
                           }
                         ]
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Test_Path3"
                       }
                     }
                   ]
