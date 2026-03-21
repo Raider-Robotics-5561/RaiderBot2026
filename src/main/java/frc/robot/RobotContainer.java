@@ -226,15 +226,15 @@ public class RobotContainer {
 				.or(OperatorController.rightBumper().onTrue(SuperStructure.SetHopperExtenderPower(-0.5)))
 				.onFalse(SuperStructure.SetHopperExtenderPower(0));
 
-		OperatorController.a().onTrue(Commands.run(() -> {
-			SuperStructure.SetIntakePWR(0.8);
-			SuperStructure.FlywheelSubsystem.setVelocity(RPM.of(2000));
-			SuperStructure.SetKickerAndBellyReverse();
-		})).onFalse(Commands.run(() -> {
-			SuperStructure.SetIntakePWR(0);
-			SuperStructure.FlywheelSubsystem.setVelocity(RPM.of(0));
-			SuperStructure.SetKickerAndBellyOff();
-		}));
+		// OperatorController.a().onTrue(Commands.run(() -> {
+		// 	SuperStructure.SetIntakePWR(0.8);
+		// 	SuperStructure.FlywheelSubsystem.setVelocity(RPM.of(2000));
+		// 	SuperStructure.SetKickerAndBellyReverse();
+		// })).onFalse(Commands.run(() -> {
+		// 	SuperStructure.SetIntakePWR(0);
+		// 	SuperStructure.FlywheelSubsystem.setVelocity(RPM.of(0));
+		// 	SuperStructure.SetKickerAndBellyOff();
+		// }));
 
 		OperatorController.back().onTrue(Commands.run(() -> {
 			if(current_alliance == DriverStation.Alliance.Blue){

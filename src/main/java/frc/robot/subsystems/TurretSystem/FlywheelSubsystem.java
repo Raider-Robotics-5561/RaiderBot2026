@@ -45,7 +45,7 @@ public class FlywheelSubsystem extends SubsystemBase {
 			.withStatorCurrentLimit(Amps.of(40))
 			.withSupplyCurrentLimit(Amps.of(40))
 			.withMotorInverted(false)
-			.withClosedLoopRampRate(Seconds.of(0.01))
+			.withClosedLoopRampRate(Seconds.of(0.001))
 			.withOpenLoopRampRate(Seconds.of(0.25))
 			.withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
 			.withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))

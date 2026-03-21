@@ -5,69 +5,98 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "DeployHopper"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Cool_PreGrab"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "DeployHopper"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeRollerOn"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Cool_PreGrab"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShotCalculatorStart_Outpost"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "BellyFeed"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 2.6
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Stage1_Grab"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "CenterCenter_Flip"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Stage2_Grab"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "IntakeRollerOn"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShotCalculatorStart_Outpost"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Stage1_Grab"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CenterCenter_Flip"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Stage2_Grab"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShotCalculatorStop"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "ToStartLine"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShotCalculatorStart_Goal"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Launch&Pickup"
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 5.2
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]

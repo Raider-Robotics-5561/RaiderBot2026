@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.*;
 
 import frc.robot.subsystems.HopperSysytem.HopperExtenderSubsystem;
 import frc.robot.subsystems.HopperSysytem.BellyRollerSubsystem;
+// import frc.robot.subsystems.HopperSysytem.CTRERollers;
 import frc.robot.subsystems.HopperSysytem.IntakeRollerSubsystem;
 import frc.robot.subsystems.HopperSysytem.KickerSubsystem;
 import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
@@ -59,24 +60,24 @@ public class SuperStructure extends SubsystemBase {
 	public Command SetKickerAndBelly() {
 	return
 		kickerSubsystem.setDutyCycle(-0.9)
-		.alongWith(new WaitCommand(1.0)
+		.alongWith(new WaitCommand(0.75)
 		.andThen(BellyRollerSubsystem.setVelocity(RPM.of(-2500))));
 	}
 
-	public Command SetKickerAndBellyReverse() 
-	{
-		return 	kickerSubsystem.setDutyCycle(0.9)
-		.alongWith(BellyRollerSubsystem.setVelocity(RPM.of(2500)));
-	}
+	// public Command SetKickerAndBellyReverse() 
+	// {
+	// 	return 	kickerSubsystem.setDutyCycle(0.9)
+	// 	.alongWith(BellyRollerSubsystem.setVelocity(RPM.of(2500)));
+	// }
 
 	public Command BackDriveKicker() {
 	return
-		kickerSubsystem.setDutyCycle(0.8);
+		kickerSubsystem.setDutyCycle(0.8).alongWith(BellyRollerSubsystem.setDutyCycle(0.25));
 	}
 
 	public Command BackDriveKickeroff() {
 	return
-		kickerSubsystem.setDutyCycle(0);
+		kickerSubsystem.setDutyCycle(0).alongWith(BellyRollerSubsystem.setDutyCycle(0));
 	}
 	
 	//start hopper NEED TO FIX
@@ -100,7 +101,7 @@ public class SuperStructure extends SubsystemBase {
 		return HopperExtenderSubsystem.set(power);
 	}
 
-	public Command SetIntakePWR(double power) {
+public Command SetIntakePWR(double power) {
 		return IntakeRollerSubsystem.setDutyCycle(power);
 	}
 

@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -32,16 +33,18 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class IntakeRollerSubsystem extends SubsystemBase {
 	TalonFX Intake = new TalonFX(22);
-	
+	// TalonFXConfiguration intakevendorconfig = new TalonFXConfiguration();
+
 	private SmartMotorControllerConfig IntakeConfig = new SmartMotorControllerConfig(this)
 			.withControlMode(ControlMode.CLOSED_LOOP)
 			.withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
 			.withSimClosedLoopController(1, 0, 0)
 			.withStatorCurrentLimit(Amps.of(40))
-			.withSupplyCurrentLimit(Amps.of(40))
+			// .withSupplyCurrentLimit(Amps.of(40))
 			.withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
 			.withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
 			.withTelemetry("IntakeMotor", TelemetryVerbosity.HIGH)
+			// .withVendorConfig(intakevendorconfig.)
 			.withGearing(new MechanismGearing(2))
 			.withMotorInverted(false)
 			.withIdleMode(MotorMode.COAST)
