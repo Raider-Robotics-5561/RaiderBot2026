@@ -83,6 +83,38 @@ public class ShotCalculatorCommand extends Command {
    */
   private static final double FIRE_CONFIDENCE_THRESHOLD = 55.0;
 
+  // ── Flywheel RPM trim ────────────────────────────────────────────────────────
+  /**
+   * Global RPM trim applied on top of the LUT value.
+   * Adjusted at runtime via {@link #incrementTrim()} / {@link #decrementTrim()}.
+   * Static so all ShotCalculatorCommand instances share the same trim value.
+   */
+  private static final double TRIM_STEP_RPM = 25.0;
+  private static double flywheel_trim = 0.0;
+
+  /** Increase the flywheel trim by {@value #TRIM_STEP_RPM} RPM. */
+  public static void incrementTrim() {
+    flywheel_trim += TRIM_STEP_RPM;
+    System.out.println("[ShotCalc] Flywheel trim -> " + flywheel_trim + " RPM");
+  }
+
+  /** Decrease the flywheel trim by {@value #TRIM_STEP_RPM} RPM. */
+  public static void decrementTrim() {
+    flywheel_trim -= TRIM_STEP_RPM;
+    System.out.println("[ShotCalc] Flywheel trim -> " + flywheel_trim + " RPM");
+  }
+
+  /** Reset the flywheel trim to zero. */
+  public static void resetTrim() {
+    flywheel_trim = 0.0;
+    System.out.println("[ShotCalc] Flywheel trim reset to 0 RPM");
+  }
+
+  /** Returns the current flywheel trim value in RPM. */
+  public static double getTrim() {
+    return flywheel_trim;
+  }
+
   // ── Subsystem references ────────────────────────────────────────────────────
   private final TurretSubsystem m_turret;
   private final FlywheelSubsystem m_flywheel;
@@ -291,6 +323,7 @@ public class ShotCalculatorCommand extends Command {
     SmartDashboard.putNumber("SOTM2: Solved Dist (m)", result.solvedDistanceM());
     SmartDashboard.putNumber("SOTM2: Iterations", result.iterationsUsed());
     SmartDashboard.putBoolean("SOTM2: Warm Start", result.warmStartUsed());
+    SmartDashboard.putNumber("SOTM2: Flywheel Trim (RPM)", flywheel_trim);
 
     if (!result.isValid()) {
       // Out of range or bad inputs — hold turret at zero, spin down
@@ -322,7 +355,7 @@ public class ShotCalculatorCommand extends Command {
     // RPM from the solver is already negative by convention (launcher fires
     // backwards)
     m_turret.setAngleSetpoint(Degrees.of(clampedAngle));
-    m_flywheel.setVelocitySetpoint(RPM.of(-result.rpm()));
+    m_flywheel.setVelocitySetpoint(RPM.of(-result.rpm() - flywheel_trim));
 
     // ── Feed control ──────────────────────────────────────────────────────────
     boolean readyToFire = m_flywheel.atSetpoint()

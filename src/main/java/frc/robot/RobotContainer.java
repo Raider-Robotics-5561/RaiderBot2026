@@ -294,6 +294,21 @@ java.util.function.Supplier<ShotCalculatorCommand> makeSotm = () ->
 			if (sotmRight.isScheduled()) scheduler.cancel(sotmRight);
 		}));
 
+		// ── Flywheel RPM trim (operator A / B / Y) ───────────────────────────────
+		// A = +25 RPM, B = -25 RPM, Y = reset to 0
+		OperatorController.a().onTrue(Commands.runOnce(() -> {
+			ShotCalculatorCommand.incrementTrim();
+			SmartDashboard.putNumber("SOTM2: Flywheel Trim (RPM)", ShotCalculatorCommand.getTrim());
+		}));
+		OperatorController.b().onTrue(Commands.runOnce(() -> {
+			ShotCalculatorCommand.decrementTrim();
+			SmartDashboard.putNumber("SOTM2: Flywheel Trim (RPM)", ShotCalculatorCommand.getTrim());
+		}));
+		OperatorController.y().onTrue(Commands.runOnce(() -> {
+			ShotCalculatorCommand.resetTrim();
+			SmartDashboard.putNumber("SOTM2: Flywheel Trim (RPM)", ShotCalculatorCommand.getTrim());
+		}));
+
 		// OperatorController.povLeft().whileTrue(ShootOnTheMoveCommand.rebuildFromDashboard());
 
 		/* ~~~~~~~~~~~~~~~~~~Drive Control~~~~~~~~~~~~~~~~~~~~~~~~ */
