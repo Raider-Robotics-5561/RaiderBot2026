@@ -70,14 +70,16 @@ public class SuperStructure extends SubsystemBase {
 	// 	.alongWith(BellyRollerSubsystem.setVelocity(RPM.of(2500)));
 	// }
 
-	public Command BackDriveKicker() {
+	public Command Flush() {
 	return
-		kickerSubsystem.setDutyCycle(0.8).alongWith(BellyRollerSubsystem.setDutyCycle(0.25));
+		kickerSubsystem.setDutyCycle(0.8).alongWith(BellyRollerSubsystem.setDutyCycle(0.25))
+		.alongWith(IntakeRollerSubsystem.setDutyCycle(0.4));
 	}
 
-	public Command BackDriveKickeroff() {
+public Command FlushOff() {
 	return
-		kickerSubsystem.setDutyCycle(0).alongWith(BellyRollerSubsystem.setDutyCycle(0));
+		kickerSubsystem.setDutyCycle(0).alongWith(BellyRollerSubsystem.setDutyCycle(0))
+		.alongWith(IntakeRollerSubsystem.setDutyCycle(0));
 	}
 	
 	//start hopper NEED TO FIX

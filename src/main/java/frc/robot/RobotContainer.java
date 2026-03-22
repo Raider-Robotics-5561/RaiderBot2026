@@ -218,8 +218,8 @@ public class RobotContainer {
 		OperatorController.rightTrigger().whileTrue(SuperStructure.SetKickerAndBelly())
 				.onFalse(SuperStructure.SetKickerAndBellyOff());
 
-		OperatorController.x().whileTrue(SuperStructure.BackDriveKicker())
-				.onFalse(SuperStructure.BackDriveKickeroff());
+		OperatorController.x().whileTrue(SuperStructure.Flush())
+				.onFalse(SuperStructure.FlushOff());
 
 		// Hopper Extender Control
 		OperatorController.leftBumper().onTrue(SuperStructure.SetHopperExtenderPower(0.3))

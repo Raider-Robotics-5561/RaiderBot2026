@@ -73,7 +73,7 @@ public class ShotCalculatorCommand extends Command {
 
   // ── LUT data pulled from ShootOnTheMoveCommand ──────────────────────────────
   private static final double[] LUT_DISTANCES = { 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5 };
-  private static final double[] LUT_RPMS =      { 0.0, 0.0, 2750.0, 2800.0, 3000.0, 3150.0, 3200.0, 3450.0, 3550.0, 3650.0, 3800.0, 3950.0 }; //NOTE - Lets tune these.
+  private static final double[] LUT_RPMS =      { 0.0, 0.0, 2750.0, 2800.0, 3000.0, 3150.0, 3200.0, 3450.0, 3550.0, 3650.0, 3900.0, 3950.0 }; //NOTE - Lets tune these.
   private static final double[] LUT_TOFS =      { 0.88, 0.92, 0.96, 1.00, 1.04, 1.08, 1.11, 1.15, 1.19, 1.23, 1.27, 1.31 };
 
   // ── Confidence threshold — below this we don't feed the ball ────────────────
