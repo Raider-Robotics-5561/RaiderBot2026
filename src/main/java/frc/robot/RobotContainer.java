@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,6 +16,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Commands.ShakeCommand;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.HopperSysytem.HopperExtenderSubsystem;
+import frc.robot.subsystems.HopperSysytem.IntakeRollerSubsystem;
+import frc.robot.subsystems.HopperSysytem.KickerSubsystem;
+import frc.robot.subsystems.TurretSystem.FlywheelSubsystem;
+import frc.robot.subsystems.TurretSystem.HoodSubsystem;
 import frc.robot.util.SuperStructure;
 import swervelib.SwerveInputStream;
 import frc.robot.Commands.ShotCalculatorCommand;
@@ -90,11 +96,21 @@ public class RobotContainer {
 	// The container for the robot. Contains subsystems, OI devices, and commands.
 
 	public RobotContainer() {
+		// Set default commands for subsystems here. They will automatically run when no other command is using the subsystem.
+		SuperStructure.kickerSubsystem.setDefaultCommand(SuperStructure.kickerSubsystem.setDutyCycle(0));
+		SuperStructure.BellyRollerSubsystem.setDefaultCommand(SuperStructure.BellyRollerSubsystem.setDutyCycle(0));
+		SuperStructure.HopperExtenderSubsystem.setDefaultCommand(SuperStructure.HopperExtenderSubsystem.set(0));	
+		SuperStructure.IntakeRollerSubsystem.setDefaultCommand(SuperStructure.IntakeRollerSubsystem.setDutyCycle(0));
+		SuperStructure.FlywheelSubsystem.setDefaultCommand(SuperStructure.FlywheelSubsystem.setDutyCycle(0));
+		SuperStructure.HoodSubsystem.setDefaultCommand(SuperStructure.HoodSubsystem.setDutyCycle(0));
+		SuperStructure.TurretSubsytem.setDefaultCommand(SuperStructure.TurretSubsytem.setDutyCycle(0));
+		
+
 		//Rather than using a chooser of all of the complied autons, we can just use the string name to build the command in getAutonomousCommand() after gameInit() registers all of the NamedCommands.
 		m_chooser = new SendableChooser<String>();
-		m_chooser.addOption("Right_Trench_Double_ToOP", "Right_Trench_Double_ToOP");
+		// m_chooser.addOption("Right_Trench_Double_ToOP", "Right_Trench_Double_ToOP");
 		m_chooser.addOption("LeftNeutralToDP", "LeftNeutralToDP");
-		m_chooser.addOption("SOTMtest", "SOTMtest");
+		// m_chooser.addOption("SOTMtest", "SOTMtest");
 		m_chooser.addOption("RightNuetralToOP", "RightNuetralToOP");
 		m_chooser.addOption("APP1", "APP1");
 		m_chooser.addOption("APP2", "APP2");
